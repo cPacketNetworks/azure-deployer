@@ -156,14 +156,13 @@
         },
         "vmSize": {
             "type": "string",
-            "defaultValue": "Standard_A1_v2",
+            "defaultValue": "Standard_A2_v2",
             "metadata": {
                 "description": "description"
             }
         }
     },
     "variables": {
-        "virtualNetworkName": "VNET",
         "publicIpAddressId": {
             "id": "[resourceId(parameters('publicIpResourceGroupName'), 'Microsoft.Network/publicIPAddresses', parameters('publicIpName'))]"
         },
