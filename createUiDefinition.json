@@ -342,7 +342,7 @@
             "authenticationType": "[basics('SSHCredentials').authenticationType]",
             "adminPasswordOrKey": "[coalesce(basics('SSHCredentials').password, basics('SSHCredentials').sshPublicKey)]",
 
-            "storageAccountName": "[steps('storageConfig').storageAccountSelector]",
+            "storageAccount": "[steps('storageConfig').storageAccountSelector]",
 
             "virtualNetwork": "[steps('networkConfig').virtualNetwork]",
 
