@@ -5,27 +5,66 @@
     "parameters": {
         "basics": [
             {
-                "name": "vmName",
-                "type": "Microsoft.Common.TextBox",
-                "label": "Virtual Machine name",
-                "toolTip": "The name of the Virtual Machine.",
-                "defaultValue": "linux-vm",
+                "name": "adminUsername",
+                "type": "Microsoft.Compute.UserNameTextBox",
+                "label": "Username",
+                "toolTip": "Admin username for the machines",
+                "osPlatform": "Linux",
                 "constraints": {
-                    "required": true,
-                    "regex": "^[a-z0-9A-Z-]{3,79}$",
-                    "validationMessage": "The VM Name must be between 3 and 79 characters long and contain letters, numbers and hyphens only."
+                    "required": true
                 }
+            },
+            {
+                "name": "SSHCredentials",
+                "type": "Microsoft.Compute.CredentialsCombo",
+                "label": {
+                    "authenticationType": "Authentication type",
+                    "password": "Password",
+                    "confirmPassword": "Confirm password",
+                    "sshPublicKey": "SSH public key"
+                },
+                "toolTip": {
+                    "authenticationType": "Authentication Type for the Virtual Machines",
+                    "password": "Password for the Virtual Machines",
+                    "sshPublicKey": "SSH Public Key for the Virtual Machines"
+                },
+                "constraints": {
+                    "required": true
+                },
+                "options": {
+                    "hideConfirmation": false
+                },
+                "osPlatform": "Linux"
             }
         ],
         "steps": [
             {
-                "name": "VirtualMachineConfig",
-                "label": "Virtual Machine Settings",
-                "subLabel": {
-                    "preValidation": "Configure the virtual machine's resources and settings",
-                    "postValidation": "Done"
-                },
-                "bladeTitle": "Virtual Machine Settings",
+                "name": "storageConfig",
+                "label": "Storage settings",
+                "elements": [
+                    {
+                        "name": "storageAccountSelector",
+                        "type": "Microsoft.Storage.StorageAccountSelector",
+                        "label": "VM Diagnostic Storage account",
+                        "toolTip": "",
+                        "defaultValue": {
+                            "name": "storageaccount01",
+                            "type": "Premium_LRS"
+                        },
+                        "constraints": {
+                            "allowedTypes": [],
+                            "excludedTypes": []
+                        },
+                        "options": {
+                            "hideExisting": false
+                        },
+                        "visible": true
+                    }
+                ]
+            },
+            {
+                "name": "networkConfig",
+                "label": "Network settings",
                 "elements": [
                     {
                         "name": "virtualNetwork",
@@ -35,21 +74,48 @@
                             "subnets": "Subnets"
                         },
                         "toolTip": {
-                            "virtualNetwork": "Name of the virtual network",
-                            "subnets": "Subnets for the virtual network"
+                            "virtualNetwork": "",
+                            "subnets": ""
                         },
                         "defaultValue": {
-                            "name": "VirtualNetwork",
+                            "name": "cpacketVnet",
                             "addressPrefixSize": "/16"
                         },
                         "constraints": {
                             "minAddressPrefixSize": "/16"
                         },
+                        "options": {
+                            "hideExisting": false
+                        },
                         "subnets": {
-                            "subnet1": {
-                                "label": "Subnet",
+                            "mgmtSubnet": {
+                                "label": "Management subnet",
                                 "defaultValue": {
-                                    "name": "Subnet-1",
+                                    "name": "mgmt",
+                                    "addressPrefixSize": "/24"
+                                },
+                                "constraints": {
+                                    "minAddressPrefixSize": "/24",
+                                    "minAddressCount": 12,
+                                    "requireContiguousAddresses": false
+                                }
+                            },
+                            "monSubnet": {
+                                "label": "Monitoring subnet",
+                                "defaultValue": {
+                                    "name": "mon",
+                                    "addressPrefixSize": "/24"
+                                },
+                                "constraints": {
+                                    "minAddressPrefixSize": "/24",
+                                    "minAddressCount": 12,
+                                    "requireContiguousAddresses": false
+                                }
+                            },
+                            "cstorSubnet": {
+                                "label": "Packet Storage subnet",
+                                "defaultValue": {
+                                    "name": "cstor",
                                     "addressPrefixSize": "/24"
                                 },
                                 "constraints": {
@@ -58,21 +124,228 @@
                                     "requireContiguousAddresses": false
                                 }
                             }
+                        },
+                        "visible": true
+                    }
+                ]
+            },
+            {
+                "name": "cclear",
+                "label": "cClear Configuration",
+                "elements": [
+                    {
+                        "name": "cClearVmName",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Virtual Machine name",
+                        "toolTip": "The name of the Virtual Machine.",
+                        "defaultValue": "cclear",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[a-z0-9A-Z-]{3,79}$",
+                            "validationMessage": "The VM Name must be between 3 and 79 characters long and contain letters, numbers and hyphens only."
                         }
+                    },
+                    {
+                        "name": "cclearPublicIpAddressCombo",
+                        "type": "Microsoft.Network.PublicIpAddressCombo",
+                        "label": {
+                            "publicIpAddress": "Public IP address",
+                            "domainNameLabel": "Domain name label"
+                        },
+                        "toolTip": {
+                            "publicIpAddress": "Public IP Address for the VM",
+                            "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
+                        },
+                        "defaultValue": {
+                            "publicIpAddressName": "[concat(steps('cclear').cClearVmName, '-', 'ip01')]",
+                            "domainNameLabel": "[concat(steps('cclear').cClearVmName, '-', take(replace(guid(), '-', ''), 10))]"
+                        },
+                        "constraints": {
+                            "required": {
+                                "domainNameLabel": true
+                            }
+                        },
+                        "options": {
+                            "hideNone": false,
+                            "hideDomainNameLabel": false,
+                            "hideExisting": false
+                        },
+                        "visible": true
+                    }
+                ]
+            },
+            {
+                "name": "cvu",
+                "label": "cVu-V Configuration",
+                "elements": [
+                    {
+                        "name": "cvuVmName",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Virtual Machine name",
+                        "toolTip": "The name of the Virtual Machine.",
+                        "defaultValue": "cvu",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[a-z0-9A-Z-]{3,79}$",
+                            "validationMessage": "The VM Name must be between 3 and 79 characters long and contain letters, numbers and hyphens only."
+                        }
+                    },
+                    {
+                        "name": "cvuPublicIpAddressCombo01",
+                        "type": "Microsoft.Network.PublicIpAddressCombo",
+                        "label": {
+                            "publicIpAddress": "Public IP address",
+                            "domainNameLabel": "Domain name label"
+                        },
+                        "toolTip": {
+                            "publicIpAddress": "Public IP Address for the VM",
+                            "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
+                        },
+                        "defaultValue": {
+                            "publicIpAddressName": "[concat(steps('cvu').cvuVmName, '-', 'ip', '01')]",
+                            "domainNameLabel": "[concat(steps('cvu').cvuVmName, '-', take(replace(guid(), '-', ''), 10))]"
+                        },
+                        "constraints": {
+                            "required": {
+                                "domainNameLabel": true
+                            }
+                        },
+                        "options": {
+                            "hideNone": false,
+                            "hideDomainNameLabel": false,
+                            "hideExisting": false
+                        },
+                        "visible": true
+                    },
+                    {
+                        "name": "cvuPublicIpAddressCombo02",
+                        "type": "Microsoft.Network.PublicIpAddressCombo",
+                        "label": {
+                            "publicIpAddress": "Public IP address",
+                            "domainNameLabel": "Domain name label"
+                        },
+                        "toolTip": {
+                            "publicIpAddress": "Public IP Address for the VM",
+                            "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
+                        },
+                        "defaultValue": {
+                            "publicIpAddressName": "[concat(steps('cvu').cvuVmName, '-', 'ip', '02')]",
+                            "domainNameLabel": "[concat(steps('cvu').cvuVmName, '-', take(replace(guid(), '-', ''), 10))]"
+                        },
+                        "constraints": {
+                            "required": {
+                                "domainNameLabel": true
+                            }
+                        },
+                        "options": {
+                            "hideNone": false,
+                            "hideDomainNameLabel": false,
+                            "hideExisting": false
+                        },
+                        "visible": true
+                    },
+                    {
+                        "name": "cvuPublicIpAddressCombo03",
+                        "type": "Microsoft.Network.PublicIpAddressCombo",
+                        "label": {
+                            "publicIpAddress": "Public IP address",
+                            "domainNameLabel": "Domain name label"
+                        },
+                        "toolTip": {
+                            "publicIpAddress": "Public IP Address for the VM",
+                            "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
+                        },
+                        "defaultValue": {
+                            "publicIpAddressName": "[concat(steps('cvu').cvuVmName, '-', 'ip', '03')]",
+                            "domainNameLabel": "[concat(steps('cvu').cvuVmName, '-', take(replace(guid(), '-', ''), 10))]"
+                        },
+                        "constraints": {
+                            "required": {
+                                "domainNameLabel": true
+                            }
+                        },
+                        "options": {
+                            "hideNone": false,
+                            "hideDomainNameLabel": false,
+                            "hideExisting": false
+                        },
+                        "visible": true
+                    }
+                ]
+            },
+            {
+                "name": "cstor",
+                "label": "cStor-V Configuration",
+                "elements": [
+                    {
+                        "name": "cstorVmName",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Virtual Machine name",
+                        "toolTip": "The name of the Virtual Machine.",
+                        "defaultValue": "cstor",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[a-z0-9A-Z-]{3,79}$",
+                            "validationMessage": "The VM Name must be between 3 and 79 characters long and contain letters, numbers and hyphens only."
+                        }
+                    },
+                    {
+                        "name": "cstorPublicIpAddressCombo",
+                        "type": "Microsoft.Network.PublicIpAddressCombo",
+                        "label": {
+                            "publicIpAddress": "Public IP address",
+                            "domainNameLabel": "Domain name label"
+                        },
+                        "toolTip": {
+                            "publicIpAddress": "Public IP Address for the VM",
+                            "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
+                        },
+                        "defaultValue": {
+                            "publicIpAddressName": "[concat(steps('cstor').cstorVmName, '-', 'ip01')]",
+                            "domainNameLabel": "[concat(steps('cstor').cstorVmName, '-', take(replace(guid(), '-', ''), 10))]"
+                        },
+                        "constraints": {
+                            "required": {
+                                "domainNameLabel": true
+                            }
+                        },
+                        "options": {
+                            "hideNone": false,
+                            "hideDomainNameLabel": false,
+                            "hideExisting": false
+                        },
+                        "visible": true
+                    }
+                ]
+            },
+            {
+                "name": "tags",
+                "label": "Tags",
+                "elements": [
+                    {
+                        "name": "tagsByResource",
+                        "type": "Microsoft.Common.TagsByResource",
+                        "resources": [
+                            "Microsoft.Network/publicIPAddresses",
+                            "Microsoft.Network/virtualNetworks",
+                            "Microsoft.Network/networkInterfaces",
+                            "Microsoft.Storage/storageAccounts",
+                            "Microsoft.Compute/virtualMachines"
+                        ]
                     }
                 ]
             }
         ],
         "outputs": {
-
             "location": "[location()]",
-            "virtualNetworkNewOrExisting": "[steps('VirtualMachineConfig').virtualNetwork.newOrExisting]",
-            "virtualNetworkName": "[steps('VirtualMachineConfig').virtualNetwork.name]",
-            "addressPrefixes": "[steps('VirtualMachineConfig').virtualNetwork.addressPrefixes]",
-            "subnetName": "[steps('VirtualMachineConfig').virtualNetwork.subnets.subnet1.name]",
-            "subnetPrefix": "[steps('VirtualMachineConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
-            "virtualNetworkResourceGroupName": "[steps('VirtualMachineConfig').virtualNetwork.resourceGroup]"
-
+            "storageAccountName": "[steps('storageConfig').storageAccountSelector]",
+            "tagsByResource": "[steps('tags').tagsByResource]",
+            "virtualNetworkNewOrExisting": "[steps('networkConfig').virtualNetwork.newOrExisting]",
+            "virtualNetworkName": "[steps('networkConfig').virtualNetwork.name]",
+            "addressPrefixes": "[steps('networkConfig').virtualNetwork.addressPrefixes]",
+            "subnetName": "[steps('networkConfig').virtualNetwork.subnets.subnet1.name]",
+            "subnetPrefix": "[steps('networkConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
+            "virtualNetworkResourceGroupName": "[steps('networkConfig').virtualNetwork.resourceGroup]"
         }
     }
 }
