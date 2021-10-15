@@ -138,7 +138,7 @@
                         "type": "Microsoft.Common.TextBox",
                         "label": "Virtual Machine name",
                         "toolTip": "The name of the Virtual Machine.",
-                        "defaultValue": "cclear",
+                        "defaultValue": "cclear-01",
                         "constraints": {
                             "required": true,
                             "regex": "^[a-z0-9A-Z-]{3,79}$",
@@ -157,7 +157,7 @@
                             "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
                         },
                         "defaultValue": {
-                            "publicIpAddressName": "[concat(steps('cclear').cClearVmName, '-', 'ip', '01')]",
+                            "publicIpAddressName": "[concat(steps('cclear').cClearVmName, '-', 'ip')]",
                             "domainNameLabel": "[concat(steps('cclear').cClearVmName, '-', take(replace(guid(), '-', ''), 10))]"
                         },
                         "constraints": {
@@ -202,8 +202,8 @@
                             "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
                         },
                         "defaultValue": {
-                            "publicIpAddressName": "[concat(steps('cvu').cvuVmName, '-', 'ip', '01')]",
-                            "domainNameLabel": "[concat(steps('cvu').cvuVmName, '-', take(replace(guid(), '-', ''), 10))]"
+                            "publicIpAddressName": "[concat(steps('cvu').cvuVmName, '-', '01', '-', 'ip')]",
+                            "domainNameLabel": "[concat(steps('cvu').cvuVmName, '-', '01', '-', take(replace(guid(), '-', ''), 10))]"
                         },
                         "constraints": {
                             "required": {
@@ -229,8 +229,8 @@
                             "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
                         },
                         "defaultValue": {
-                            "publicIpAddressName": "[concat(steps('cvu').cvuVmName, '-', 'ip', '02')]",
-                            "domainNameLabel": "[concat(steps('cvu').cvuVmName, '-', take(replace(guid(), '-', ''), 10))]"
+                            "publicIpAddressName": "[concat(steps('cvu').cvuVmName, '-', '02', '-', 'ip')]",
+                            "domainNameLabel": "[concat(steps('cvu').cvuVmName, '-', '02', '-', take(replace(guid(), '-', ''), 10))]"
                         },
                         "constraints": {
                             "required": {
@@ -256,8 +256,8 @@
                             "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
                         },
                         "defaultValue": {
-                            "publicIpAddressName": "[concat(steps('cvu').cvuVmName, '-', 'ip', '03')]",
-                            "domainNameLabel": "[concat(steps('cvu').cvuVmName, '-', take(replace(guid(), '-', ''), 10))]"
+                            "publicIpAddressName": "[concat(steps('cvu').cvuVmName, '-', '03', '-', 'ip')]",
+                            "domainNameLabel": "[concat(steps('cvu').cvuVmName, '-', '03', '-', take(replace(guid(), '-', ''), 10))]"
                         },
                         "constraints": {
                             "required": {
@@ -282,7 +282,7 @@
                         "type": "Microsoft.Common.TextBox",
                         "label": "Virtual Machine name",
                         "toolTip": "The name of the Virtual Machine.",
-                        "defaultValue": "cstor",
+                        "defaultValue": "cstor-01",
                         "constraints": {
                             "required": true,
                             "regex": "^[a-z0-9A-Z-]{3,79}$",
@@ -301,7 +301,7 @@
                             "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
                         },
                         "defaultValue": {
-                            "publicIpAddressName": "[concat(steps('cstor').cstorVmName, '-', 'ip', '01')]",
+                            "publicIpAddressName": "[concat(steps('cstor').cstorVmName, '-', 'ip')]",
                             "domainNameLabel": "[concat(steps('cstor').cstorVmName, '-', take(replace(guid(), '-', ''), 10))]"
                         },
                         "constraints": {
