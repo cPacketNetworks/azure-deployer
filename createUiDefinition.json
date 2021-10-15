@@ -146,7 +146,7 @@
                         }
                     },
                     {
-                        "name": "cclearPublicIpAddressCombo01",
+                        "name": "cclearPublicIpAddress01",
                         "type": "Microsoft.Network.PublicIpAddressCombo",
                         "label": {
                             "publicIpAddress": "Public IP address",
@@ -191,7 +191,7 @@
                         }
                     },
                     {
-                        "name": "cvuPublicIpAddressCombo01",
+                        "name": "cvuPublicIpAddress01",
                         "type": "Microsoft.Network.PublicIpAddressCombo",
                         "label": {
                             "publicIpAddress": "Public IP address",
@@ -218,7 +218,7 @@
                         "visible": true
                     },
                     {
-                        "name": "cvuPublicIpAddressCombo02",
+                        "name": "cvuPublicIpAddress02",
                         "type": "Microsoft.Network.PublicIpAddressCombo",
                         "label": {
                             "publicIpAddress": "Public IP address",
@@ -245,7 +245,7 @@
                         "visible": true
                     },
                     {
-                        "name": "cvuPublicIpAddressCombo03",
+                        "name": "cvuPublicIpAddress03",
                         "type": "Microsoft.Network.PublicIpAddressCombo",
                         "label": {
                             "publicIpAddress": "Public IP address",
@@ -290,7 +290,7 @@
                         }
                     },
                     {
-                        "name": "cstorPublicIpAddressCombo01",
+                        "name": "cstorPublicIpAddress01",
                         "type": "Microsoft.Network.PublicIpAddressCombo",
                         "label": {
                             "publicIpAddress": "Public IP address",
@@ -338,14 +338,26 @@
         ],
         "outputs": {
             "location": "[location()]",
+            "adminUsername": "[basics('adminUsername')]",
+            "authenticationType": "[basics('SSHCredentials').authenticationType]",
+            "adminPasswordOrKey": "[coalesce(basics('SSHCredentials').password, basics('SSHCredentials').sshPublicKey)]",
+
             "storageAccountName": "[steps('storageConfig').storageAccountSelector]",
-            "tagsByResource": "[steps('tags').tagsByResource]",
-            "virtualNetworkNewOrExisting": "[steps('networkConfig').virtualNetwork.newOrExisting]",
-            "virtualNetworkName": "[steps('networkConfig').virtualNetwork.name]",
-            "addressPrefixes": "[steps('networkConfig').virtualNetwork.addressPrefixes]",
-            "subnetName": "[steps('networkConfig').virtualNetwork.subnets.subnet1.name]",
-            "subnetPrefix": "[steps('networkConfig').virtualNetwork.subnets.subnet1.addressPrefix]",
-            "virtualNetworkResourceGroupName": "[steps('networkConfig').virtualNetwork.resourceGroup]"
+
+            "virtualNetwork": "[steps('networkConfig').virtualNetwork]",
+
+            "cClearVmName": "[steps('cclear').cClearVmName]",
+            "cclearPublicIpAddress01": "[steps('cclear').cclearPublicIpAddress01]",
+            
+            "cvuVmName": "[steps('cvu').cvuVmName]",
+            "cvuPublicIpAddress01": "[steps('cvu').cvuPublicIpAddress01]",
+            "cvuPublicIpAddress02": "[steps('cvu').cvuPublicIpAddress02]",
+            "cvuPublicIpAddress03": "[steps('cvu').cvuPublicIpAddress03]",
+
+            "cstorVmName": "[steps('cstor').cstorVmName]",
+            "cstorPublicIpAddress01": "[steps('cstor').cstorPublicIpAddress01]",
+
+            "tagsByResource": "[steps('tags').tagsByResource]"
         }
     }
 }
