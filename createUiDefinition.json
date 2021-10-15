@@ -146,7 +146,7 @@
                         }
                     },
                     {
-                        "name": "cclearPublicIpAddressCombo",
+                        "name": "cclearPublicIpAddressCombo01",
                         "type": "Microsoft.Network.PublicIpAddressCombo",
                         "label": {
                             "publicIpAddress": "Public IP address",
@@ -157,7 +157,7 @@
                             "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
                         },
                         "defaultValue": {
-                            "publicIpAddressName": "[concat(steps('cclear').cClearVmName, '-', 'ip01')]",
+                            "publicIpAddressName": "[concat(steps('cclear').cClearVmName, '-', 'ip', '01')]",
                             "domainNameLabel": "[concat(steps('cclear').cClearVmName, '-', take(replace(guid(), '-', ''), 10))]"
                         },
                         "constraints": {
@@ -181,8 +181,8 @@
                     {
                         "name": "cvuVmName",
                         "type": "Microsoft.Common.TextBox",
-                        "label": "Virtual Machine name",
-                        "toolTip": "The name of the Virtual Machine.",
+                        "label": "Virtual Machine Base Name",
+                        "toolTip": "The Base Name of the Virtual Machine. A number will be appended to the end. Ex. cvu-01.",
                         "defaultValue": "cvu",
                         "constraints": {
                             "required": true,
@@ -290,7 +290,7 @@
                         }
                     },
                     {
-                        "name": "cstorPublicIpAddressCombo",
+                        "name": "cstorPublicIpAddressCombo01",
                         "type": "Microsoft.Network.PublicIpAddressCombo",
                         "label": {
                             "publicIpAddress": "Public IP address",
@@ -301,7 +301,7 @@
                             "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
                         },
                         "defaultValue": {
-                            "publicIpAddressName": "[concat(steps('cstor').cstorVmName, '-', 'ip01')]",
+                            "publicIpAddressName": "[concat(steps('cstor').cstorVmName, '-', 'ip', '01')]",
                             "domainNameLabel": "[concat(steps('cstor').cstorVmName, '-', take(replace(guid(), '-', ''), 10))]"
                         },
                         "constraints": {
