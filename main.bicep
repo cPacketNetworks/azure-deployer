@@ -115,6 +115,7 @@ resource cstorsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if
 
 resource cclearpip 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cclearPublicIpAddress01.newOrExistingOrNone == 'new') {
   name: cvuPublicIpAddress01.name
+  location: location
   properties: {
     publicIPAllocationMethod: cvuPublicIpAddress01.publicIPAllocationMethod
     dnsSettings: {
@@ -125,6 +126,7 @@ resource cclearpip 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cclear
 
 resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   name: '${cClearVmName}-nic'
+  location: location
   properties: {
     ipConfigurations: [
       {

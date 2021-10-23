@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "3174119786683609416"
+      "templateHash": "9449593639997671421"
     }
   },
   "parameters": {
@@ -188,6 +188,7 @@
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2020-11-01",
       "name": "[parameters('cvuPublicIpAddress01').name]",
+      "location": "[parameters('location')]",
       "properties": {
         "publicIPAllocationMethod": "[parameters('cvuPublicIpAddress01').publicIPAllocationMethod]",
         "dnsSettings": {
@@ -199,6 +200,7 @@
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
       "name": "[format('{0}-nic', parameters('cClearVmName'))]",
+      "location": "[parameters('location')]",
       "properties": {
         "ipConfigurations": [
           {
