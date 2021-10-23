@@ -74,7 +74,6 @@ var cstorsubnetId = virtualNetwork.newOrExisting == 'new' ? cstorsubnet.id : res
 
 var cclearpublicIPId = cclearPublicIpAddress01.newOrExistingOrNone == 'new' ? cclearpip.id : resourceId(cclearPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cclearPublicIpAddress01.name)
 
-
 resource sa 'Microsoft.Storage/storageAccounts@2021-04-01' = if (storageAccount.newOrExisting == 'new') {
   kind: storageAccount.kind
   location: location
@@ -119,12 +118,12 @@ resource cstorsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if
 }
 
 resource cclearpip 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cclearPublicIpAddress01.newOrExistingOrNone == 'new') {
-  name: cvuPublicIpAddress01.name
+  name: cclearPublicIpAddress01.name
   location: location
   properties: {
-    publicIPAllocationMethod: cvuPublicIpAddress01.publicIPAllocationMethod
+    publicIPAllocationMethod: cclearPublicIpAddress01.publicIPAllocationMethod
     dnsSettings: {
-      domainNameLabel: cvuPublicIpAddress01.domainNameLabel
+      domainNameLabel: cclearPublicIpAddress01.domainNameLabel
     }
   }
 }
@@ -163,11 +162,7 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     }
     storageProfile: {
       imageReference: {
-        id: '93004638-8c6b-4e33-ba58-946afd57efdf'
-        offer: 'cstor-aidsinga-rg1'
-        publisher: 'cpacketccloudpre'
-        sku: 'cclearvpre'
-        version: '0.0.4'
+        id: '/subscriptions/93004638-8c6b-4e33-ba58-946afd57efdf/resourceGroups/cstor-aidsinga-rg1/providers/Microsoft.Compute/galleries/cpacketccloudpre/images/cclearvpre/versions/0.0.4'
       }
       osDisk: {
         createOption: 'FromImage'

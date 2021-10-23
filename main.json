@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "6388622040584855854"
+      "templateHash": "15823298415606252801"
     }
   },
   "parameters": {
@@ -132,7 +132,7 @@
     "mgmtsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name))]",
     "monsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name))]",
     "cstorsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name))]",
-    "cclearpublicIPId": "[if(equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'new'), resourceId('Microsoft.Network/publicIPAddresses', parameters('cvuPublicIpAddress01').name), resourceId(parameters('cclearPublicIpAddress01').resourceGroup, 'Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name))]"
+    "cclearpublicIPId": "[if(equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'new'), resourceId('Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name), resourceId(parameters('cclearPublicIpAddress01').resourceGroup, 'Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name))]"
   },
   "resources": [
     {
@@ -198,12 +198,12 @@
       "condition": "[equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'new')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "apiVersion": "2020-11-01",
-      "name": "[parameters('cvuPublicIpAddress01').name]",
+      "name": "[parameters('cclearPublicIpAddress01').name]",
       "location": "[parameters('location')]",
       "properties": {
-        "publicIPAllocationMethod": "[parameters('cvuPublicIpAddress01').publicIPAllocationMethod]",
+        "publicIPAllocationMethod": "[parameters('cclearPublicIpAddress01').publicIPAllocationMethod]",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('cvuPublicIpAddress01').domainNameLabel]"
+          "domainNameLabel": "[parameters('cclearPublicIpAddress01').domainNameLabel]"
         }
       }
     },
@@ -229,7 +229,7 @@
         ]
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('cvuPublicIpAddress01').name)]",
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name)]",
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name)]"
       ]
     },
@@ -244,11 +244,7 @@
         },
         "storageProfile": {
           "imageReference": {
-            "id": "93004638-8c6b-4e33-ba58-946afd57efdf",
-            "offer": "cstor-aidsinga-rg1",
-            "publisher": "cpacketccloudpre",
-            "sku": "cclearvpre",
-            "version": "0.0.4"
+            "id": "/subscriptions/93004638-8c6b-4e33-ba58-946afd57efdf/resourceGroups/cstor-aidsinga-rg1/providers/Microsoft.Compute/galleries/cpacketccloudpre/images/cclearvpre/versions/0.0.4"
           },
           "osDisk": {
             "createOption": "FromImage"
