@@ -9,9 +9,9 @@
                 "description": "Location for all resources."
             }
         },
-        "vmName": {
+        "cClearVmName": {
             "type": "string",
-            "defaultValue": "linux-vm",
+            "defaultValue": "cclear-0-vm",
             "metadata": {
                 "description": "Name for the Virtual Machine."
             }
@@ -63,10 +63,6 @@
             "metadata": {
                 "description": "Name of the resource group for the existing virtual network"
             }
-        },
-        "networkInterfaces_cclear_0_vm_nic_name": {
-            "defaultValue": "cclear-0-vm-nic",
-            "type": "String"
         }
     },
     "resources": [
@@ -93,7 +89,7 @@
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2020-11-01",
-            "name": "[parameters('networkInterfaces_cclear_0_vm_nic_name')]",
+            "name": "[concat(parameters('cClearVmName'), 'nic')]",
             "location": "[parameters('location')]",
             "dependsOn": [
                 "[parameters('virtualNetworkName')]"
@@ -101,7 +97,7 @@
             "properties": {
                 "ipConfigurations": [
                     {
-                        "name": "[concat(parameters('networkInterfaces_cclear_0_vm_nic_name'), '-config')]",
+                        "name": "[concat(parameters('cClearVmName'), 'nic-config')]",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
                             "subnet": {

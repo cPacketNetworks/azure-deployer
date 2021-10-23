@@ -11,7 +11,7 @@
   "adminPasswordOrKey": {
     "value": "rwy5tba-dxf9ftz@ZTP"
   },
-  "storageAccountName": {
+  "storageAccount": {
     "value": {
       "name": "jjohnstonarmtestgui",
       "resourceGroup": "jjohnstonarm-tf-rg",

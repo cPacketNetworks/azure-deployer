@@ -1,0 +1,277 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.1008.15138",
+      "templateHash": "9527465301858165134"
+    }
+  },
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Location for the resources."
+      }
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "User name for the Virtual Machine."
+      }
+    },
+    "authenticationType": {
+      "type": "string",
+      "metadata": {
+        "description": "Type of authentication to use on the Virtual Machine."
+      },
+      "allowedValues": [
+        "password",
+        "sshPublicKey"
+      ]
+    },
+    "adminPasswordOrKey": {
+      "type": "secureString",
+      "metadata": {
+        "description": "Password or ssh key for the Virtual Machine."
+      }
+    },
+    "storageAccount": {
+      "type": "object",
+      "metadata": {
+        "description": "storageAccount properties from storageAccountSelector"
+      }
+    },
+    "virtualNetwork": {
+      "type": "object",
+      "metadata": {
+        "description": "virtualNetwork properties from VirtualNetworkCombo"
+      }
+    },
+    "cClearVmName": {
+      "type": "string",
+      "metadata": {
+        "description": "cClear VM Name"
+      }
+    },
+    "VMSizeSettings": {
+      "type": "object",
+      "defaultValue": {
+        "cclear": "Standard_D4s_v3",
+        "cvu": "Standard_D4s_v3",
+        "cstor": "Standard_D4s_v3"
+      },
+      "metadata": {
+        "description": "defualt values for cclear VM"
+      }
+    },
+    "cclearPublicIpAddress01": {
+      "type": "object",
+      "metadata": {
+        "description": "public IP properties from PublicIpAddressCombo"
+      }
+    },
+    "cvuVmName": {
+      "type": "string",
+      "metadata": {
+        "description": "cVu Base VM Name"
+      }
+    },
+    "cvuPublicIpAddress01": {
+      "type": "object",
+      "metadata": {
+        "description": "public IP properties from PublicIpAddressCombo"
+      }
+    },
+    "cvuPublicIpAddress02": {
+      "type": "object",
+      "metadata": {
+        "description": "public IP properties from PublicIpAddressCombo"
+      }
+    },
+    "cvuPublicIpAddress03": {
+      "type": "object",
+      "metadata": {
+        "description": "public IP properties from PublicIpAddressCombo"
+      }
+    },
+    "cstorVmName": {
+      "type": "string",
+      "metadata": {
+        "description": "cStor VM Name"
+      }
+    },
+    "cstorPublicIpAddress01": {
+      "type": "object",
+      "metadata": {
+        "description": "public IP properties from PublicIpAddressCombo"
+      }
+    },
+    "tagsByResource": {
+      "type": "object",
+      "metadata": {
+        "description": "tags from TagsByResource"
+      }
+    }
+  },
+  "functions": [],
+  "variables": {
+    "linuxConfiguration": {
+      "disablePasswordAuthentication": true,
+      "ssh": {
+        "publicKeys": [
+          {
+            "path": "[format('/home/{0}/.ssh/authorized_keys', parameters('adminUsername'))]",
+            "keyData": "[parameters('adminPasswordOrKey')]"
+          }
+        ]
+      }
+    }
+  },
+  "resources": [
+    {
+      "condition": "[equals(parameters('storageAccount').newOrExisting, 'new')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-04-01",
+      "name": "[parameters('storageAccount').name]",
+      "kind": "[parameters('storageAccount').kind]",
+      "location": "[parameters('location')]",
+      "sku": "[parameters('storageAccount').type]"
+    },
+    {
+      "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2021-02-01",
+      "name": "[parameters('virtualNetwork').name]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": "[parameters('virtualNetwork').addressPrefixes]"
+        }
+      }
+    },
+    {
+      "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2021-02-01",
+      "name": "[parameters('virtualNetwork').subnets.mgmtSubnet.name]",
+      "properties": {
+        "addressPrefix": "[parameters('virtualNetwork').subnets.mgmtSubnet.addressPrefix]"
+      }
+    },
+    {
+      "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2021-02-01",
+      "name": "[parameters('virtualNetwork').subnets.monSubnet.name]",
+      "properties": {
+        "addressPrefix": "[parameters('virtualNetwork').subnets.monSubnet.addressPrefix]"
+      }
+    },
+    {
+      "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
+      "type": "Microsoft.Network/virtualNetworks/subnets",
+      "apiVersion": "2021-02-01",
+      "name": "[parameters('virtualNetwork').subnets.cstorSubnet.name]",
+      "properties": {
+        "addressPrefix": "[parameters('virtualNetwork').subnets.cstorSubnet.addressPrefix]"
+      }
+    },
+    {
+      "condition": "[equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'new')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2021-02-01",
+      "name": "[parameters('cvuPublicIpAddress01').name]",
+      "properties": {
+        "publicIPAllocationMethod": "[parameters('cvuPublicIpAddress01').publicIPAllocationMethod]",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('cvuPublicIpAddress01').domainNameLabel]"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2021-02-01",
+      "name": "[format('{0}-nic', parameters('cClearVmName'))]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "[format('{0}-ipconfig-nic', parameters('cClearVmName'))]",
+            "properties": {
+              "subnet": {
+                "id": "[format('{0}/subnets/{1}', resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetwork').name), parameters('virtualNetwork').subnets.mgmtSubnet.name)]"
+              },
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[if(equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'none'), null(), resourceId('Microsoft.Network/publicIPAddresses', parameters('cvuPublicIpAddress01').name))]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('cvuPublicIpAddress01').name)]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', split(parameters('virtualNetwork').subnets.mgmtSubnet.name, '/')[0], split(parameters('virtualNetwork').subnets.mgmtSubnet.name, '/')[1])]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetwork').name)]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2021-04-01",
+      "name": "[parameters('cClearVmName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('VMSizeSettings').cclear]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            },
+            "image": {
+              "uri": "/subscriptions/93004638-8c6b-4e33-ba58-946afd57efdf/resourceGroups/cstor-aidsinga-rg1/providers/Microsoft.Compute/galleries/cpacketccloudpre/images/cclearvpre/versions/0.0.4"
+            }
+          },
+          "dataDisks": [
+            {
+              "name": "[format('{0}-DataDisk1', parameters('cClearVmName'))]",
+              "lun": 1,
+              "createOption": "Empty",
+              "diskSizeGB": 500,
+              "managedDisk": {
+                "storageAccountType": "Standard_LRS"
+              }
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('cClearVmName')))]"
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[parameters('cClearVmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPasswordOrKey')]",
+          "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('cClearVmName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/tags",
+      "apiVersion": "2021-04-01",
+      "name": "default",
+      "properties": {
+        "tags": "[parameters('tagsByResource')]"
+      }
+    }
+  ]
+}
