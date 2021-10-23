@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "8698083307306560754"
+      "templateHash": "13265388454721139449"
     }
   },
   "parameters": {
@@ -142,7 +142,9 @@
       "name": "[parameters('storageAccount').name]",
       "kind": "[parameters('storageAccount').kind]",
       "location": "[parameters('location')]",
-      "sku": "[parameters('storageAccount').type]"
+      "sku": {
+        "name": "[parameters('storageAccount').type]"
+      }
     },
     {
       "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",

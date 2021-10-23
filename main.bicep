@@ -79,7 +79,9 @@ resource sa 'Microsoft.Storage/storageAccounts@2021-04-01' = if (storageAccount.
   kind: storageAccount.kind
   location: location
   name: storageAccount.name
-  sku: storageAccount.type
+  sku: {
+    name: storageAccount.type
+  }
 }
 
 resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
