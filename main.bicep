@@ -162,9 +162,6 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     storageProfile: {
       osDisk: {
         createOption: 'FromImage'
-        managedDisk: {
-          storageAccountType: 'Standard_LRS'
-        }
         image: {
           uri: '/subscriptions/93004638-8c6b-4e33-ba58-946afd57efdf/resourceGroups/cstor-aidsinga-rg1/providers/Microsoft.Compute/galleries/cpacketccloudpre/images/cclearvpre/versions/0.0.4'
           // uri: '/subscriptions/${var.cpacket_shared_images_subscription_id}/resourceGroups/${var.cclear_image.resource_group_name}/providers/Microsoft.Compute/galleries/${var.cclear_image.gallery_name}/images/${var.cclear_image.image_definition}/versions/${var.cclear_image.image_version}'
@@ -176,9 +173,6 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
           lun: 1
           createOption: 'Empty'
           diskSizeGB: 500
-          managedDisk: {
-            storageAccountType: 'Standard_LRS'
-          }
         }
       ]
     }

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "8205195864983110731"
+      "templateHash": "8698083307306560754"
     }
   },
   "parameters": {
@@ -243,9 +243,6 @@
         "storageProfile": {
           "osDisk": {
             "createOption": "FromImage",
-            "managedDisk": {
-              "storageAccountType": "Standard_LRS"
-            },
             "image": {
               "uri": "/subscriptions/93004638-8c6b-4e33-ba58-946afd57efdf/resourceGroups/cstor-aidsinga-rg1/providers/Microsoft.Compute/galleries/cpacketccloudpre/images/cclearvpre/versions/0.0.4"
             }
@@ -255,10 +252,7 @@
               "name": "[format('{0}-DataDisk1', parameters('cClearVmName'))]",
               "lun": 1,
               "createOption": "Empty",
-              "diskSizeGB": 500,
-              "managedDisk": {
-                "storageAccountType": "Standard_LRS"
-              }
+              "diskSizeGB": 500
             }
           ]
         },
