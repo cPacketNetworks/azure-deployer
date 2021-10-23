@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "14642560869201697421"
+      "templateHash": "3174119786683609416"
     }
   },
   "parameters": {
@@ -127,7 +127,12 @@
           }
         ]
       }
-    }
+    },
+    "storageAccountId": "[if(equals(parameters('storageAccount').newOrExisting, 'new'), resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount').name), resourceId(parameters('storageAccount').resourceGroup, 'Microsoft.Storage/storageAccounts/', parameters('storageAccount').name))]",
+    "mgmtsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', split(parameters('virtualNetwork').subnets.mgmtSubnet.name, '/')[0], split(parameters('virtualNetwork').subnets.mgmtSubnet.name, '/')[1]), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name))]",
+    "monsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', split(parameters('virtualNetwork').subnets.monSubnet.name, '/')[0], split(parameters('virtualNetwork').subnets.monSubnet.name, '/')[1]), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name))]",
+    "cstorsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', split(parameters('virtualNetwork').subnets.cstorSubnet.name, '/')[0], split(parameters('virtualNetwork').subnets.cstorSubnet.name, '/')[1]), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name))]",
+    "cclearpublicIPId": "[if(equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'new'), resourceId('Microsoft.Network/publicIPAddresses', parameters('cvuPublicIpAddress01').name), resourceId(parameters('cclearPublicIpAddress01').resourceGroup, 'Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name))]"
   },
   "resources": [
     {
@@ -200,11 +205,11 @@
             "name": "[format('{0}-ipconfig-nic', parameters('cClearVmName'))]",
             "properties": {
               "subnet": {
-                "id": "[format('{0}/subnets/{1}', resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetwork').name), parameters('virtualNetwork').subnets.mgmtSubnet.name)]"
+                "id": "[variables('mgmtsubnetId')]"
               },
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[if(equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'none'), null(), resourceId('Microsoft.Network/publicIPAddresses', parameters('cvuPublicIpAddress01').name))]"
+                "id": "[if(equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'none'), null(), variables('cclearpublicIPId'))]"
               }
             }
           }
@@ -212,8 +217,7 @@
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', parameters('cvuPublicIpAddress01').name)]",
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', split(parameters('virtualNetwork').subnets.mgmtSubnet.name, '/')[0], split(parameters('virtualNetwork').subnets.mgmtSubnet.name, '/')[1])]",
-        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetwork').name)]"
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', split(parameters('virtualNetwork').subnets.mgmtSubnet.name, '/')[0], split(parameters('virtualNetwork').subnets.mgmtSubnet.name, '/')[1])]"
       ]
     },
     {

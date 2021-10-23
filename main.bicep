@@ -67,6 +67,14 @@ var linuxConfiguration = {
   }
 }
 
+var storageAccountId = storageAccount.newOrExisting == 'new' ? sa.id : resourceId(storageAccount.resourceGroup, 'Microsoft.Storage/storageAccounts/', storageAccount.name)
+var mgmtsubnetId = virtualNetwork.newOrExisting == 'new' ? mgmtsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.mgmtSubnet.name)
+var monsubnetId = virtualNetwork.newOrExisting == 'new' ? monsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.monSubnet.name)
+var cstorsubnetId = virtualNetwork.newOrExisting == 'new' ? cstorsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.cstorSubnet.name)
+
+var cclearpublicIPId = cclearPublicIpAddress01.newOrExistingOrNone == 'new' ? cclearpip.id : resourceId(cclearPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cclearPublicIpAddress01.name)
+
+
 resource sa 'Microsoft.Storage/storageAccounts@2021-04-01' = if (storageAccount.newOrExisting == 'new') {
   kind: storageAccount.kind
   location: location
@@ -123,11 +131,11 @@ resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
         name: '${cClearVmName}-ipconfig-nic'
         properties: {
           subnet: {
-            id: '${vnet.id}/subnets/${mgmtsubnet.name}'
+            id: mgmtsubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
-            id: any(cclearPublicIpAddress01.newOrExistingOrNone == 'none' ? null : cclearpip.id)
+            id: any(cclearPublicIpAddress01.newOrExistingOrNone == 'none' ? null : cclearpublicIPId)
           }
         }
       }
