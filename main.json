@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "13265388454721139449"
+      "templateHash": "6388622040584855854"
     }
   },
   "parameters": {
@@ -243,11 +243,15 @@
           "vmSize": "[parameters('VMSizeSettings').cclear]"
         },
         "storageProfile": {
+          "imageReference": {
+            "id": "93004638-8c6b-4e33-ba58-946afd57efdf",
+            "offer": "cstor-aidsinga-rg1",
+            "publisher": "cpacketccloudpre",
+            "sku": "cclearvpre",
+            "version": "0.0.4"
+          },
           "osDisk": {
-            "createOption": "FromImage",
-            "image": {
-              "uri": "/subscriptions/93004638-8c6b-4e33-ba58-946afd57efdf/resourceGroups/cstor-aidsinga-rg1/providers/Microsoft.Compute/galleries/cpacketccloudpre/images/cclearvpre/versions/0.0.4"
-            }
+            "createOption": "FromImage"
           },
           "dataDisks": [
             {

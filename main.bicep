@@ -162,12 +162,21 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       vmSize: VMSizeSettings.cclear
     }
     storageProfile: {
+      imageReference: {
+        id: '93004638-8c6b-4e33-ba58-946afd57efdf'
+        offer: 'cstor-aidsinga-rg1'
+        publisher: 'cpacketccloudpre'
+        sku: 'cclearvpre'
+        version: '0.0.4'
+      }
       osDisk: {
         createOption: 'FromImage'
+        /*
         image: {
           uri: '/subscriptions/93004638-8c6b-4e33-ba58-946afd57efdf/resourceGroups/cstor-aidsinga-rg1/providers/Microsoft.Compute/galleries/cpacketccloudpre/images/cclearvpre/versions/0.0.4'
           // uri: '/subscriptions/${var.cpacket_shared_images_subscription_id}/resourceGroups/${var.cclear_image.resource_group_name}/providers/Microsoft.Compute/galleries/${var.cclear_image.gallery_name}/images/${var.cclear_image.image_definition}/versions/${var.cclear_image.image_version}'
         }
+        */
       }
       dataDisks: [
         {
