@@ -94,6 +94,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = if (virtualNetwor
 
 resource mgmtsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
   name: virtualNetwork.subnets.mgmtSubnet.name
+  parent: vnet
   properties: {
     addressPrefix: virtualNetwork.subnets.mgmtSubnet.addressPrefix
   }
@@ -101,6 +102,7 @@ resource mgmtsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if 
 
 resource monsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
   name: virtualNetwork.subnets.monSubnet.name
+  parent: vnet
   properties: {
     addressPrefix: virtualNetwork.subnets.monSubnet.addressPrefix
   }
@@ -108,6 +110,7 @@ resource monsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (
 
 resource cstorsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
   name: virtualNetwork.subnets.cstorSubnet.name
+  parent: vnet
   properties: {
     addressPrefix: virtualNetwork.subnets.cstorSubnet.addressPrefix
   }
