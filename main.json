@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "9527465301858165134"
+      "templateHash": "14642560869201697421"
     }
   },
   "parameters": {
@@ -142,7 +142,7 @@
     {
       "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
       "type": "Microsoft.Network/virtualNetworks",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2020-11-01",
       "name": "[parameters('virtualNetwork').name]",
       "location": "[parameters('location')]",
       "properties": {
@@ -154,7 +154,7 @@
     {
       "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
       "type": "Microsoft.Network/virtualNetworks/subnets",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2020-11-01",
       "name": "[parameters('virtualNetwork').subnets.mgmtSubnet.name]",
       "properties": {
         "addressPrefix": "[parameters('virtualNetwork').subnets.mgmtSubnet.addressPrefix]"
@@ -163,7 +163,7 @@
     {
       "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
       "type": "Microsoft.Network/virtualNetworks/subnets",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2020-11-01",
       "name": "[parameters('virtualNetwork').subnets.monSubnet.name]",
       "properties": {
         "addressPrefix": "[parameters('virtualNetwork').subnets.monSubnet.addressPrefix]"
@@ -172,7 +172,7 @@
     {
       "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
       "type": "Microsoft.Network/virtualNetworks/subnets",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2020-11-01",
       "name": "[parameters('virtualNetwork').subnets.cstorSubnet.name]",
       "properties": {
         "addressPrefix": "[parameters('virtualNetwork').subnets.cstorSubnet.addressPrefix]"
@@ -181,7 +181,7 @@
     {
       "condition": "[equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'new')]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2020-11-01",
       "name": "[parameters('cvuPublicIpAddress01').name]",
       "properties": {
         "publicIPAllocationMethod": "[parameters('cvuPublicIpAddress01').publicIPAllocationMethod]",
@@ -192,7 +192,7 @@
     },
     {
       "type": "Microsoft.Network/networkInterfaces",
-      "apiVersion": "2021-02-01",
+      "apiVersion": "2020-11-01",
       "name": "[format('{0}-nic', parameters('cClearVmName'))]",
       "properties": {
         "ipConfigurations": [
@@ -218,7 +218,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines",
-      "apiVersion": "2021-04-01",
+      "apiVersion": "2021-03-01",
       "name": "[parameters('cClearVmName')]",
       "location": "[parameters('location')]",
       "properties": {

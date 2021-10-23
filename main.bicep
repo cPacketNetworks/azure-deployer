@@ -74,7 +74,7 @@ resource sa 'Microsoft.Storage/storageAccounts@2021-04-01' = if (storageAccount.
   sku: storageAccount.type
 }
 
-resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = if (virtualNetwork.newOrExisting == 'new') {
+resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
   name: virtualNetwork.name
   location: location
   properties: {
@@ -84,28 +84,28 @@ resource vnet 'Microsoft.Network/virtualNetworks@2021-02-01' = if (virtualNetwor
   }
 }
 
-resource mgmtsubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = if (virtualNetwork.newOrExisting == 'new') {
+resource mgmtsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
   name: virtualNetwork.subnets.mgmtSubnet.name
   properties: {
     addressPrefix: virtualNetwork.subnets.mgmtSubnet.addressPrefix
   }
 }
 
-resource monsubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = if (virtualNetwork.newOrExisting == 'new') {
+resource monsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
   name: virtualNetwork.subnets.monSubnet.name
   properties: {
     addressPrefix: virtualNetwork.subnets.monSubnet.addressPrefix
   }
 }
 
-resource cstorsubnet 'Microsoft.Network/virtualNetworks/subnets@2021-02-01' = if (virtualNetwork.newOrExisting == 'new') {
+resource cstorsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
   name: virtualNetwork.subnets.cstorSubnet.name
   properties: {
     addressPrefix: virtualNetwork.subnets.cstorSubnet.addressPrefix
   }
 }
 
-resource cclearpip 'Microsoft.Network/publicIPAddresses@2021-02-01' = if (cclearPublicIpAddress01.newOrExistingOrNone == 'new') {
+resource cclearpip 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cclearPublicIpAddress01.newOrExistingOrNone == 'new') {
   name: cvuPublicIpAddress01.name
   properties: {
     publicIPAllocationMethod: cvuPublicIpAddress01.publicIPAllocationMethod
@@ -115,7 +115,7 @@ resource cclearpip 'Microsoft.Network/publicIPAddresses@2021-02-01' = if (cclear
   }
 }
 
-resource cclearnic 'Microsoft.Network/networkInterfaces@2021-02-01' = {
+resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   name: '${cClearVmName}-nic'
   properties: {
     ipConfigurations: [
@@ -139,7 +139,7 @@ resource cclearnic 'Microsoft.Network/networkInterfaces@2021-02-01' = {
 // cvu_image_id    = "/subscriptions/${var.cpacket_shared_images_subscription_id}/resourceGroups/${var.cvu_image.resource_group_name}/providers/Microsoft.Compute/galleries/${var.cvu_image.gallery_name}/images/${var.cvu_image.image_definition}/versions/${var.cvu_image.image_version}"
 // cclear_image_id = "/subscriptions/${var.cpacket_shared_images_subscription_id}/resourceGroups/${var.cclear_image.resource_group_name}/providers/Microsoft.Compute/galleries/${var.cclear_image.gallery_name}/images/${var.cclear_image.image_definition}/versions/${var.cclear_image.image_version}"
 
-resource cclearvm 'Microsoft.Compute/virtualMachines@2021-04-01' = {
+resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   name: cClearVmName
   location: location
   properties: {
