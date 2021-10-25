@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "15823298415606252801"
+      "templateHash": "9863672220295103646"
     }
   },
   "parameters": {
@@ -275,14 +275,6 @@
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('cClearVmName')))]"
       ]
-    },
-    {
-      "type": "Microsoft.Resources/tags",
-      "apiVersion": "2021-04-01",
-      "name": "default",
-      "properties": {
-        "tags": "[parameters('tagsByResource')]"
-      }
     }
   ]
 }
