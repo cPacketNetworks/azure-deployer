@@ -1,0 +1,134 @@
+{
+  "location": {
+    "value": "eastus2"
+  },
+  "adminUsername": {
+    "value": "jjohnston"
+  },
+  "authenticationType": {
+    "value": "password"
+  },
+  "adminPasswordOrKey": {
+    "value": "rwy5tba-dxf9ftz@ZTP"
+  },
+  "storageAccount": {
+    "value": {
+      "name": "jjohnstonarmtfbootdiag",
+      "resourceGroup": "jjohnstonarm-tf-rg",
+      "type": "Standard_LRS",
+      "newOrExisting": "existing",
+      "kind": "StorageV2"
+    }
+  },
+  "virtualNetwork": {
+    "value": {
+      "name": "jjohnstonarm-tf-vnet",
+      "resourceGroup": "jjohnstonarm-tf-rg",
+      "addressPrefixes": [
+        "10.101.0.0/16"
+      ],
+      "addressPrefix": "10.101.0.0/16",
+      "newOrExisting": "existing",
+      "subnets": {
+        "mgmtSubnet": {
+          "name": "jjohnstonarm-tf-management",
+          "addressPrefix": "10.101.1.0/24",
+          "startAddress": "10.101.1.4"
+        },
+        "monSubnet": {
+          "name": "jjohnstonarm-tf-monitor",
+          "addressPrefix": "10.101.2.0/24",
+          "startAddress": "10.101.2.4"
+        },
+        "cstorSubnet": {
+          "name": "jjohnstonarm-tf-cstor",
+          "addressPrefix": "10.101.7.0/24",
+          "startAddress": "10.101.7.4"
+        }
+      }
+    }
+  },
+  "cClearVmName": {
+    "value": "cclear-01"
+  },
+  "cclearPublicIpAddress01": {
+    "value": {
+      "name": "cclear-01-ip",
+      "resourceGroup": "jjohnstonarm-tf-rg",
+      "domainNameLabel": "cclear-01-1292a3d3a2",
+      "newOrExistingOrNone": "new",
+      "publicIPAllocationMethod": "Dynamic",
+      "sku": "Basic"
+    }
+  },
+  "cvuVmName": {
+    "value": "cvu"
+  },
+  "cvuPublicIpAddress01": {
+    "value": {
+      "name": "cvu-01-ip",
+      "resourceGroup": "jjohnstonarm-tf-rg",
+      "domainNameLabel": "cvu-01-dd7d9ad1d4",
+      "newOrExistingOrNone": "new",
+      "publicIPAllocationMethod": "Dynamic",
+      "sku": "Basic"
+    }
+  },
+  "cvuPublicIpAddress02": {
+    "value": {
+      "name": "cvu-02-ip",
+      "resourceGroup": "jjohnstonarm-tf-rg",
+      "domainNameLabel": "cvu-02-3f45cde6f8",
+      "newOrExistingOrNone": "new",
+      "publicIPAllocationMethod": "Dynamic",
+      "sku": "Basic"
+    }
+  },
+  "cvuPublicIpAddress03": {
+    "value": {
+      "name": "cvu-03-ip",
+      "resourceGroup": "jjohnstonarm-tf-rg",
+      "domainNameLabel": "cvu-03-1f77437d0f",
+      "newOrExistingOrNone": "new",
+      "publicIPAllocationMethod": "Dynamic",
+      "sku": "Basic"
+    }
+  },
+  "cstorVmName": {
+    "value": "cstor-01"
+  },
+  "cstorPublicIpAddress01": {
+    "value": {
+      "name": "cstor-01-ip",
+      "resourceGroup": "jjohnstonarm-tf-rg",
+      "domainNameLabel": "cstor-01-a3f5385c47",
+      "newOrExistingOrNone": "new",
+      "publicIPAllocationMethod": "Dynamic",
+      "sku": "Basic"
+    }
+  },
+  "tagsByResource": {
+    "value": {
+      "Microsoft.Network/networkInterfaces": {
+        "createdby": "jjohnston",
+        "project": "se-demos"
+      },
+      "Microsoft.Network/publicIPAddresses": {
+        "createdby": "jjohnston",
+        "project": "se-demos"
+      },
+      "Microsoft.Storage/storageAccounts": {
+        "createdby": "jjohnston",
+        "project": "se-demos"
+      },
+      "Microsoft.Compute/virtualMachines": {
+        "createdby": "jjohnston",
+        "project": "se-demos"
+      },
+      "Microsoft.Network/virtualNetworks": {
+        "createdby": "jjohnston",
+        "project": "se-demos"
+      }
+    }
+  }
+}

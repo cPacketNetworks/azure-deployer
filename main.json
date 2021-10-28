@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "9863672220295103646"
+      "templateHash": "15798204312717520814"
     }
   },
   "parameters": {
@@ -144,7 +144,8 @@
       "location": "[parameters('location')]",
       "sku": {
         "name": "[parameters('storageAccount').type]"
-      }
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Storage/storageAccounts'), null(), parameters('tagsByResource')['Microsoft.Storage/storageAccounts'])]"
     },
     {
       "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
@@ -156,7 +157,8 @@
         "addressSpace": {
           "addressPrefixes": "[parameters('virtualNetwork').addressPrefixes]"
         }
-      }
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/virtualNetworks'), null(), parameters('tagsByResource')['Microsoft.Network/virtualNetworks'])]"
     },
     {
       "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
@@ -205,7 +207,8 @@
         "dnsSettings": {
           "domainNameLabel": "[parameters('cclearPublicIpAddress01').domainNameLabel]"
         }
-      }
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/publicIPAddresses'), null(), parameters('tagsByResource')['Microsoft.Network/publicIPAddresses'])]"
     },
     {
       "type": "Microsoft.Network/networkInterfaces",
@@ -228,6 +231,7 @@
           }
         ]
       },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), null(), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'])]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name)]",
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name)]"
@@ -272,6 +276,7 @@
           "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]"
         }
       },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), null(), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'])]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('cClearVmName')))]"
       ]

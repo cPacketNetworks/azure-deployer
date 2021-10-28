@@ -81,6 +81,7 @@ resource sa 'Microsoft.Storage/storageAccounts@2021-04-01' = if (storageAccount.
   sku: {
     name: storageAccount.type
   }
+  tags: any(contains(tagsByResource, 'Microsoft.Storage/storageAccounts') ? null : tagsByResource['Microsoft.Storage/storageAccounts'])
 }
 
 resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
@@ -91,6 +92,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = if (virtualNetwor
       addressPrefixes: virtualNetwork.addressPrefixes
     }
   }
+  tags: any(contains(tagsByResource, 'Microsoft.Network/virtualNetworks') ? null : tagsByResource['Microsoft.Network/virtualNetworks'])
 }
 
 resource mgmtsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
@@ -126,6 +128,7 @@ resource cclearpip 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cclear
       domainNameLabel: cclearPublicIpAddress01.domainNameLabel
     }
   }
+  tags: any(contains(tagsByResource, 'Microsoft.Network/publicIPAddresses') ? null : tagsByResource['Microsoft.Network/publicIPAddresses'])
 }
 
 resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
@@ -147,6 +150,7 @@ resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
       }
     ]
   }
+  tags: any(contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? null : tagsByResource['Microsoft.Network/networkInterfaces'])
 }
 
 // cstor_image_id  = "/subscriptions/${var.cpacket_shared_images_subscription_id}/resourceGroups/${var.cstor_image.resource_group_name}/providers/Microsoft.Compute/galleries/${var.cstor_image.gallery_name}/images/${var.cstor_image.image_definition}/versions/${var.cstor_image.image_version}"
@@ -190,13 +194,5 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
     }
   }
+  tags: any(contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? null : tagsByResource['Microsoft.Compute/virtualMachines'])
 }
-
-/*
-resource applyTags 'Microsoft.Resources/tags@2021-04-01' = {
-  name: 'default'
-  properties: {
-    tags: tagsByResource
-  }
-}
-*/
