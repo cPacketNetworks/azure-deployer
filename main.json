@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "15798204312717520814"
+      "templateHash": "11913697757739406746"
     }
   },
   "parameters": {
@@ -145,7 +145,7 @@
       "sku": {
         "name": "[parameters('storageAccount').type]"
       },
-      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Storage/storageAccounts'), null(), parameters('tagsByResource')['Microsoft.Storage/storageAccounts'])]"
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Storage/storageAccounts'), parameters('tagsByResource')['Microsoft.Storage/storageAccounts'], null())]"
     },
     {
       "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
@@ -158,7 +158,7 @@
           "addressPrefixes": "[parameters('virtualNetwork').addressPrefixes]"
         }
       },
-      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/virtualNetworks'), null(), parameters('tagsByResource')['Microsoft.Network/virtualNetworks'])]"
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/virtualNetworks'), parameters('tagsByResource')['Microsoft.Network/virtualNetworks'], null())]"
     },
     {
       "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
@@ -208,7 +208,7 @@
           "domainNameLabel": "[parameters('cclearPublicIpAddress01').domainNameLabel]"
         }
       },
-      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/publicIPAddresses'), null(), parameters('tagsByResource')['Microsoft.Network/publicIPAddresses'])]"
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/publicIPAddresses'), parameters('tagsByResource')['Microsoft.Network/publicIPAddresses'], null())]"
     },
     {
       "type": "Microsoft.Network/networkInterfaces",
@@ -231,7 +231,7 @@
           }
         ]
       },
-      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), null(), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'])]",
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name)]",
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name)]"
@@ -276,7 +276,7 @@
           "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]"
         }
       },
-      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), null(), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'])]",
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('cClearVmName')))]"
       ]
