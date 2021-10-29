@@ -38,7 +38,7 @@ param cclearPublicIpAddress01 object
 param cClearImage object
 
 @description('cClear Image Version')
-param cClearVersion object
+param cClearVersion string = ''
 
 @description('cVu Base VM Name')
 param cvuVmName string
@@ -56,7 +56,7 @@ param cvuPublicIpAddress03 object
 param cvuImage object
 
 @description('cvu Image Version')
-param cvuVersion object
+param cvuVersion string = ''
 
 @description('cStor VM Name')
 param cstorVmName string
@@ -68,7 +68,7 @@ param cstorPublicIpAddress01 object
 param cstorImage object
 
 @description('cstor Image Version')
-param cstorVersion object
+param cstorVersion string = ''
 
 @description('tags from TagsByResource')
 param tagsByResource object

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "9788712942031816786"
+      "templateHash": "5502993870231365434"
     }
   },
   "parameters": {
@@ -79,7 +79,8 @@
       }
     },
     "cClearVersion": {
-      "type": "object",
+      "type": "string",
+      "defaultValue": "",
       "metadata": {
         "description": "cClear Image Version"
       }
@@ -115,7 +116,8 @@
       }
     },
     "cvuVersion": {
-      "type": "object",
+      "type": "string",
+      "defaultValue": "",
       "metadata": {
         "description": "cvu Image Version"
       }
@@ -139,7 +141,8 @@
       }
     },
     "cstorVersion": {
-      "type": "object",
+      "type": "string",
+      "defaultValue": "",
       "metadata": {
         "description": "cstor Image Version"
       }
