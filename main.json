@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "14003570559481730104"
+      "templateHash": "5881181591100560175"
     }
   },
   "parameters": {
@@ -282,8 +282,7 @@
               "lun": 1,
               "createOption": "Empty",
               "diskSizeGB": 500,
-              "caching": "None",
-              "writeAcceleratorEnabled": true
+              "caching": "ReadWrite"
             }
           ]
         },
