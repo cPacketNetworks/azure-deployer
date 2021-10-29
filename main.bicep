@@ -203,6 +203,7 @@ resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
           lun: 1
           createOption: 'Empty'
           diskSizeGB: 500
+          caching: 'None'
           writeAcceleratorEnabled: true
         }
       ]
