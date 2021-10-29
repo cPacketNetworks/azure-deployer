@@ -39,30 +39,6 @@
         ],
         "steps": [
             {
-                "name": "storageConfig",
-                "label": "Storage settings",
-                "elements": [
-                    {
-                        "name": "storageAccountSelector",
-                        "type": "Microsoft.Storage.StorageAccountSelector",
-                        "label": "VM Diagnostic Storage account",
-                        "toolTip": "",
-                        "defaultValue": {
-                            "name": "storageaccount01",
-                            "type": "Premium_LRS"
-                        },
-                        "constraints": {
-                            "allowedTypes": [],
-                            "excludedTypes": []
-                        },
-                        "options": {
-                            "hideExisting": false
-                        },
-                        "visible": true
-                    }
-                ]
-            },
-            {
                 "name": "networkConfig",
                 "label": "Network settings",
                 "elements": [
@@ -419,7 +395,6 @@
             "adminUsername": "[basics('adminUsername')]",
             "authenticationType": "[basics('SSHCredentials').authenticationType]",
             "adminPasswordOrKey": "[coalesce(basics('SSHCredentials').password, basics('SSHCredentials').sshPublicKey)]",
-            "storageAccount": "[steps('storageConfig').storageAccountSelector]",
             "virtualNetwork": "[steps('networkConfig').virtualNetwork]",
             "cClearVmName": "[steps('cclear').cClearVmName]",
             "cclearPublicIpAddress01": "[steps('cclear').cclearPublicIpAddress01]",
