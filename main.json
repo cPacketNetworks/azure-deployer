@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "5502993870231365434"
+      "templateHash": "3672777712113419025"
     }
   },
   "parameters": {
@@ -35,12 +35,6 @@
       "type": "secureString",
       "metadata": {
         "description": "Password or ssh key for the Virtual Machine."
-      }
-    },
-    "storageAccount": {
-      "type": "object",
-      "metadata": {
-        "description": "storageAccount properties from storageAccountSelector"
       }
     },
     "virtualNetwork": {
@@ -167,7 +161,6 @@
         ]
       }
     },
-    "storageAccountId": "[if(equals(parameters('storageAccount').newOrExisting, 'new'), resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount').name), resourceId(parameters('storageAccount').resourceGroup, 'Microsoft.Storage/storageAccounts/', parameters('storageAccount').name))]",
     "mgmtsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name))]",
     "monsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name))]",
     "cstorsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name))]",
@@ -175,18 +168,6 @@
     "cclearImageURI": "[if(empty(parameters('cClearVersion')), parameters('cClearImage').id, format('{0}/versions/{1}', parameters('cClearImage').id, parameters('cClearVersion')))]"
   },
   "resources": [
-    {
-      "condition": "[equals(parameters('storageAccount').newOrExisting, 'new')]",
-      "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2021-04-01",
-      "name": "[parameters('storageAccount').name]",
-      "kind": "[parameters('storageAccount').kind]",
-      "location": "[parameters('location')]",
-      "sku": {
-        "name": "[parameters('storageAccount').type]"
-      },
-      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Storage/storageAccounts'), parameters('tagsByResource')['Microsoft.Storage/storageAccounts'], null())]"
-    },
     {
       "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
       "type": "Microsoft.Network/virtualNetworks",
@@ -318,18 +299,11 @@
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPasswordOrKey')]",
           "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]"
-        },
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "[reference(variables('storageAccountId')).primaryEndpoints.blob]"
-          }
         }
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('cClearVmName')))]",
-        "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccount').name)]"
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('cClearVmName')))]"
       ]
     }
   ]
