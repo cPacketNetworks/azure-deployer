@@ -34,6 +34,12 @@ param VMSizeSettings object = {
 @description('public IP properties from PublicIpAddressCombo')
 param cclearPublicIpAddress01 object
 
+@description('cClear Image URI')
+param cClearImage object
+
+@description('cClear Image Version')
+param cClearVersion object
+
 @description('cVu Base VM Name')
 param cvuVmName string
 
@@ -46,11 +52,23 @@ param cvuPublicIpAddress02 object
 @description('public IP properties from PublicIpAddressCombo')
 param cvuPublicIpAddress03 object
 
+@description('cvu Image URI')
+param cvuImage object
+
+@description('cvu Image Version')
+param cvuVersion object
+
 @description('cStor VM Name')
 param cstorVmName string
 
 @description('public IP properties from PublicIpAddressCombo')
 param cstorPublicIpAddress01 object
+
+@description('cstor Image URI')
+param cstorImage object
+
+@description('cstor Image Version')
+param cstorVersion object
 
 @description('tags from TagsByResource')
 param tagsByResource object
@@ -72,7 +90,8 @@ var mgmtsubnetId = virtualNetwork.newOrExisting == 'new' ? mgmtsubnet.id : resou
 var monsubnetId = virtualNetwork.newOrExisting == 'new' ? monsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.monSubnet.name)
 var cstorsubnetId = virtualNetwork.newOrExisting == 'new' ? cstorsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.cstorSubnet.name)
 
-var cclearpublicIPId = cclearPublicIpAddress01.newOrExistingOrNone == 'new' ? cclearpip.id : resourceId(cclearPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cclearPublicIpAddress01.name)
+var cclearpublicIPId = cclearPublicIpAddress01.newOrExistingOrNone == 'new' ? cclearpip01.id : resourceId(cclearPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cclearPublicIpAddress01.name)
+var cclearImageURI = empty(cClearVersion) ? cClearImage.id : '${cClearImage.id}/versions/${cClearVersion}'
 
 resource sa 'Microsoft.Storage/storageAccounts@2021-04-01' = if (storageAccount.newOrExisting == 'new') {
   kind: storageAccount.kind
@@ -92,7 +111,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = if (virtualNetwor
       addressPrefixes: virtualNetwork.addressPrefixes
     }
   }
-   tags: contains(tagsByResource, 'Microsoft.Network/virtualNetworks') ? tagsByResource['Microsoft.Network/virtualNetworks'] : null
+  tags: contains(tagsByResource, 'Microsoft.Network/virtualNetworks') ? tagsByResource['Microsoft.Network/virtualNetworks'] : null
 }
 
 resource mgmtsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
@@ -119,7 +138,11 @@ resource cstorsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if
   }
 }
 
-resource cclearpip 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cclearPublicIpAddress01.newOrExistingOrNone == 'new') {
+/*
+  cClear Section
+*/
+
+resource cclearpip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cclearPublicIpAddress01.newOrExistingOrNone == 'new') {
   name: cclearPublicIpAddress01.name
   location: location
   properties: {
@@ -131,7 +154,7 @@ resource cclearpip 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cclear
   tags: contains(tagsByResource, 'Microsoft.Network/publicIPAddresses') ? tagsByResource['Microsoft.Network/publicIPAddresses'] : null
 }
 
-resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
+resource cclearnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   name: '${cClearVmName}-nic'
   location: location
   properties: {
@@ -153,11 +176,7 @@ resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }
 
-// cstor_image_id  = "/subscriptions/${var.cpacket_shared_images_subscription_id}/resourceGroups/${var.cstor_image.resource_group_name}/providers/Microsoft.Compute/galleries/${var.cstor_image.gallery_name}/images/${var.cstor_image.image_definition}/versions/${var.cstor_image.image_version}"
-// cvu_image_id    = "/subscriptions/${var.cpacket_shared_images_subscription_id}/resourceGroups/${var.cvu_image.resource_group_name}/providers/Microsoft.Compute/galleries/${var.cvu_image.gallery_name}/images/${var.cvu_image.image_definition}/versions/${var.cvu_image.image_version}"
-// cclear_image_id = "/subscriptions/${var.cpacket_shared_images_subscription_id}/resourceGroups/${var.cclear_image.resource_group_name}/providers/Microsoft.Compute/galleries/${var.cclear_image.gallery_name}/images/${var.cclear_image.image_definition}/versions/${var.cclear_image.image_version}"
-
-resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
+resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   name: cClearVmName
   location: location
   properties: {
@@ -166,10 +185,12 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     }
     storageProfile: {
       imageReference: {
-        id: '/subscriptions/93004638-8c6b-4e33-ba58-946afd57efdf/resourceGroups/cstor-aidsinga-rg1/providers/Microsoft.Compute/galleries/cpacketccloudpre/images/cclearvpre/versions/0.0.4'
+        id: cclearImageURI
       }
       osDisk: {
+        osType: 'Linux'
         createOption: 'FromImage'
+        caching: 'ReadWrite'
       }
       dataDisks: [
         {
@@ -177,13 +198,15 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
           lun: 1
           createOption: 'Empty'
           diskSizeGB: 500
+          caching: 'ReadWrite'
+          writeAcceleratorEnabled: true
         }
       ]
     }
     networkProfile: {
       networkInterfaces: [
         {
-          id: cclearnic.id
+          id: cclearnic01.id
         }
       ]
     }
@@ -193,14 +216,12 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
     }
-    /*
     diagnosticsProfile: {
       bootDiagnostics: {
         enabled: true
-        storageUri: storageAccountId.properties.primaryEndpoints.blob
+        storageUri: reference(storageAccountId).primaryEndpoints.blob
       }
     }
-    */
   }
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }

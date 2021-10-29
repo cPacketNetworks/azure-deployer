@@ -171,6 +171,31 @@
                             "hideExisting": false
                         },
                         "visible": true
+                    },
+                    {
+                        "name": "Image",
+                        "type": "Microsoft.Common.Section",
+                        "label": "Image Selection",
+                        "elements": [
+                            {
+                                "name": "ImageSelector",
+                                "type": "Microsoft.Solutions.ResourceSelector",
+                                "label": "Select image",
+                                "resourceType": "Microsoft.Compute/galleries/images",
+                                "options": {
+                                    "filter": {
+                                        "subscription": "onBasics",
+                                        "location": "onBasics"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "VersionSelector",
+                                "type": "Microsoft.Common.TextBox",
+                                "label": "Image Version (Optional)"
+                            }
+                        ],
+                        "visible": true
                     }
                 ]
             },
@@ -270,6 +295,31 @@
                             "hideExisting": false
                         },
                         "visible": true
+                    },
+                    {
+                        "name": "Image",
+                        "type": "Microsoft.Common.Section",
+                        "label": "Image Selection",
+                        "elements": [
+                            {
+                                "name": "ImageSelector",
+                                "type": "Microsoft.Solutions.ResourceSelector",
+                                "label": "Select image",
+                                "resourceType": "Microsoft.Compute/galleries/images",
+                                "options": {
+                                    "filter": {
+                                        "subscription": "onBasics",
+                                        "location": "onBasics"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "VersionSelector",
+                                "type": "Microsoft.Common.TextBox",
+                                "label": "Image Version (Optional)"
+                            }
+                        ],
+                        "visible": true
                     }
                 ]
             },
@@ -315,6 +365,31 @@
                             "hideExisting": false
                         },
                         "visible": true
+                    },
+                    {
+                        "name": "Image",
+                        "type": "Microsoft.Common.Section",
+                        "label": "Image Selection",
+                        "elements": [
+                            {
+                                "name": "ImageSelector",
+                                "type": "Microsoft.Solutions.ResourceSelector",
+                                "label": "Select image",
+                                "resourceType": "Microsoft.Compute/galleries/images",
+                                "options": {
+                                    "filter": {
+                                        "subscription": "onBasics",
+                                        "location": "onBasics"
+                                    }
+                                }
+                            },
+                            {
+                                "name": "VersionSelector",
+                                "type": "Microsoft.Common.TextBox",
+                                "label": "Image Version (Optional)"
+                            }
+                        ],
+                        "visible": true
                     }
                 ]
             },
@@ -341,22 +416,22 @@
             "adminUsername": "[basics('adminUsername')]",
             "authenticationType": "[basics('SSHCredentials').authenticationType]",
             "adminPasswordOrKey": "[coalesce(basics('SSHCredentials').password, basics('SSHCredentials').sshPublicKey)]",
-
             "storageAccount": "[steps('storageConfig').storageAccountSelector]",
-
             "virtualNetwork": "[steps('networkConfig').virtualNetwork]",
-
             "cClearVmName": "[steps('cclear').cClearVmName]",
             "cclearPublicIpAddress01": "[steps('cclear').cclearPublicIpAddress01]",
-            
+            "cClearImage": "[steps('cclear').Image.ImageSelector]",
+            "cClearVersion": "[steps('cclear').Image.VersionSelector]",
             "cvuVmName": "[steps('cvu').cvuVmName]",
             "cvuPublicIpAddress01": "[steps('cvu').cvuPublicIpAddress01]",
             "cvuPublicIpAddress02": "[steps('cvu').cvuPublicIpAddress02]",
             "cvuPublicIpAddress03": "[steps('cvu').cvuPublicIpAddress03]",
-
+            "cvuImage": "[steps('cvu').Image.ImageSelector]",
+            "cvuVersion": "[steps('cvu').Image.VersionSelector]",
             "cstorVmName": "[steps('cstor').cstorVmName]",
             "cstorPublicIpAddress01": "[steps('cstor').cstorPublicIpAddress01]",
-
+            "cstorImage": "[steps('cstor').Image.ImageSelector]",
+            "cstorVersion": "[steps('cstor').Image.VersionSelector]",
             "tagsByResource": "[steps('tags').tagsByResource]"
         }
     }
