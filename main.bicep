@@ -105,6 +105,13 @@ var cclearImageURI = empty(cClearVersion) ? cClearImage.id : '${cClearImage.id}/
 var cstorpublicIPId = cstorPublicIpAddress01.newOrExistingOrNone == 'new' ? cstorpip01.id : resourceId(cstorPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cstorPublicIpAddress01.name)
 var cstorImageURI = empty(cstorVersion) ? cstorImage.id : '${cstorImage.id}/versions/${cstorVersion}'
 
+var cvuImageURI = empty(cvuVersion) ? cvuImage.id : '${cvuImage.id}/versions/${cvuVersion}'
+var cvupublicIP01Id = cvuPublicIpAddress01.newOrExistingOrNone == 'new' ? cvupip01.id : resourceId(cvuPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cvuPublicIpAddress01.name)
+//var cvupublicIP02Id = cvuPublicIpAddress02.newOrExistingOrNone == 'new' ? cvupip02.id : resourceId(cvuPublicIpAddress02.resourceGroup, 'Microsoft.Network/publicIPAddresses', cvuPublicIpAddress02.name)
+//var cvupublicIP03Id = cvuPublicIpAddress03.newOrExistingOrNone == 'new' ? cvupip03.id : resourceId(cvuPublicIpAddress03.resourceGroup, 'Microsoft.Network/publicIPAddresses', cvuPublicIpAddress03.name)
+
+
+
 /*
 resource sa 'Microsoft.Storage/storageAccounts@2021-04-01' = if (storageAccount.newOrExisting == 'new') {
   kind: storageAccount.kind
@@ -273,12 +280,12 @@ resource cstormgmtnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
 }
 
 resource cstorcapturenic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
-  name: '${cstorVmName}-mon-nic'
+  name: '${cstorVmName}-capture-nic'
   location: location
   properties: {
     ipConfigurations: [
       {
-        name: '${cstorVmName}-mon-ipconfig-nic'
+        name: '${cstorVmName}-capture-ipconfig-nic'
         properties: {
           subnet: {
             id: cstorsubnetId
@@ -349,3 +356,95 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   }
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }
+
+/*
+  cVu Section
+*/
+
+resource cvupip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cvuPublicIpAddress01.newOrExistingOrNone == 'new') {
+  name: cvuPublicIpAddress01.name
+  location: location
+  properties: {
+    publicIPAllocationMethod: cvuPublicIpAddress01.publicIPAllocationMethod
+    dnsSettings: {
+      domainNameLabel: cvuPublicIpAddress01.domainNameLabel
+    }
+  }
+  tags: contains(tagsByResource, 'Microsoft.Network/publicIPAddresses') ? tagsByResource['Microsoft.Network/publicIPAddresses'] : null
+}
+
+resource cvumonnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
+  name: '${cvuVmName}-01-mon-nic'
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: '${cvuVmName}-01-mon-ipconfig-nic'
+        properties: {
+          subnet: {
+            id: monsubnetId
+          }
+          privateIPAllocationMethod: 'Dynamic'
+          publicIPAddress: {
+            id: any(cvuPublicIpAddress01.newOrExistingOrNone == 'none' ? null : cvupublicIP01Id)
+          }
+        }
+      }
+    ]
+  }
+  tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
+}
+
+resource cvuvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
+  name: '${cvuVmName}-01'
+  location: location
+  properties: {
+    hardwareProfile: {
+      vmSize: VMSizeSettings.cvu
+    }
+    storageProfile: {
+      imageReference: {
+        id: cvuImageURI
+      }
+      osDisk: {
+        osType: 'Linux'
+        createOption: 'FromImage'
+        caching: 'ReadWrite'
+      }
+      dataDisks: [
+        {
+          name: '${cvuVmName}-01-DataDisk0'
+          lun: 0
+          createOption: 'Empty'
+          diskSizeGB: 500
+          caching: 'ReadWrite'
+        }
+        {
+          name: '${cvuVmName}-01-DataDisk1'
+          lun: 1
+          createOption: 'Empty'
+          diskSizeGB: 500
+          caching: 'ReadWrite'
+        }
+      ]
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          id: cvumonnic01.id
+          properties: {
+            primary: true
+          }
+        }
+      ]
+    }
+    osProfile: {
+      computerName: '${cvuVmName}-01'
+      adminUsername: adminUsername
+      adminPassword: adminPasswordOrKey
+      linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
+    }
+  }
+  tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
+}
+

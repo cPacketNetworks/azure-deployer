@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "10253698342230675180"
+      "templateHash": "1928221123096265073"
     }
   },
   "parameters": {
@@ -167,7 +167,9 @@
     "cclearpublicIPId": "[if(equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'new'), resourceId('Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name), resourceId(parameters('cclearPublicIpAddress01').resourceGroup, 'Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name))]",
     "cclearImageURI": "[if(empty(parameters('cClearVersion')), parameters('cClearImage').id, format('{0}/versions/{1}', parameters('cClearImage').id, parameters('cClearVersion')))]",
     "cstorpublicIPId": "[if(equals(parameters('cstorPublicIpAddress01').newOrExistingOrNone, 'new'), resourceId('Microsoft.Network/publicIPAddresses', parameters('cstorPublicIpAddress01').name), resourceId(parameters('cstorPublicIpAddress01').resourceGroup, 'Microsoft.Network/publicIPAddresses', parameters('cstorPublicIpAddress01').name))]",
-    "cstorImageURI": "[if(empty(parameters('cstorVersion')), parameters('cstorImage').id, format('{0}/versions/{1}', parameters('cstorImage').id, parameters('cstorVersion')))]"
+    "cstorImageURI": "[if(empty(parameters('cstorVersion')), parameters('cstorImage').id, format('{0}/versions/{1}', parameters('cstorImage').id, parameters('cstorVersion')))]",
+    "cvuImageURI": "[if(empty(parameters('cvuVersion')), parameters('cvuImage').id, format('{0}/versions/{1}', parameters('cvuImage').id, parameters('cvuVersion')))]",
+    "cvupublicIP01Id": "[if(equals(parameters('cvuPublicIpAddress01').newOrExistingOrNone, 'new'), resourceId('Microsoft.Network/publicIPAddresses', parameters('cvuPublicIpAddress01').name), resourceId(parameters('cvuPublicIpAddress01').resourceGroup, 'Microsoft.Network/publicIPAddresses', parameters('cvuPublicIpAddress01').name))]"
   },
   "resources": [
     {
@@ -351,12 +353,12 @@
     {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
-      "name": "[format('{0}-mon-nic', parameters('cstorVmName'))]",
+      "name": "[format('{0}-capture-nic', parameters('cstorVmName'))]",
       "location": "[parameters('location')]",
       "properties": {
         "ipConfigurations": [
           {
-            "name": "[format('{0}-mon-ipconfig-nic', parameters('cstorVmName'))]",
+            "name": "[format('{0}-capture-ipconfig-nic', parameters('cstorVmName'))]",
             "properties": {
               "subnet": {
                 "id": "[variables('cstorsubnetId')]"
@@ -415,7 +417,7 @@
               }
             },
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mon-nic', parameters('cstorVmName')))]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-capture-nic', parameters('cstorVmName')))]",
               "properties": {
                 "primary": false
               }
@@ -431,8 +433,106 @@
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mgmt-nic', parameters('cstorVmName')))]",
-        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mon-nic', parameters('cstorVmName')))]"
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-capture-nic', parameters('cstorVmName')))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mgmt-nic', parameters('cstorVmName')))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('cvuPublicIpAddress01').newOrExistingOrNone, 'new')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2020-11-01",
+      "name": "[parameters('cvuPublicIpAddress01').name]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "[parameters('cvuPublicIpAddress01').publicIPAllocationMethod]",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('cvuPublicIpAddress01').domainNameLabel]"
+        }
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/publicIPAddresses'), parameters('tagsByResource')['Microsoft.Network/publicIPAddresses'], null())]"
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2020-11-01",
+      "name": "[format('{0}-01-mon-nic', parameters('cvuVmName'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "[format('{0}-01-mon-ipconfig-nic', parameters('cvuVmName'))]",
+            "properties": {
+              "subnet": {
+                "id": "[variables('monsubnetId')]"
+              },
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[if(equals(parameters('cvuPublicIpAddress01').newOrExistingOrNone, 'none'), null(), variables('cvupublicIP01Id'))]"
+              }
+            }
+          }
+        ]
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('cvuPublicIpAddress01').name)]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name)]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2021-03-01",
+      "name": "[format('{0}-01', parameters('cvuVmName'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('VMSizeSettings').cvu]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "id": "[variables('cvuImageURI')]"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "createOption": "FromImage",
+            "caching": "ReadWrite"
+          },
+          "dataDisks": [
+            {
+              "name": "[format('{0}-01-DataDisk0', parameters('cvuVmName'))]",
+              "lun": 0,
+              "createOption": "Empty",
+              "diskSizeGB": 500,
+              "caching": "ReadWrite"
+            },
+            {
+              "name": "[format('{0}-01-DataDisk1', parameters('cvuVmName'))]",
+              "lun": 1,
+              "createOption": "Empty",
+              "diskSizeGB": 500,
+              "caching": "ReadWrite"
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-01-mon-nic', parameters('cvuVmName')))]",
+              "properties": {
+                "primary": true
+              }
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[format('{0}-01', parameters('cvuVmName'))]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPasswordOrKey')]",
+          "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]"
+        }
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-01-mon-nic', parameters('cvuVmName')))]"
       ]
     }
   ]
