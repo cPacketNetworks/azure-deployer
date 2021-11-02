@@ -272,7 +272,7 @@ resource cstormgmtnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }
 
-resource cstormonnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
+resource cstorcapturenic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   name: '${cstorVmName}-mon-nic'
   location: location
   properties: {
@@ -333,7 +333,7 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
           }
         }
         {
-          id: cstormonnic01.id
+          id: cstorcapturenic01.id
           properties: {
             primary: false
           }
