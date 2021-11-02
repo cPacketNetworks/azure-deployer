@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "5881181591100560175"
+      "templateHash": "10253698342230675180"
     }
   },
   "parameters": {
@@ -43,12 +43,6 @@
         "description": "virtualNetwork properties from VirtualNetworkCombo"
       }
     },
-    "cClearVmName": {
-      "type": "string",
-      "metadata": {
-        "description": "cClear VM Name"
-      }
-    },
     "VMSizeSettings": {
       "type": "object",
       "defaultValue": {
@@ -58,6 +52,12 @@
       },
       "metadata": {
         "description": "defualt values for cclear VM"
+      }
+    },
+    "cClearVmName": {
+      "type": "string",
+      "metadata": {
+        "description": "cClear VM Name"
       }
     },
     "cclearPublicIpAddress01": {
@@ -165,7 +165,9 @@
     "monsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name))]",
     "cstorsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name))]",
     "cclearpublicIPId": "[if(equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'new'), resourceId('Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name), resourceId(parameters('cclearPublicIpAddress01').resourceGroup, 'Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name))]",
-    "cclearImageURI": "[if(empty(parameters('cClearVersion')), parameters('cClearImage').id, format('{0}/versions/{1}', parameters('cClearImage').id, parameters('cClearVersion')))]"
+    "cclearImageURI": "[if(empty(parameters('cClearVersion')), parameters('cClearImage').id, format('{0}/versions/{1}', parameters('cClearImage').id, parameters('cClearVersion')))]",
+    "cstorpublicIPId": "[if(equals(parameters('cstorPublicIpAddress01').newOrExistingOrNone, 'new'), resourceId('Microsoft.Network/publicIPAddresses', parameters('cstorPublicIpAddress01').name), resourceId(parameters('cstorPublicIpAddress01').resourceGroup, 'Microsoft.Network/publicIPAddresses', parameters('cstorPublicIpAddress01').name))]",
+    "cstorImageURI": "[if(empty(parameters('cstorVersion')), parameters('cstorImage').id, format('{0}/versions/{1}', parameters('cstorImage').id, parameters('cstorVersion')))]"
   },
   "resources": [
     {
@@ -303,6 +305,134 @@
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('cClearVmName')))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('cstorPublicIpAddress01').newOrExistingOrNone, 'new')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2020-11-01",
+      "name": "[parameters('cstorPublicIpAddress01').name]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publicIPAllocationMethod": "[parameters('cstorPublicIpAddress01').publicIPAllocationMethod]",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('cstorPublicIpAddress01').domainNameLabel]"
+        }
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/publicIPAddresses'), parameters('tagsByResource')['Microsoft.Network/publicIPAddresses'], null())]"
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2020-11-01",
+      "name": "[format('{0}-mgmt-nic', parameters('cstorVmName'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "[format('{0}-mgmt-ipconfig-nic', parameters('cstorVmName'))]",
+            "properties": {
+              "subnet": {
+                "id": "[variables('mgmtsubnetId')]"
+              },
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[if(equals(parameters('cstorPublicIpAddress01').newOrExistingOrNone, 'none'), null(), variables('cstorpublicIPId'))]"
+              }
+            }
+          }
+        ]
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('cstorPublicIpAddress01').name)]",
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name)]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2020-11-01",
+      "name": "[format('{0}-mon-nic', parameters('cstorVmName'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "[format('{0}-mon-ipconfig-nic', parameters('cstorVmName'))]",
+            "properties": {
+              "subnet": {
+                "id": "[variables('cstorsubnetId')]"
+              },
+              "privateIPAllocationMethod": "Dynamic"
+            }
+          }
+        ]
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name)]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2021-03-01",
+      "name": "[parameters('cstorVmName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('VMSizeSettings').cstor]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "id": "[variables('cstorImageURI')]"
+          },
+          "osDisk": {
+            "osType": "Linux",
+            "createOption": "FromImage",
+            "caching": "ReadWrite"
+          },
+          "dataDisks": [
+            {
+              "name": "[format('{0}-DataDisk0', parameters('cstorVmName'))]",
+              "lun": 0,
+              "createOption": "Empty",
+              "diskSizeGB": 500,
+              "caching": "ReadWrite"
+            },
+            {
+              "name": "[format('{0}-DataDisk1', parameters('cstorVmName'))]",
+              "lun": 1,
+              "createOption": "Empty",
+              "diskSizeGB": 500,
+              "caching": "ReadWrite"
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mgmt-nic', parameters('cstorVmName')))]",
+              "properties": {
+                "primary": true
+              }
+            },
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mon-nic', parameters('cstorVmName')))]",
+              "properties": {
+                "primary": false
+              }
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[parameters('cstorVmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPasswordOrKey')]",
+          "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]"
+        }
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mgmt-nic', parameters('cstorVmName')))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mon-nic', parameters('cstorVmName')))]"
       ]
     }
   ]

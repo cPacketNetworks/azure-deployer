@@ -23,15 +23,17 @@ param storageAccount object
 @description('virtualNetwork properties from VirtualNetworkCombo')
 param virtualNetwork object
 
-@description('cClear VM Name')
-param cClearVmName string
-
 @description('defualt values for cclear VM')
 param VMSizeSettings object = {
   cclear: 'Standard_D4s_v3'
   cvu: 'Standard_D4s_v3'
   cstor: 'Standard_D4s_v3'
 }
+
+// cClear
+
+@description('cClear VM Name')
+param cClearVmName string
 
 @description('public IP properties from PublicIpAddressCombo')
 param cclearPublicIpAddress01 object
@@ -41,6 +43,8 @@ param cClearImage object
 
 @description('cClear Image Version')
 param cClearVersion string = ''
+
+// cVu
 
 @description('cVu Base VM Name')
 param cvuVmName string
@@ -59,6 +63,8 @@ param cvuImage object
 
 @description('cvu Image Version')
 param cvuVersion string = ''
+
+// cStor
 
 @description('cStor VM Name')
 param cstorVmName string
@@ -95,6 +101,9 @@ var cstorsubnetId = virtualNetwork.newOrExisting == 'new' ? cstorsubnet.id : res
 
 var cclearpublicIPId = cclearPublicIpAddress01.newOrExistingOrNone == 'new' ? cclearpip01.id : resourceId(cclearPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cclearPublicIpAddress01.name)
 var cclearImageURI = empty(cClearVersion) ? cClearImage.id : '${cClearImage.id}/versions/${cClearVersion}'
+
+var cstorpublicIPId = cstorPublicIpAddress01.newOrExistingOrNone == 'new' ? cstorpip01.id : resourceId(cstorPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cstorPublicIpAddress01.name)
+var cstorImageURI = empty(cstorVersion) ? cstorImage.id : '${cstorImage.id}/versions/${cstorVersion}'
 
 /*
 resource sa 'Microsoft.Storage/storageAccounts@2021-04-01' = if (storageAccount.newOrExisting == 'new') {
@@ -216,6 +225,123 @@ resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     }
     osProfile: {
       computerName: cClearVmName
+      adminUsername: adminUsername
+      adminPassword: adminPasswordOrKey
+      linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
+    }
+  }
+  tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
+}
+
+
+/*
+  cStor Section
+*/
+
+resource cstorpip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cstorPublicIpAddress01.newOrExistingOrNone == 'new') {
+  name: cstorPublicIpAddress01.name
+  location: location
+  properties: {
+    publicIPAllocationMethod: cstorPublicIpAddress01.publicIPAllocationMethod
+    dnsSettings: {
+      domainNameLabel: cstorPublicIpAddress01.domainNameLabel
+    }
+  }
+  tags: contains(tagsByResource, 'Microsoft.Network/publicIPAddresses') ? tagsByResource['Microsoft.Network/publicIPAddresses'] : null
+}
+
+resource cstormgmtnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
+  name: '${cstorVmName}-mgmt-nic'
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: '${cstorVmName}-mgmt-ipconfig-nic'
+        properties: {
+          subnet: {
+            id: mgmtsubnetId
+          }
+          privateIPAllocationMethod: 'Dynamic'
+          publicIPAddress: {
+            id: any(cstorPublicIpAddress01.newOrExistingOrNone == 'none' ? null : cstorpublicIPId)
+          }
+        }
+      }
+    ]
+  }
+  tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
+}
+
+resource cstormonnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
+  name: '${cstorVmName}-mon-nic'
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: '${cstorVmName}-mon-ipconfig-nic'
+        properties: {
+          subnet: {
+            id: cstorsubnetId
+          }
+          privateIPAllocationMethod: 'Dynamic'
+        }
+      }
+    ]
+  }
+  tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
+}
+
+resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
+  name: cstorVmName
+  location: location
+  properties: {
+    hardwareProfile: {
+      vmSize: VMSizeSettings.cstor
+    }
+    storageProfile: {
+      imageReference: {
+        id: cstorImageURI
+      }
+      osDisk: {
+        osType: 'Linux'
+        createOption: 'FromImage'
+        caching: 'ReadWrite'
+      }
+      dataDisks: [
+        {
+          name: '${cstorVmName}-DataDisk0'
+          lun: 0
+          createOption: 'Empty'
+          diskSizeGB: 500
+          caching: 'ReadWrite'
+        }
+        {
+          name: '${cstorVmName}-DataDisk1'
+          lun: 1
+          createOption: 'Empty'
+          diskSizeGB: 500
+          caching: 'ReadWrite'
+        }
+      ]
+    }
+    networkProfile: {
+      networkInterfaces: [
+        {
+          id: cstormgmtnic01.id
+          properties: {
+            primary: true
+          }
+        }
+        {
+          id: cstormonnic01.id
+          properties: {
+            primary: false
+          }
+        }
+      ]
+    }
+    osProfile: {
+      computerName: cstorVmName
       adminUsername: adminUsername
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
