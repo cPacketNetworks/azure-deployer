@@ -390,7 +390,7 @@ resource cvumonnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
           }
           loadBalancerBackendAddressPools: [
             {
-              id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '-backend')
+              id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '${cvulbName}-backend')
             }
           ]
         }
@@ -481,13 +481,13 @@ resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
         name: '${cvulbName}-to_server'
         properties: {
           frontendIPConfiguration: {
-            id: resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', cvulbName, '-frontend')
+            id: resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', cvulbName, '${cvulbName}-frontend')
           }
           backendAddressPool: {
-            id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '-backend')
+            id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '${cvulbName}-backend')
           }
           probe: {
-            id: resourceId('Microsoft.Network/loadBalancers/probes', cvulbName, '-probe')
+            id: resourceId('Microsoft.Network/loadBalancers/probes', cvulbName, '${cvulbName}-probe')
           }
           frontendPort: 0
           backendPort: 0

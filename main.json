@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "16364440579864433836"
+      "templateHash": "11983961423618428764"
     }
   },
   "parameters": {
@@ -477,7 +477,7 @@
               },
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('cvulbName'), '-backend')]"
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('cvulbName'), format('{0}-backend', parameters('cvulbName')))]"
                 }
               ]
             }
@@ -577,13 +577,13 @@
             "name": "[format('{0}-to_server', parameters('cvulbName'))]",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', parameters('cvulbName'), '-frontend')]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', parameters('cvulbName'), format('{0}-frontend', parameters('cvulbName')))]"
               },
               "backendAddressPool": {
-                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('cvulbName'), '-backend')]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('cvulbName'), format('{0}-backend', parameters('cvulbName')))]"
               },
               "probe": {
-                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', parameters('cvulbName'), '-probe')]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', parameters('cvulbName'), format('{0}-probe', parameters('cvulbName')))]"
               },
               "frontendPort": 0,
               "backendPort": 0,
