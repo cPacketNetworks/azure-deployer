@@ -270,30 +270,6 @@ resource cstorpip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cstor
 }
 */
 
-resource cstormgmtnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
-  name: '${cstorVmName}-mgmt-nic'
-  location: location
-  properties: {
-    ipConfigurations: [
-      {
-        name: '${cstorVmName}-mgmt-ipconfig-nic'
-        properties: {
-          subnet: {
-            id: mgmtsubnetId
-          }
-          privateIPAllocationMethod: 'Dynamic'
-          /*
-          publicIPAddress: {
-            id: any(cstorPublicIpAddress01.newOrExistingOrNone == 'none' ? null : cstorpublicIPId)
-          }
-          */
-        }
-      }
-    ]
-  }
-  tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
-}
-
 resource cstorcapturenic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   name: '${cstorVmName}-capture-nic'
   location: location
@@ -349,12 +325,6 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: cstormgmtnic01.id
-          properties: {
-            primary: true
-          }
-        }
-        {
           id: cstorcapturenic01.id
           properties: {
             primary: false
@@ -367,7 +337,7 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       adminUsername: adminUsername
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
-      customData: loadFileAsBase64('./cstor-v.bash')
+      //customData: loadFileAsBase64('./cstor-v.bash')
     }
   }
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "17007207339856037180"
+      "templateHash": "11598229451722182637"
     }
   },
   "parameters": {
@@ -262,29 +262,6 @@
     {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
-      "name": "[format('{0}-mgmt-nic', parameters('cstorVmName'))]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "[format('{0}-mgmt-ipconfig-nic', parameters('cstorVmName'))]",
-            "properties": {
-              "subnet": {
-                "id": "[variables('mgmtsubnetId')]"
-              },
-              "privateIPAllocationMethod": "Dynamic"
-            }
-          }
-        ]
-      },
-      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name)]"
-      ]
-    },
-    {
-      "type": "Microsoft.Network/networkInterfaces",
-      "apiVersion": "2020-11-01",
       "name": "[format('{0}-capture-nic', parameters('cstorVmName'))]",
       "location": "[parameters('location')]",
       "properties": {
@@ -343,12 +320,6 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mgmt-nic', parameters('cstorVmName')))]",
-              "properties": {
-                "primary": true
-              }
-            },
-            {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-capture-nic', parameters('cstorVmName')))]",
               "properties": {
                 "primary": false
@@ -360,14 +331,12 @@
           "computerName": "[parameters('cstorVmName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPasswordOrKey')]",
-          "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]",
-          "customData": "IyEvYmluL2Jhc2gKCmNobW9kIHVnK3cgL2hvbWUvY3BhY2tldC9ib290X2NvbmZpZy50eHQKCiMgY3N0b3ItViBpbmxpbmUgYm9vdCBjb25maWcgc2V0dGluZ3MKY2F0IDw8RU9GX0JPT1RDRkcgPi9ob21lL2NwYWNrZXQvYm9vdF9jb25maWcudHh0CnsKJ2NhcHR1cmVfbmljX2luZGV4JzogMSwKJ2V0aF9kZXYnIDogJ2V0aDEnLAoncnVuX2NmbG93X21vZGUnOiBUcnVlCn0KRU9GX0JPT1RDRkc="
+          "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]"
         }
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-capture-nic', parameters('cstorVmName')))]",
-        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mgmt-nic', parameters('cstorVmName')))]"
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-capture-nic', parameters('cstorVmName')))]"
       ]
     },
     {
