@@ -368,6 +368,9 @@ resource cvupip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cvuPubl
 resource cvumonnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   name: '${cvuVmName}-01-mon-nic'
   location: location
+  dependsOn: [
+    cvulb01
+  ]
   properties: {
     ipConfigurations: [
       {

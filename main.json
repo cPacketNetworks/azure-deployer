@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "11598229451722182637"
+      "templateHash": "5925800324242285450"
     }
   },
   "parameters": {
@@ -366,6 +366,7 @@
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
       "dependsOn": [
+        "[resourceId('Microsoft.Network/loadBalancers', variables('cvulbName'))]",
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name)]"
       ]
     },
