@@ -167,6 +167,10 @@ resource cstorsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if
 resource cclearpip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cclearPublicIpAddress01.newOrExistingOrNone == 'new') {
   name: cclearPublicIpAddress01.name
   location: location
+  sku: {
+    name: 'Basic'
+    tier: 'Regional'
+  }
   properties: {
     publicIPAllocationMethod: cclearPublicIpAddress01.publicIPAllocationMethod
     dnsSettings: {
@@ -248,6 +252,10 @@ resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
 resource cstorpip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cstorPublicIpAddress01.newOrExistingOrNone == 'new') {
   name: cstorPublicIpAddress01.name
   location: location
+  sku: {
+    name: 'Basic'
+    tier: 'Regional'
+  }
   properties: {
     publicIPAllocationMethod: cstorPublicIpAddress01.publicIPAllocationMethod
     dnsSettings: {
@@ -364,6 +372,10 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
 resource cvupip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cvuPublicIpAddress01.newOrExistingOrNone == 'new') {
   name: cvuPublicIpAddress01.name
   location: location
+  sku: {
+    name: 'Basic'
+    tier: 'Regional'
+  }
   properties: {
     publicIPAllocationMethod: cvuPublicIpAddress01.publicIPAllocationMethod
     dnsSettings: {
@@ -396,6 +408,8 @@ resource cvumonnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
         }
       }
     ]
+    enableAcceleratedNetworking: true
+    enableIPForwarding: true
   }
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }

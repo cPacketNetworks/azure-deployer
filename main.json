@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "11983961423618428764"
+      "templateHash": "14265658083565122150"
     }
   },
   "parameters": {
@@ -234,6 +234,10 @@
       "apiVersion": "2020-11-01",
       "name": "[parameters('cclearPublicIpAddress01').name]",
       "location": "[parameters('location')]",
+      "sku": {
+        "name": "Basic",
+        "tier": "Regional"
+      },
       "properties": {
         "publicIPAllocationMethod": "[parameters('cclearPublicIpAddress01').publicIPAllocationMethod]",
         "dnsSettings": {
@@ -322,6 +326,10 @@
       "apiVersion": "2020-11-01",
       "name": "[parameters('cstorPublicIpAddress01').name]",
       "location": "[parameters('location')]",
+      "sku": {
+        "name": "Basic",
+        "tier": "Regional"
+      },
       "properties": {
         "publicIPAllocationMethod": "[parameters('cstorPublicIpAddress01').publicIPAllocationMethod]",
         "dnsSettings": {
@@ -450,6 +458,10 @@
       "apiVersion": "2020-11-01",
       "name": "[parameters('cvuPublicIpAddress01').name]",
       "location": "[parameters('location')]",
+      "sku": {
+        "name": "Basic",
+        "tier": "Regional"
+      },
       "properties": {
         "publicIPAllocationMethod": "[parameters('cvuPublicIpAddress01').publicIPAllocationMethod]",
         "dnsSettings": {
@@ -482,7 +494,9 @@
               ]
             }
           }
-        ]
+        ],
+        "enableAcceleratedNetworking": true,
+        "enableIPForwarding": true
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
       "dependsOn": [
