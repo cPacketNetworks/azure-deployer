@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "14936357157775921947"
+      "templateHash": "5769330750121915311"
     }
   },
   "parameters": {
@@ -261,7 +261,7 @@
               },
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[if(equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'none'), null(), variables('cclearpublicIPId'))]"
+                "id": "[if(equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'none'), null(), if(empty(variables('cclearpublicIPId')), null(), variables('cclearpublicIPId')))]"
               }
             }
           }

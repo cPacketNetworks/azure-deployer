@@ -193,7 +193,7 @@ resource cclearnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
           }
           privateIPAllocationMethod: 'Dynamic'
           publicIPAddress: {
-            id: any(cclearPublicIpAddress01.newOrExistingOrNone == 'none' ? null : cclearpublicIPId)
+            id: any(cclearPublicIpAddress01.newOrExistingOrNone == 'none' ? null : empty(cclearpublicIPId) ? null : cclearpublicIPId)
           }
         }
       }
