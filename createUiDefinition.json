@@ -122,33 +122,6 @@
                         }
                     },
                     {
-                        "name": "cclearPublicIpAddress01",
-                        "type": "Microsoft.Network.PublicIpAddressCombo",
-                        "label": {
-                            "publicIpAddress": "Public IP address",
-                            "domainNameLabel": "Domain name label"
-                        },
-                        "toolTip": {
-                            "publicIpAddress": "Public IP Address for the VM",
-                            "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
-                        },
-                        "defaultValue": {
-                            "publicIpAddressName": "[concat(steps('cclear').cClearVmName, '-', 'ip')]",
-                            "domainNameLabel": "[concat(steps('cclear').cClearVmName, '-', take(replace(guid(), '-', ''), 10))]"
-                        },
-                        "constraints": {
-                            "required": {
-                                "domainNameLabel": true
-                            }
-                        },
-                        "options": {
-                            "hideNone": false,
-                            "hideDomainNameLabel": false,
-                            "hideExisting": false
-                        },
-                        "visible": true
-                    },
-                    {
                         "name": "Image",
                         "type": "Microsoft.Common.Section",
                         "label": "Image Selection",
@@ -191,87 +164,6 @@
                             "regex": "^[a-z0-9A-Z-]{3,79}$",
                             "validationMessage": "The VM Name must be between 3 and 79 characters long and contain letters, numbers and hyphens only."
                         }
-                    },
-                    {
-                        "name": "cvuPublicIpAddress01",
-                        "type": "Microsoft.Network.PublicIpAddressCombo",
-                        "label": {
-                            "publicIpAddress": "Public IP address",
-                            "domainNameLabel": "Domain name label"
-                        },
-                        "toolTip": {
-                            "publicIpAddress": "Public IP Address for the VM",
-                            "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
-                        },
-                        "defaultValue": {
-                            "publicIpAddressName": "[concat(steps('cvu').cvuVmName, '-', '01', '-', 'ip')]",
-                            "domainNameLabel": "[concat(steps('cvu').cvuVmName, '-', '01', '-', take(replace(guid(), '-', ''), 10))]"
-                        },
-                        "constraints": {
-                            "required": {
-                                "domainNameLabel": true
-                            }
-                        },
-                        "options": {
-                            "hideNone": false,
-                            "hideDomainNameLabel": false,
-                            "hideExisting": false
-                        },
-                        "visible": true
-                    },
-                    {
-                        "name": "cvuPublicIpAddress02",
-                        "type": "Microsoft.Network.PublicIpAddressCombo",
-                        "label": {
-                            "publicIpAddress": "Public IP address",
-                            "domainNameLabel": "Domain name label"
-                        },
-                        "toolTip": {
-                            "publicIpAddress": "Public IP Address for the VM",
-                            "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
-                        },
-                        "defaultValue": {
-                            "publicIpAddressName": "[concat(steps('cvu').cvuVmName, '-', '02', '-', 'ip')]",
-                            "domainNameLabel": "[concat(steps('cvu').cvuVmName, '-', '02', '-', take(replace(guid(), '-', ''), 10))]"
-                        },
-                        "constraints": {
-                            "required": {
-                                "domainNameLabel": true
-                            }
-                        },
-                        "options": {
-                            "hideNone": false,
-                            "hideDomainNameLabel": false,
-                            "hideExisting": false
-                        },
-                        "visible": true
-                    },
-                    {
-                        "name": "cvuPublicIpAddress03",
-                        "type": "Microsoft.Network.PublicIpAddressCombo",
-                        "label": {
-                            "publicIpAddress": "Public IP address",
-                            "domainNameLabel": "Domain name label"
-                        },
-                        "toolTip": {
-                            "publicIpAddress": "Public IP Address for the VM",
-                            "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
-                        },
-                        "defaultValue": {
-                            "publicIpAddressName": "[concat(steps('cvu').cvuVmName, '-', '03', '-', 'ip')]",
-                            "domainNameLabel": "[concat(steps('cvu').cvuVmName, '-', '03', '-', take(replace(guid(), '-', ''), 10))]"
-                        },
-                        "constraints": {
-                            "required": {
-                                "domainNameLabel": true
-                            }
-                        },
-                        "options": {
-                            "hideNone": false,
-                            "hideDomainNameLabel": false,
-                            "hideExisting": false
-                        },
-                        "visible": true
                     },
                     {
                         "name": "Image",
@@ -318,33 +210,6 @@
                         }
                     },
                     {
-                        "name": "cstorPublicIpAddress01",
-                        "type": "Microsoft.Network.PublicIpAddressCombo",
-                        "label": {
-                            "publicIpAddress": "Public IP address",
-                            "domainNameLabel": "Domain name label"
-                        },
-                        "toolTip": {
-                            "publicIpAddress": "Public IP Address for the VM",
-                            "domainNameLabel": "DNS Prefix for the public IP Address, must be globally unique"
-                        },
-                        "defaultValue": {
-                            "publicIpAddressName": "[concat(steps('cstor').cstorVmName, '-', 'ip')]",
-                            "domainNameLabel": "[concat(steps('cstor').cstorVmName, '-', take(replace(guid(), '-', ''), 10))]"
-                        },
-                        "constraints": {
-                            "required": {
-                                "domainNameLabel": true
-                            }
-                        },
-                        "options": {
-                            "hideNone": false,
-                            "hideDomainNameLabel": false,
-                            "hideExisting": false
-                        },
-                        "visible": true
-                    },
-                    {
                         "name": "Image",
                         "type": "Microsoft.Common.Section",
                         "label": "Image Selection",
@@ -380,7 +245,6 @@
                         "name": "tagsByResource",
                         "type": "Microsoft.Common.TagsByResource",
                         "resources": [
-                            "Microsoft.Network/publicIPAddresses",
                             "Microsoft.Network/virtualNetworks",
                             "Microsoft.Network/networkInterfaces",
                             "Microsoft.Storage/storageAccounts",
@@ -398,17 +262,12 @@
             "adminPasswordOrKey": "[coalesce(basics('SSHCredentials').password, basics('SSHCredentials').sshPublicKey)]",
             "virtualNetwork": "[steps('networkConfig').virtualNetwork]",
             "cClearVmName": "[steps('cclear').cClearVmName]",
-            "cclearPublicIpAddress01": "[steps('cclear').cclearPublicIpAddress01]",
             "cClearImage": "[steps('cclear').Image.ImageSelector]",
             "cClearVersion": "[steps('cclear').Image.VersionSelector]",
             "cvuVmName": "[steps('cvu').cvuVmName]",
-            "cvuPublicIpAddress01": "[steps('cvu').cvuPublicIpAddress01]",
-            "cvuPublicIpAddress02": "[steps('cvu').cvuPublicIpAddress02]",
-            "cvuPublicIpAddress03": "[steps('cvu').cvuPublicIpAddress03]",
             "cvuImage": "[steps('cvu').Image.ImageSelector]",
             "cvuVersion": "[steps('cvu').Image.VersionSelector]",
             "cstorVmName": "[steps('cstor').cstorVmName]",
-            "cstorPublicIpAddress01": "[steps('cstor').cstorPublicIpAddress01]",
             "cstorImage": "[steps('cstor').Image.ImageSelector]",
             "cstorVersion": "[steps('cstor').Image.VersionSelector]",
             "tagsByResource": "[steps('tags').tagsByResource]"
