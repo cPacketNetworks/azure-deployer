@@ -373,7 +373,7 @@ resource cvupip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cvuPubl
   name: cvuPublicIpAddress01.name
   location: location
   sku: {
-    name: 'Basic'
+    name: 'Standard'
     tier: 'Regional'
   }
   properties: {

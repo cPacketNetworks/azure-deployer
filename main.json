@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "14265658083565122150"
+      "templateHash": "12262900201266593899"
     }
   },
   "parameters": {
@@ -459,7 +459,7 @@
       "name": "[parameters('cvuPublicIpAddress01').name]",
       "location": "[parameters('location')]",
       "sku": {
-        "name": "Basic",
+        "name": "Standard",
         "tier": "Regional"
       },
       "properties": {
