@@ -110,8 +110,6 @@ var cvupublicIP01Id = cvuPublicIpAddress01.newOrExistingOrNone == 'new' ? cvupip
 //var cvupublicIP02Id = cvuPublicIpAddress02.newOrExistingOrNone == 'new' ? cvupip02.id : resourceId(cvuPublicIpAddress02.resourceGroup, 'Microsoft.Network/publicIPAddresses', cvuPublicIpAddress02.name)
 //var cvupublicIP03Id = cvuPublicIpAddress03.newOrExistingOrNone == 'new' ? cvupip03.id : resourceId(cvuPublicIpAddress03.resourceGroup, 'Microsoft.Network/publicIPAddresses', cvuPublicIpAddress03.name)
 
-
-
 /*
 resource sa 'Microsoft.Storage/storageAccounts@2021-04-01' = if (storageAccount.newOrExisting == 'new') {
   kind: storageAccount.kind
@@ -239,7 +237,6 @@ resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   }
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }
-
 
 /*
   cStor Section
@@ -448,3 +445,66 @@ resource cvuvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }
 
+resource cvulbfrontend01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
+  name: 'cvu-lb-frontend-01-nic'
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'cvu-lb-frontend-01-nic-ipconfig'
+        properties: {
+          subnet: {
+            id: monsubnetId
+          }
+          privateIPAllocationMethod: 'Dynamic'
+        }
+      }
+    ]
+  }
+  tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
+}
+
+resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
+  name: 'cvu_mon_lb'
+  location: location
+  sku: {
+    name: 'Standard'
+    tier: 'Regional'
+  }
+  properties: {
+    frontendIPConfigurations: [
+      {
+        id: cvulbfrontend01.id
+        name: 'cvu_mon_lb_frontend'
+      }
+    ]
+    loadBalancingRules: [
+      {
+        name: 'cvu_mon_lb_to_server'
+        properties: {
+          frontendIPConfiguration: {
+            id: cvulbfrontend01.id
+          }
+          frontendPort: 0
+          backendPort: 0
+          protocol: 'All'
+          backendAddressPool: {
+            id: cvumonnic01.id
+          }
+        }
+      }
+    ]
+    probes: [
+      {
+        name: 'cvu_mon_lb_probe'
+        properties: {
+          protocol: 'Tcp'
+          port: 22
+          intervalInSeconds: 15
+          numberOfProbes: 2
+        }
+      }
+    ]
+  }
+  tags: contains(tagsByResource, 'Microsoft.Network/loadBalancers') ? tagsByResource['Microsoft.Network/loadBalancers'] : null
+}

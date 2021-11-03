@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "1928221123096265073"
+      "templateHash": "8705542262623130847"
     }
   },
   "parameters": {
@@ -532,6 +532,79 @@
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
       "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-01-mon-nic', parameters('cvuVmName')))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2020-11-01",
+      "name": "cvu-lb-frontend-01-nic",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "cvu-lb-frontend-01-nic-ipconfig",
+            "properties": {
+              "subnet": {
+                "id": "[variables('monsubnetId')]"
+              },
+              "privateIPAllocationMethod": "Dynamic"
+            }
+          }
+        ]
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name)]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/loadBalancers",
+      "apiVersion": "2021-03-01",
+      "name": "cvu_mon_lb",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard",
+        "tier": "Regional"
+      },
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "id": "[resourceId('Microsoft.Network/networkInterfaces', 'cvu-lb-frontend-01-nic')]",
+            "name": "cvu_mon_lb_frontend"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "cvu_mon_lb_to_server",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/networkInterfaces', 'cvu-lb-frontend-01-nic')]"
+              },
+              "frontendPort": 0,
+              "backendPort": 0,
+              "protocol": "All",
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-01-mon-nic', parameters('cvuVmName')))]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "cvu_mon_lb_probe",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 22,
+              "intervalInSeconds": 15,
+              "numberOfProbes": 2
+            }
+          }
+        ]
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/loadBalancers'), parameters('tagsByResource')['Microsoft.Network/loadBalancers'], null())]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', 'cvu-lb-frontend-01-nic')]",
         "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-01-mon-nic', parameters('cvuVmName')))]"
       ]
     }
