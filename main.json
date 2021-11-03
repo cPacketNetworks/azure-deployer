@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "5553479886601782314"
+      "templateHash": "17007207339856037180"
     }
   },
   "parameters": {
@@ -111,13 +111,6 @@
         "description": "cstor Image Version"
       }
     },
-    "cvulbName": {
-      "type": "string",
-      "defaultValue": "cvu_mon_lb",
-      "metadata": {
-        "description": "cvu load balancer name"
-      }
-    },
     "tagsByResource": {
       "type": "object",
       "metadata": {
@@ -127,6 +120,7 @@
   },
   "functions": [],
   "variables": {
+    "cvulbName": "[format('{0}_mon_lb', parameters('cvuVmName'))]",
     "linuxConfiguration": {
       "disablePasswordAuthentication": true,
       "ssh": {
@@ -366,7 +360,8 @@
           "computerName": "[parameters('cstorVmName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPasswordOrKey')]",
-          "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]"
+          "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]",
+          "customData": "IyEvYmluL2Jhc2gKCmNobW9kIHVnK3cgL2hvbWUvY3BhY2tldC9ib290X2NvbmZpZy50eHQKCiMgY3N0b3ItViBpbmxpbmUgYm9vdCBjb25maWcgc2V0dGluZ3MKY2F0IDw8RU9GX0JPT1RDRkcgPi9ob21lL2NwYWNrZXQvYm9vdF9jb25maWcudHh0CnsKJ2NhcHR1cmVfbmljX2luZGV4JzogMSwKJ2V0aF9kZXYnIDogJ2V0aDEnLAoncnVuX2NmbG93X21vZGUnOiBUcnVlCn0KRU9GX0JPT1RDRkc="
         }
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
@@ -391,7 +386,7 @@
               "privateIPAllocationMethod": "Dynamic",
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('cvulbName'), format('{0}-backend', parameters('cvulbName')))]"
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cvulbName'), format('{0}-backend', variables('cvulbName')))]"
                 }
               ]
             }
@@ -465,7 +460,7 @@
     {
       "type": "Microsoft.Network/loadBalancers",
       "apiVersion": "2021-03-01",
-      "name": "[parameters('cvulbName')]",
+      "name": "[variables('cvulbName')]",
       "location": "[parameters('location')]",
       "sku": {
         "name": "Standard",
@@ -474,7 +469,7 @@
       "properties": {
         "frontendIPConfigurations": [
           {
-            "name": "[format('{0}-frontend', parameters('cvulbName'))]",
+            "name": "[format('{0}-frontend', variables('cvulbName'))]",
             "properties": {
               "subnet": {
                 "id": "[variables('monsubnetId')]"
@@ -484,21 +479,21 @@
         ],
         "backendAddressPools": [
           {
-            "name": "[format('{0}-backend', parameters('cvulbName'))]"
+            "name": "[format('{0}-backend', variables('cvulbName'))]"
           }
         ],
         "loadBalancingRules": [
           {
-            "name": "[format('{0}-to_server', parameters('cvulbName'))]",
+            "name": "[format('{0}-to_server', variables('cvulbName'))]",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', parameters('cvulbName'), format('{0}-frontend', parameters('cvulbName')))]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', variables('cvulbName'), format('{0}-frontend', variables('cvulbName')))]"
               },
               "backendAddressPool": {
-                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('cvulbName'), format('{0}-backend', parameters('cvulbName')))]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cvulbName'), format('{0}-backend', variables('cvulbName')))]"
               },
               "probe": {
-                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', parameters('cvulbName'), format('{0}-probe', parameters('cvulbName')))]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', variables('cvulbName'), format('{0}-probe', variables('cvulbName')))]"
               },
               "frontendPort": 0,
               "backendPort": 0,
@@ -508,7 +503,7 @@
         ],
         "probes": [
           {
-            "name": "[format('{0}-probe', parameters('cvulbName'))]",
+            "name": "[format('{0}-probe', variables('cvulbName'))]",
             "properties": {
               "protocol": "Tcp",
               "port": 22,

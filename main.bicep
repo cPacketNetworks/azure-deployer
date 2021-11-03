@@ -78,11 +78,10 @@ param cstorImage object
 @description('cstor Image Version')
 param cstorVersion string = ''
 
-@description('cvu load balancer name')
-param cvulbName string = 'cvu_mon_lb'
-
 @description('tags from TagsByResource')
 param tagsByResource object
+
+var cvulbName = '${cvuVmName}_mon_lb'
 
 var linuxConfiguration = {
   disablePasswordAuthentication: true
@@ -368,6 +367,7 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       adminUsername: adminUsername
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
+      customData: loadFileAsBase64('./cstor-v.bash')
     }
   }
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
