@@ -377,6 +377,7 @@ resource cvupip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cvuPubl
     tier: 'Regional'
   }
   properties: {
+    publicIPAllocationMethod: 'Static'
     dnsSettings: {
       domainNameLabel: cvuPublicIpAddress01.domainNameLabel
     }
