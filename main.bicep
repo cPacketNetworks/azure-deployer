@@ -390,7 +390,7 @@ resource cvumonnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
           }
           loadBalancerBackendAddressPools: [
             {
-              id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', '${cvulbName}-backend')
+              id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '-backend')
             }
           ]
         }
@@ -453,25 +453,6 @@ resource cvuvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }
 
-resource cvulbfrontend01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
-  name: '${cvulbName}-frontend-01-nic'
-  location: location
-  properties: {
-    ipConfigurations: [
-      {
-        name: '${cvulbName}-frontend-01-nic-ipconfig'
-        properties: {
-          subnet: {
-            id: monsubnetId
-          }
-          privateIPAllocationMethod: 'Dynamic'
-        }
-      }
-    ]
-  }
-  tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
-}
-
 resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
   name: cvulbName
   location: location
@@ -500,13 +481,13 @@ resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
         name: '${cvulbName}-to_server'
         properties: {
           frontendIPConfiguration: {
-            id: resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', '${cvulbName}-frontend')
+            id: resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', cvulbName, '-frontend')
           }
           backendAddressPool: {
-            id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', '${cvulbName}-backend')
+            id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '-backend')
           }
           probe: {
-            id: resourceId('Microsoft.Network/loadBalancers/probes', '${cvulbName}-probe')
+            id: resourceId('Microsoft.Network/loadBalancers/probes', cvulbName, '-probe')
           }
           frontendPort: 0
           backendPort: 0
