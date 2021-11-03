@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "8705542262623130847"
+      "templateHash": "10371329983676577156"
     }
   },
   "parameters": {
@@ -139,6 +139,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "cstor Image Version"
+      }
+    },
+    "cvulbName": {
+      "type": "string",
+      "defaultValue": "cvu_mon_lb",
+      "metadata": {
+        "description": "cvu load balancer name"
       }
     },
     "tagsByResource": {
@@ -467,7 +474,12 @@
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
                 "id": "[if(equals(parameters('cvuPublicIpAddress01').newOrExistingOrNone, 'none'), null(), variables('cvupublicIP01Id'))]"
-              }
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', format('{0}-backend', parameters('cvulbName')))]"
+                }
+              ]
             }
           }
         ]
@@ -538,12 +550,12 @@
     {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
-      "name": "cvu-lb-frontend-01-nic",
+      "name": "[format('{0}-frontend-01-nic', parameters('cvulbName'))]",
       "location": "[parameters('location')]",
       "properties": {
         "ipConfigurations": [
           {
-            "name": "cvu-lb-frontend-01-nic-ipconfig",
+            "name": "[format('{0}-frontend-01-nic-ipconfig', parameters('cvulbName'))]",
             "properties": {
               "subnet": {
                 "id": "[variables('monsubnetId')]"
@@ -561,7 +573,7 @@
     {
       "type": "Microsoft.Network/loadBalancers",
       "apiVersion": "2021-03-01",
-      "name": "cvu_mon_lb",
+      "name": "[parameters('cvulbName')]",
       "location": "[parameters('location')]",
       "sku": {
         "name": "Standard",
@@ -570,29 +582,41 @@
       "properties": {
         "frontendIPConfigurations": [
           {
-            "id": "[resourceId('Microsoft.Network/networkInterfaces', 'cvu-lb-frontend-01-nic')]",
-            "name": "cvu_mon_lb_frontend"
+            "name": "[format('{0}-frontend', parameters('cvulbName'))]",
+            "properties": {
+              "subnet": {
+                "id": "[variables('monsubnetId')]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[format('{0}-backend', parameters('cvulbName'))]"
           }
         ],
         "loadBalancingRules": [
           {
-            "name": "cvu_mon_lb_to_server",
+            "name": "[format('{0}-to_server', parameters('cvulbName'))]",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/networkInterfaces', 'cvu-lb-frontend-01-nic')]"
+                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', format('{0}-frontend', parameters('cvulbName')))]"
+              },
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', format('{0}-backend', parameters('cvulbName')))]"
+              },
+              "probe": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', format('{0}-probe', parameters('cvulbName')))]"
               },
               "frontendPort": 0,
               "backendPort": 0,
-              "protocol": "All",
-              "backendAddressPool": {
-                "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-01-mon-nic', parameters('cvuVmName')))]"
-              }
+              "protocol": "All"
             }
           }
         ],
         "probes": [
           {
-            "name": "cvu_mon_lb_probe",
+            "name": "[format('{0}-probe', parameters('cvulbName'))]",
             "properties": {
               "protocol": "Tcp",
               "port": 22,
@@ -604,8 +628,7 @@
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/loadBalancers'), parameters('tagsByResource')['Microsoft.Network/loadBalancers'], null())]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', 'cvu-lb-frontend-01-nic')]",
-        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-01-mon-nic', parameters('cvuVmName')))]"
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name)]"
       ]
     }
   ]

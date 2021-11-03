@@ -78,6 +78,9 @@ param cstorImage object
 @description('cstor Image Version')
 param cstorVersion string = ''
 
+@description('cvu load balancer name')
+param cvulbName string = 'cvu_mon_lb'
+
 @description('tags from TagsByResource')
 param tagsByResource object
 
@@ -385,6 +388,11 @@ resource cvumonnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
           publicIPAddress: {
             id: any(cvuPublicIpAddress01.newOrExistingOrNone == 'none' ? null : cvupublicIP01Id)
           }
+          loadBalancerBackendAddressPools: [
+            {
+              id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', '${cvulbName}-backend')
+            }
+          ]
         }
       }
     ]
@@ -446,12 +454,12 @@ resource cvuvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
 }
 
 resource cvulbfrontend01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
-  name: 'cvu-lb-frontend-01-nic'
+  name: '${cvulbName}-frontend-01-nic'
   location: location
   properties: {
     ipConfigurations: [
       {
-        name: 'cvu-lb-frontend-01-nic-ipconfig'
+        name: '${cvulbName}-frontend-01-nic-ipconfig'
         properties: {
           subnet: {
             id: monsubnetId
@@ -465,7 +473,7 @@ resource cvulbfrontend01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
 }
 
 resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
-  name: 'cvu_mon_lb'
+  name: cvulbName
   location: location
   sku: {
     name: 'Standard'
@@ -474,29 +482,41 @@ resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
   properties: {
     frontendIPConfigurations: [
       {
-        id: cvulbfrontend01.id
-        name: 'cvu_mon_lb_frontend'
+        name: '${cvulbName}-frontend'
+        properties: {
+          subnet: {
+            id: monsubnetId
+          }
+        }
+      }
+    ]
+    backendAddressPools: [
+      {
+        name: '${cvulbName}-backend'
       }
     ]
     loadBalancingRules: [
       {
-        name: 'cvu_mon_lb_to_server'
+        name: '${cvulbName}-to_server'
         properties: {
           frontendIPConfiguration: {
-            id: cvulbfrontend01.id
+            id: resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', '${cvulbName}-frontend')
+          }
+          backendAddressPool: {
+            id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', '${cvulbName}-backend')
+          }
+          probe: {
+            id: resourceId('Microsoft.Network/loadBalancers/probes', '${cvulbName}-probe')
           }
           frontendPort: 0
           backendPort: 0
           protocol: 'All'
-          backendAddressPool: {
-            id: cvumonnic01.id
-          }
         }
       }
     ]
     probes: [
       {
-        name: 'cvu_mon_lb_probe'
+        name: '${cvulbName}-probe'
         properties: {
           protocol: 'Tcp'
           port: 22
