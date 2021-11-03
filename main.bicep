@@ -35,8 +35,8 @@ param VMSizeSettings object = {
 @description('cClear VM Name')
 param cClearVmName string
 
-@description('public IP properties from PublicIpAddressCombo')
-param cclearPublicIpAddress01 object
+//@description('public IP properties from PublicIpAddressCombo')
+//param cclearPublicIpAddress01 object
 
 @description('cClear Image URI')
 param cClearImage object
@@ -49,14 +49,14 @@ param cClearVersion string = ''
 @description('cVu Base VM Name')
 param cvuVmName string
 
-@description('public IP properties from PublicIpAddressCombo')
-param cvuPublicIpAddress01 object
+//@description('public IP properties from PublicIpAddressCombo')
+//param cvuPublicIpAddress01 object
 
-@description('public IP properties from PublicIpAddressCombo')
-param cvuPublicIpAddress02 object
+//@description('public IP properties from PublicIpAddressCombo')
+//param cvuPublicIpAddress02 object
 
-@description('public IP properties from PublicIpAddressCombo')
-param cvuPublicIpAddress03 object
+//@description('public IP properties from PublicIpAddressCombo')
+//param cvuPublicIpAddress03 object
 
 @description('cvu Image URI')
 param cvuImage object
@@ -69,8 +69,8 @@ param cvuVersion string = ''
 @description('cStor VM Name')
 param cstorVmName string
 
-@description('public IP properties from PublicIpAddressCombo')
-param cstorPublicIpAddress01 object
+//@description('public IP properties from PublicIpAddressCombo')
+//param cstorPublicIpAddress01 object
 
 @description('cstor Image URI')
 param cstorImage object
@@ -102,14 +102,14 @@ var mgmtsubnetId = virtualNetwork.newOrExisting == 'new' ? mgmtsubnet.id : resou
 var monsubnetId = virtualNetwork.newOrExisting == 'new' ? monsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.monSubnet.name)
 var cstorsubnetId = virtualNetwork.newOrExisting == 'new' ? cstorsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.cstorSubnet.name)
 
-var cclearpublicIPId = cclearPublicIpAddress01.newOrExistingOrNone == 'new' ? cclearpip01.id : resourceId(cclearPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cclearPublicIpAddress01.name)
+//var cclearpublicIPId = cclearPublicIpAddress01.newOrExistingOrNone == 'new' ? cclearpip01.id : resourceId(cclearPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cclearPublicIpAddress01.name)
 var cclearImageURI = empty(cClearVersion) ? cClearImage.id : '${cClearImage.id}/versions/${cClearVersion}'
 
-var cstorpublicIPId = cstorPublicIpAddress01.newOrExistingOrNone == 'new' ? cstorpip01.id : resourceId(cstorPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cstorPublicIpAddress01.name)
+//var cstorpublicIPId = cstorPublicIpAddress01.newOrExistingOrNone == 'new' ? cstorpip01.id : resourceId(cstorPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cstorPublicIpAddress01.name)
 var cstorImageURI = empty(cstorVersion) ? cstorImage.id : '${cstorImage.id}/versions/${cstorVersion}'
 
 var cvuImageURI = empty(cvuVersion) ? cvuImage.id : '${cvuImage.id}/versions/${cvuVersion}'
-var cvupublicIP01Id = cvuPublicIpAddress01.newOrExistingOrNone == 'new' ? cvupip01.id : resourceId(cvuPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cvuPublicIpAddress01.name)
+//var cvupublicIP01Id = cvuPublicIpAddress01.newOrExistingOrNone == 'new' ? cvupip01.id : resourceId(cvuPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cvuPublicIpAddress01.name)
 //var cvupublicIP02Id = cvuPublicIpAddress02.newOrExistingOrNone == 'new' ? cvupip02.id : resourceId(cvuPublicIpAddress02.resourceGroup, 'Microsoft.Network/publicIPAddresses', cvuPublicIpAddress02.name)
 //var cvupublicIP03Id = cvuPublicIpAddress03.newOrExistingOrNone == 'new' ? cvupip03.id : resourceId(cvuPublicIpAddress03.resourceGroup, 'Microsoft.Network/publicIPAddresses', cvuPublicIpAddress03.name)
 
@@ -164,6 +164,7 @@ resource cstorsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if
   cClear Section
 */
 
+/*
 resource cclearpip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cclearPublicIpAddress01.newOrExistingOrNone == 'new') {
   name: cclearPublicIpAddress01.name
   location: location
@@ -179,6 +180,7 @@ resource cclearpip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (ccle
   }
   tags: contains(tagsByResource, 'Microsoft.Network/publicIPAddresses') ? tagsByResource['Microsoft.Network/publicIPAddresses'] : null
 }
+*/
 
 resource cclearnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   name: '${cClearVmName}-nic'
@@ -192,9 +194,11 @@ resource cclearnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
             id: mgmtsubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
+          /*
           publicIPAddress: {
             id: any(cclearPublicIpAddress01.newOrExistingOrNone == 'none' ? null : empty(cclearpublicIPId) ? null : cclearpublicIPId)
           }
+          */
         }
       }
     ]
@@ -249,6 +253,7 @@ resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   cStor Section
 */
 
+/*
 resource cstorpip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cstorPublicIpAddress01.newOrExistingOrNone == 'new') {
   name: cstorPublicIpAddress01.name
   location: location
@@ -264,6 +269,7 @@ resource cstorpip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cstor
   }
   tags: contains(tagsByResource, 'Microsoft.Network/publicIPAddresses') ? tagsByResource['Microsoft.Network/publicIPAddresses'] : null
 }
+*/
 
 resource cstormgmtnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   name: '${cstorVmName}-mgmt-nic'
@@ -277,9 +283,11 @@ resource cstormgmtnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
             id: mgmtsubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
+          /*
           publicIPAddress: {
             id: any(cstorPublicIpAddress01.newOrExistingOrNone == 'none' ? null : cstorpublicIPId)
           }
+          */
         }
       }
     ]
@@ -369,6 +377,7 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   cVu Section
 */
 
+/*
 resource cvupip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cvuPublicIpAddress01.newOrExistingOrNone == 'new') {
   name: cvuPublicIpAddress01.name
   location: location
@@ -384,6 +393,7 @@ resource cvupip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cvuPubl
   }
   tags: contains(tagsByResource, 'Microsoft.Network/publicIPAddresses') ? tagsByResource['Microsoft.Network/publicIPAddresses'] : null
 }
+*/
 
 resource cvumonnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   name: '${cvuVmName}-01-mon-nic'
@@ -397,9 +407,11 @@ resource cvumonnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
             id: monsubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
+          /*
           publicIPAddress: {
             id: any(cvuPublicIpAddress01.newOrExistingOrNone == 'none' ? null : cvupublicIP01Id)
           }
+          */
           loadBalancerBackendAddressPools: [
             {
               id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '${cvulbName}-backend')

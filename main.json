@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "5769330750121915311"
+      "templateHash": "5553479886601782314"
     }
   },
   "parameters": {
@@ -60,12 +60,6 @@
         "description": "cClear VM Name"
       }
     },
-    "cclearPublicIpAddress01": {
-      "type": "object",
-      "metadata": {
-        "description": "public IP properties from PublicIpAddressCombo"
-      }
-    },
     "cClearImage": {
       "type": "object",
       "metadata": {
@@ -85,24 +79,6 @@
         "description": "cVu Base VM Name"
       }
     },
-    "cvuPublicIpAddress01": {
-      "type": "object",
-      "metadata": {
-        "description": "public IP properties from PublicIpAddressCombo"
-      }
-    },
-    "cvuPublicIpAddress02": {
-      "type": "object",
-      "metadata": {
-        "description": "public IP properties from PublicIpAddressCombo"
-      }
-    },
-    "cvuPublicIpAddress03": {
-      "type": "object",
-      "metadata": {
-        "description": "public IP properties from PublicIpAddressCombo"
-      }
-    },
     "cvuImage": {
       "type": "object",
       "metadata": {
@@ -120,12 +96,6 @@
       "type": "string",
       "metadata": {
         "description": "cStor VM Name"
-      }
-    },
-    "cstorPublicIpAddress01": {
-      "type": "object",
-      "metadata": {
-        "description": "public IP properties from PublicIpAddressCombo"
       }
     },
     "cstorImage": {
@@ -171,12 +141,9 @@
     "mgmtsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name))]",
     "monsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name))]",
     "cstorsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name))]",
-    "cclearpublicIPId": "[if(equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'new'), resourceId('Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name), resourceId(parameters('cclearPublicIpAddress01').resourceGroup, 'Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name))]",
     "cclearImageURI": "[if(empty(parameters('cClearVersion')), parameters('cClearImage').id, format('{0}/versions/{1}', parameters('cClearImage').id, parameters('cClearVersion')))]",
-    "cstorpublicIPId": "[if(equals(parameters('cstorPublicIpAddress01').newOrExistingOrNone, 'new'), resourceId('Microsoft.Network/publicIPAddresses', parameters('cstorPublicIpAddress01').name), resourceId(parameters('cstorPublicIpAddress01').resourceGroup, 'Microsoft.Network/publicIPAddresses', parameters('cstorPublicIpAddress01').name))]",
     "cstorImageURI": "[if(empty(parameters('cstorVersion')), parameters('cstorImage').id, format('{0}/versions/{1}', parameters('cstorImage').id, parameters('cstorVersion')))]",
-    "cvuImageURI": "[if(empty(parameters('cvuVersion')), parameters('cvuImage').id, format('{0}/versions/{1}', parameters('cvuImage').id, parameters('cvuVersion')))]",
-    "cvupublicIP01Id": "[if(equals(parameters('cvuPublicIpAddress01').newOrExistingOrNone, 'new'), resourceId('Microsoft.Network/publicIPAddresses', parameters('cvuPublicIpAddress01').name), resourceId(parameters('cvuPublicIpAddress01').resourceGroup, 'Microsoft.Network/publicIPAddresses', parameters('cvuPublicIpAddress01').name))]"
+    "cvuImageURI": "[if(empty(parameters('cvuVersion')), parameters('cvuImage').id, format('{0}/versions/{1}', parameters('cvuImage').id, parameters('cvuVersion')))]"
   },
   "resources": [
     {
@@ -229,24 +196,6 @@
       ]
     },
     {
-      "condition": "[equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'new')]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2020-11-01",
-      "name": "[parameters('cclearPublicIpAddress01').name]",
-      "location": "[parameters('location')]",
-      "sku": {
-        "name": "Basic",
-        "tier": "Regional"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "[parameters('cclearPublicIpAddress01').publicIPAllocationMethod]",
-        "dnsSettings": {
-          "domainNameLabel": "[parameters('cclearPublicIpAddress01').domainNameLabel]"
-        }
-      },
-      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/publicIPAddresses'), parameters('tagsByResource')['Microsoft.Network/publicIPAddresses'], null())]"
-    },
-    {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
       "name": "[format('{0}-nic', parameters('cClearVmName'))]",
@@ -259,17 +208,13 @@
               "subnet": {
                 "id": "[variables('mgmtsubnetId')]"
               },
-              "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[if(equals(parameters('cclearPublicIpAddress01').newOrExistingOrNone, 'none'), null(), if(empty(variables('cclearpublicIPId')), null(), variables('cclearpublicIPId')))]"
-              }
+              "privateIPAllocationMethod": "Dynamic"
             }
           }
         ]
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('cclearPublicIpAddress01').name)]",
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name)]"
       ]
     },
@@ -321,24 +266,6 @@
       ]
     },
     {
-      "condition": "[equals(parameters('cstorPublicIpAddress01').newOrExistingOrNone, 'new')]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2020-11-01",
-      "name": "[parameters('cstorPublicIpAddress01').name]",
-      "location": "[parameters('location')]",
-      "sku": {
-        "name": "Basic",
-        "tier": "Regional"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "[parameters('cstorPublicIpAddress01').publicIPAllocationMethod]",
-        "dnsSettings": {
-          "domainNameLabel": "[parameters('cstorPublicIpAddress01').domainNameLabel]"
-        }
-      },
-      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/publicIPAddresses'), parameters('tagsByResource')['Microsoft.Network/publicIPAddresses'], null())]"
-    },
-    {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
       "name": "[format('{0}-mgmt-nic', parameters('cstorVmName'))]",
@@ -351,17 +278,13 @@
               "subnet": {
                 "id": "[variables('mgmtsubnetId')]"
               },
-              "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[if(equals(parameters('cstorPublicIpAddress01').newOrExistingOrNone, 'none'), null(), variables('cstorpublicIPId'))]"
-              }
+              "privateIPAllocationMethod": "Dynamic"
             }
           }
         ]
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('cstorPublicIpAddress01').name)]",
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name)]"
       ]
     },
@@ -453,24 +376,6 @@
       ]
     },
     {
-      "condition": "[equals(parameters('cvuPublicIpAddress01').newOrExistingOrNone, 'new')]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2020-11-01",
-      "name": "[parameters('cvuPublicIpAddress01').name]",
-      "location": "[parameters('location')]",
-      "sku": {
-        "name": "Standard",
-        "tier": "Regional"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "Static",
-        "dnsSettings": {
-          "domainNameLabel": "[parameters('cvuPublicIpAddress01').domainNameLabel]"
-        }
-      },
-      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/publicIPAddresses'), parameters('tagsByResource')['Microsoft.Network/publicIPAddresses'], null())]"
-    },
-    {
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
       "name": "[format('{0}-01-mon-nic', parameters('cvuVmName'))]",
@@ -484,9 +389,6 @@
                 "id": "[variables('monsubnetId')]"
               },
               "privateIPAllocationMethod": "Dynamic",
-              "publicIPAddress": {
-                "id": "[if(equals(parameters('cvuPublicIpAddress01').newOrExistingOrNone, 'none'), null(), variables('cvupublicIP01Id'))]"
-              },
               "loadBalancerBackendAddressPools": [
                 {
                   "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('cvulbName'), format('{0}-backend', parameters('cvulbName')))]"
@@ -500,7 +402,6 @@
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', parameters('cvuPublicIpAddress01').name)]",
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name)]"
       ]
     },
