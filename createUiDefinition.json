@@ -384,7 +384,8 @@
                             "Microsoft.Network/virtualNetworks",
                             "Microsoft.Network/networkInterfaces",
                             "Microsoft.Storage/storageAccounts",
-                            "Microsoft.Compute/virtualMachines"
+                            "Microsoft.Compute/virtualMachines",
+                            "Microsoft.Network/loadBalancers"
                         ]
                     }
                 ]
