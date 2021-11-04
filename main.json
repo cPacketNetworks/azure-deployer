@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "5925800324242285450"
+      "templateHash": "8064036580450910680"
     }
   },
   "parameters": {
@@ -322,7 +322,7 @@
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-capture-nic', parameters('cstorVmName')))]",
               "properties": {
-                "primary": false
+                "primary": true
               }
             }
           ]

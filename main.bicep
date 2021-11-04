@@ -327,7 +327,7 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
         {
           id: cstorcapturenic01.id
           properties: {
-            primary: false
+            primary: true
           }
         }
       ]
