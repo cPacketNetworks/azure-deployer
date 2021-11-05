@@ -141,11 +141,6 @@ resource cclearnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
             id: mgmtsubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
-          /*
-          publicIPAddress: {
-            id: any(cclearPublicIpAddress01.newOrExistingOrNone == 'none' ? null : empty(cclearpublicIPId) ? null : cclearpublicIPId)
-          }
-          */
         }
       }
     ]
