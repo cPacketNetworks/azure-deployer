@@ -362,8 +362,8 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       adminUsername: adminUsername
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
-      //customData: loadFileAsBase64('./cstor-v.bash')
-      customData: loadTextContent('./userdata-cstor.bash')
+      customData: loadFileAsBase64('./userdata-cstor.bash')
+      //customData: loadTextContent('./userdata-cstor.bash')
       
     }
   }

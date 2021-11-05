@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "9497596837358188297"
+      "templateHash": "10000691198625928896"
     }
   },
   "parameters": {
@@ -361,7 +361,7 @@
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPasswordOrKey')]",
           "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]",
-          "customData": "#!/bin/bash\n\n# cVu-V-k inline boot config settings\ncat <<EOF_BOOTCFG >/home/cpacket/boot_config.txt\n{\n'capture_mode': 'libpcap',\n'decap_mode': 'vxlan',\n'num_pcap_bufs': 2,\n'capture_nic_index': 0,\n'pci_whitelist': '0001:00:02.0',\n'eth_dev': 'eth0',\n'core_mask': '0x3',\n'burnside_mode': False,\n'cstor_lite_mode': False,\n'ssh': {'enabled': True},\n'cleanup_threshold': 50,\n'use_compression': False,\n'tiered_stor_en': False,\n'capture_nic_eth': 'eth0',\n'management_nic_eth': 'eth1',\n}\nEOF_BOOTCFG\n\nchmod ug+w /home/cpacket/boot_config.txt\n\necho \"cloud-init ran user-data at: \" $(date) >>/home/cpacket/prebootmsg.txt"
+          "customData": "IyEvYmluL2Jhc2gKCiMgY1Z1LVYtayBpbmxpbmUgYm9vdCBjb25maWcgc2V0dGluZ3MKY2F0IDw8RU9GX0JPT1RDRkcgPi9ob21lL2NwYWNrZXQvYm9vdF9jb25maWcudHh0CnsKJ2NhcHR1cmVfbW9kZSc6ICdsaWJwY2FwJywKJ2RlY2FwX21vZGUnOiAndnhsYW4nLAonbnVtX3BjYXBfYnVmcyc6IDIsCidjYXB0dXJlX25pY19pbmRleCc6IDAsCidwY2lfd2hpdGVsaXN0JzogJzAwMDE6MDA6MDIuMCcsCidldGhfZGV2JzogJ2V0aDAnLAonY29yZV9tYXNrJzogJzB4MycsCididXJuc2lkZV9tb2RlJzogRmFsc2UsCidjc3Rvcl9saXRlX21vZGUnOiBGYWxzZSwKJ3NzaCc6IHsnZW5hYmxlZCc6IFRydWV9LAonY2xlYW51cF90aHJlc2hvbGQnOiA1MCwKJ3VzZV9jb21wcmVzc2lvbic6IEZhbHNlLAondGllcmVkX3N0b3JfZW4nOiBGYWxzZSwKJ2NhcHR1cmVfbmljX2V0aCc6ICdldGgwJywKJ21hbmFnZW1lbnRfbmljX2V0aCc6ICdldGgxJywKfQpFT0ZfQk9PVENGRwoKY2htb2QgdWcrdyAvaG9tZS9jcGFja2V0L2Jvb3RfY29uZmlnLnR4dAoKZWNobyAiY2xvdWQtaW5pdCByYW4gdXNlci1kYXRhIGF0OiAiICQoZGF0ZSkgPj4vaG9tZS9jcGFja2V0L3ByZWJvb3Rtc2cudHh0"
         }
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
