@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "15440629596511784524"
+      "templateHash": "11161052050657394949"
     }
   },
   "parameters": {
@@ -134,7 +134,8 @@
   },
   "functions": [],
   "variables": {
-    "cvulbName": "[format('{0}_mon_lb', parameters('cvuVmName'))]",
+    "cvulbName": "[format('{0}_iLB', parameters('cvuVmName'))]",
+    "cstorlbName": "[format('{0}_iLB', parameters('cstorVmName'))]",
     "linuxConfiguration": {
       "disablePasswordAuthentication": true,
       "ssh": {
@@ -290,10 +291,17 @@
               "subnet": {
                 "id": "[variables('cstorsubnetId')]"
               },
-              "privateIPAllocationMethod": "Dynamic"
+              "privateIPAllocationMethod": "Dynamic",
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[if(greater(parameters('cstorCount'), 1), resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cstorlbName'), format('{0}-backend', variables('cstorlbName'))), null())]"
+                }
+              ]
             }
           }
-        ]
+        ],
+        "enableAcceleratedNetworking": true,
+        "enableIPForwarding": true
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
       "dependsOn": [
@@ -587,6 +595,68 @@
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/loadBalancers'), parameters('tagsByResource')['Microsoft.Network/loadBalancers'], null())]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name)]"
+      ]
+    },
+    {
+      "condition": "[greater(parameters('cstorCount'), 1)]",
+      "type": "Microsoft.Network/loadBalancers",
+      "apiVersion": "2021-03-01",
+      "name": "[variables('cstorlbName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard",
+        "tier": "Regional"
+      },
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "[format('{0}-frontend', variables('cstorlbName'))]",
+            "properties": {
+              "subnet": {
+                "id": "[variables('cstorsubnetId')]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "[format('{0}-backend', variables('cstorlbName'))]"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "[format('{0}-to_server', variables('cstorlbName'))]",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', variables('cstorlbName'), format('{0}-frontend', variables('cstorlbName')))]"
+              },
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cstorlbName'), format('{0}-backend', variables('cstorlbName')))]"
+              },
+              "probe": {
+                "id": "[resourceId('Microsoft.Network/loadBalancers/probes', variables('cstorlbName'), format('{0}-probe', variables('cstorlbName')))]"
+              },
+              "frontendPort": 0,
+              "backendPort": 0,
+              "protocol": "All"
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "[format('{0}-probe', variables('cstorlbName'))]",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 22,
+              "intervalInSeconds": 15,
+              "numberOfProbes": 2
+            }
+          }
+        ]
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/loadBalancers'), parameters('tagsByResource')['Microsoft.Network/loadBalancers'], null())]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name)]"
       ]
     }
   ]

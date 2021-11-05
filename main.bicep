@@ -87,7 +87,8 @@ param cstorVersion string = ''
 @description('tags from TagsByResource')
 param tagsByResource object
 
-var cvulbName = '${cvuVmName}_mon_lb'
+var cvulbName = '${cvuVmName}_iLB'
+var cstorlbName = '${cstorVmName}_iLB'
 
 var linuxConfiguration = {
   disablePasswordAuthentication: true
@@ -288,9 +289,16 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ fo
             id: cstorsubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
+          loadBalancerBackendAddressPools: [
+            {
+              id: any(cstorCount > 1 ? resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend') : null)
+            }
+          ]
         }
       }
     ]
+    enableAcceleratedNetworking: true
+    enableIPForwarding: true
   }
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
@@ -550,6 +558,63 @@ resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cvuCount > 1
     probes: [
       {
         name: '${cvulbName}-probe'
+        properties: {
+          protocol: 'Tcp'
+          port: 22
+          intervalInSeconds: 15
+          numberOfProbes: 2
+        }
+      }
+    ]
+  }
+  tags: contains(tagsByResource, 'Microsoft.Network/loadBalancers') ? tagsByResource['Microsoft.Network/loadBalancers'] : null
+}
+
+resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorCount > 1) {
+  name: cstorlbName
+  location: location
+  sku: {
+    name: 'Standard'
+    tier: 'Regional'
+  }
+  properties: {
+    frontendIPConfigurations: [
+      {
+        name: '${cstorlbName}-frontend'
+        properties: {
+          subnet: {
+            id: cstorsubnetId
+          }
+        }
+      }
+    ]
+    backendAddressPools: [
+      {
+        name: '${cstorlbName}-backend'
+      }
+    ]
+    loadBalancingRules: [
+      {
+        name: '${cstorlbName}-to_server'
+        properties: {
+          frontendIPConfiguration: {
+            id: resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', cstorlbName, '${cstorlbName}-frontend')
+          }
+          backendAddressPool: {
+            id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend')
+          }
+          probe: {
+            id: resourceId('Microsoft.Network/loadBalancers/probes', cstorlbName, '${cstorlbName}-probe')
+          }
+          frontendPort: 0
+          backendPort: 0
+          protocol: 'All'
+        }
+      }
+    ]
+    probes: [
+      {
+        name: '${cstorlbName}-probe'
         properties: {
           protocol: 'Tcp'
           port: 22
