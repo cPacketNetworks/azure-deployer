@@ -236,6 +236,9 @@ resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
 resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): {
   name: '${cstorVmName}-${i}-capture-nic'
   location: location
+  dependsOn: [
+    cstorlb01
+  ]
   properties: {
     ipConfigurations: [
       {
