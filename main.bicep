@@ -414,7 +414,7 @@ resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for 
           privateIPAllocationMethod: 'Dynamic'
           loadBalancerBackendAddressPools: [
             {
-              id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '${cvulbName}-backend')
+              id: any(cvuCount > 1 ? resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '${cvulbName}-backend') : null)
             }
           ]
         }
@@ -505,7 +505,7 @@ resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [ for i in range
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }]
 
-resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
+resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cvuCount > 1) {
   name: cvulbName
   location: location
   sku: {

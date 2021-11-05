@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "8396720051790913291"
+      "templateHash": "15440629596511784524"
     }
   },
   "parameters": {
@@ -416,7 +416,7 @@
               "privateIPAllocationMethod": "Dynamic",
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cvulbName'), format('{0}-backend', variables('cvulbName')))]"
+                  "id": "[if(greater(parameters('cvuCount'), 1), resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cvulbName'), format('{0}-backend', variables('cvulbName'))), null())]"
                 }
               ]
             }
@@ -528,6 +528,7 @@
       ]
     },
     {
+      "condition": "[greater(parameters('cvuCount'), 1)]",
       "type": "Microsoft.Network/loadBalancers",
       "apiVersion": "2021-03-01",
       "name": "[variables('cvulbName')]",
