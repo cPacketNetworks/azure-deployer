@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "8064036580450910680"
+      "templateHash": "9497596837358188297"
     }
   },
   "parameters": {
@@ -283,6 +283,29 @@
       ]
     },
     {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2020-11-01",
+      "name": "[format('{0}-mgmt-nic', parameters('cstorVmName'))]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "[format('{0}-mgmt-ipconfig-nic', parameters('cstorVmName'))]",
+            "properties": {
+              "subnet": {
+                "id": "[variables('mgmtsubnetId')]"
+              },
+              "privateIPAllocationMethod": "Dynamic"
+            }
+          }
+        ]
+      },
+      "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name)]"
+      ]
+    },
+    {
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2021-03-01",
       "name": "[parameters('cstorVmName')]",
@@ -324,6 +347,12 @@
               "properties": {
                 "primary": true
               }
+            },
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mgmt-nic', parameters('cstorVmName')))]",
+              "properties": {
+                "primary": false
+              }
             }
           ]
         },
@@ -331,12 +360,14 @@
           "computerName": "[parameters('cstorVmName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPasswordOrKey')]",
-          "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]"
+          "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]",
+          "customData": "#!/bin/bash\n\n# cVu-V-k inline boot config settings\ncat <<EOF_BOOTCFG >/home/cpacket/boot_config.txt\n{\n'capture_mode': 'libpcap',\n'decap_mode': 'vxlan',\n'num_pcap_bufs': 2,\n'capture_nic_index': 0,\n'pci_whitelist': '0001:00:02.0',\n'eth_dev': 'eth0',\n'core_mask': '0x3',\n'burnside_mode': False,\n'cstor_lite_mode': False,\n'ssh': {'enabled': True},\n'cleanup_threshold': 50,\n'use_compression': False,\n'tiered_stor_en': False,\n'capture_nic_eth': 'eth0',\n'management_nic_eth': 'eth1',\n}\nEOF_BOOTCFG\n\nchmod ug+w /home/cpacket/boot_config.txt\n\necho \"cloud-init ran user-data at: \" $(date) >>/home/cpacket/prebootmsg.txt"
         }
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-capture-nic', parameters('cstorVmName')))]"
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-capture-nic', parameters('cstorVmName')))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mgmt-nic', parameters('cstorVmName')))]"
       ]
     },
     {

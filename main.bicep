@@ -289,6 +289,25 @@ resource cstorcapturenic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }
 
+resource cstormgmtnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
+  name: '${cstorVmName}-mgmt-nic'
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: '${cstorVmName}-mgmt-ipconfig-nic'
+        properties: {
+          subnet: {
+            id: mgmtsubnetId
+          }
+          privateIPAllocationMethod: 'Dynamic'
+        }
+      }
+    ]
+  }
+  tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
+}
+
 resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   name: cstorVmName
   location: location
@@ -330,6 +349,12 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
             primary: true
           }
         }
+        {
+          id: cstormgmtnic01.id
+          properties: {
+            primary: false
+          }
+        }
       ]
     }
     osProfile: {
@@ -338,6 +363,8 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
       //customData: loadFileAsBase64('./cstor-v.bash')
+      customData: loadTextContent('./userdata-cstor.bash')
+      
     }
   }
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
