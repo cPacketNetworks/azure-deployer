@@ -209,7 +209,7 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ fo
           privateIPAllocationMethod: 'Dynamic'
           loadBalancerBackendAddressPools: [
             {
-              id: any(cstorCount > 1 ? resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend') : null)
+              id: any(cstorCount > 1 ? resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend') : '')
             }
           ]
         }

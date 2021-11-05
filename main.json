@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "11161052050657394949"
+      "templateHash": "16184360061808855131"
     }
   },
   "parameters": {
@@ -294,7 +294,7 @@
               "privateIPAllocationMethod": "Dynamic",
               "loadBalancerBackendAddressPools": [
                 {
-                  "id": "[if(greater(parameters('cstorCount'), 1), resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cstorlbName'), format('{0}-backend', variables('cstorlbName'))), null())]"
+                  "id": "[if(greater(parameters('cstorCount'), 1), resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cstorlbName'), format('{0}-backend', variables('cstorlbName'))), '')]"
                 }
               ]
             }
