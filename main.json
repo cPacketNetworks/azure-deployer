@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "7874005966020167029"
+      "templateHash": "12920348663833112353"
     }
   },
   "parameters": {
@@ -71,6 +71,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "cClear Image Version"
+      }
+    },
+    "cvuCount": {
+      "type": "int",
+      "defaultValue": 3,
+      "metadata": {
+        "description": "Number of cVus"
       }
     },
     "cvuVmName": {
@@ -371,14 +378,18 @@
       ]
     },
     {
+      "copy": {
+        "name": "cvucapturenic",
+        "count": "[length(range(0, parameters('cvuCount')))]"
+      },
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
-      "name": "[format('{0}-01-capture-nic', parameters('cvuVmName'))]",
+      "name": "[format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[copyIndex()])]",
       "location": "[parameters('location')]",
       "properties": {
         "ipConfigurations": [
           {
-            "name": "[format('{0}-01-capture-ipconfig-nic', parameters('cvuVmName'))]",
+            "name": "[format('{0}-{1}-capture-ipconfig-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[copyIndex()])]",
             "properties": {
               "subnet": {
                 "id": "[variables('monsubnetId')]"
@@ -402,14 +413,18 @@
       ]
     },
     {
+      "copy": {
+        "name": "cvumgmtnic",
+        "count": "[length(range(0, parameters('cvuCount')))]"
+      },
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
-      "name": "[format('{0}-01-mgmt-nic', parameters('cvuVmName'))]",
+      "name": "[format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[copyIndex()])]",
       "location": "[parameters('location')]",
       "properties": {
         "ipConfigurations": [
           {
-            "name": "[format('{0}-01-mgmt-ipconfig-nic', parameters('cvuVmName'))]",
+            "name": "[format('{0}-{1}-mgmt-ipconfig-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[copyIndex()])]",
             "properties": {
               "subnet": {
                 "id": "[variables('mgmtsubnetId')]"
@@ -425,9 +440,13 @@
       ]
     },
     {
+      "copy": {
+        "name": "cvuvm",
+        "count": "[length(range(0, parameters('cvuCount')))]"
+      },
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2021-03-01",
-      "name": "[format('{0}-01', parameters('cvuVmName'))]",
+      "name": "[format('{0}-{1}', parameters('cvuVmName'), range(0, parameters('cvuCount'))[copyIndex()])]",
       "location": "[parameters('location')]",
       "properties": {
         "hardwareProfile": {
@@ -444,14 +463,14 @@
           },
           "dataDisks": [
             {
-              "name": "[format('{0}-01-DataDisk0', parameters('cvuVmName'))]",
+              "name": "[format('{0}-{1}-DataDisk0', parameters('cvuVmName'), range(0, parameters('cvuCount'))[copyIndex()])]",
               "lun": 0,
               "createOption": "Empty",
               "diskSizeGB": 500,
               "caching": "ReadWrite"
             },
             {
-              "name": "[format('{0}-01-DataDisk1', parameters('cvuVmName'))]",
+              "name": "[format('{0}-{1}-DataDisk1', parameters('cvuVmName'), range(0, parameters('cvuCount'))[copyIndex()])]",
               "lun": 1,
               "createOption": "Empty",
               "diskSizeGB": 500,
@@ -462,13 +481,13 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-01-capture-nic', parameters('cvuVmName')))]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]",
               "properties": {
                 "primary": true
               }
             },
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-01-mgmt-nic', parameters('cvuVmName')))]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]",
               "properties": {
                 "primary": false
               }
@@ -476,7 +495,7 @@
           ]
         },
         "osProfile": {
-          "computerName": "[format('{0}-01', parameters('cvuVmName'))]",
+          "computerName": "[format('{0}-{1}', parameters('cvuVmName'), parameters('cvuCount'))]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPasswordOrKey')]",
           "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]",
@@ -485,8 +504,8 @@
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-01-capture-nic', parameters('cvuVmName')))]",
-        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-01-mgmt-nic', parameters('cvuVmName')))]"
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]"
       ]
     },
     {

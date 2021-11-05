@@ -46,6 +46,9 @@ param cClearVersion string = ''
 
 // cVu
 
+@description('Number of cVus')
+param cvuCount int = 3
+
 @description('cVu Base VM Name')
 param cvuVmName string
 
@@ -391,8 +394,8 @@ resource cvupip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cvuPubl
 }
 */
 
-resource cvucapturenic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
-  name: '${cvuVmName}-01-capture-nic'
+resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for i in range(0, cvuCount): {
+  name: '${cvuVmName}-${i}-capture-nic'
   location: location
   dependsOn: [
     cvulb01
@@ -400,7 +403,7 @@ resource cvucapturenic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   properties: {
     ipConfigurations: [
       {
-        name: '${cvuVmName}-01-capture-ipconfig-nic'
+        name: '${cvuVmName}-${i}-capture-ipconfig-nic'
         properties: {
           subnet: {
             id: monsubnetId
@@ -418,15 +421,15 @@ resource cvucapturenic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
     enableIPForwarding: true
   }
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
-}
+}]
 
-resource cvumgmtnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
-  name: '${cvuVmName}-01-mgmt-nic'
+resource cvumgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for i in range(0, cvuCount): {
+  name: '${cvuVmName}-${i}-mgmt-nic'
   location: location
   properties: {
     ipConfigurations: [
       {
-        name: '${cvuVmName}-01-mgmt-ipconfig-nic'
+        name: '${cvuVmName}-${i}-mgmt-ipconfig-nic'
         properties: {
           subnet: {
             id: mgmtsubnetId
@@ -437,10 +440,10 @@ resource cvumgmtnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
     ]
   }
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
-}
+}]
 
-resource cvuvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
-  name: '${cvuVmName}-01'
+resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [ for i in range(0, cvuCount): {
+  name: '${cvuVmName}-${i}'
   location: location
   properties: {
     hardwareProfile: {
@@ -457,14 +460,14 @@ resource cvuvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       }
       dataDisks: [
         {
-          name: '${cvuVmName}-01-DataDisk0'
+          name: '${cvuVmName}-${i}-DataDisk0'
           lun: 0
           createOption: 'Empty'
           diskSizeGB: 500
           caching: 'ReadWrite'
         }
         {
-          name: '${cvuVmName}-01-DataDisk1'
+          name: '${cvuVmName}-${i}-DataDisk1'
           lun: 1
           createOption: 'Empty'
           diskSizeGB: 500
@@ -475,13 +478,13 @@ resource cvuvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: cvucapturenic01.id
+          id: cvucapturenic[i].id
           properties: {
             primary: true
           }
         }
         {
-          id: cvumgmtnic01.id
+          id: cvumgmtnic[i].id
           properties: {
             primary: false
           }
@@ -489,7 +492,7 @@ resource cvuvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       ]
     }
     osProfile: {
-      computerName: '${cvuVmName}-01'
+      computerName: '${cvuVmName}-${cvuCount}'
       adminUsername: adminUsername
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
@@ -497,7 +500,7 @@ resource cvuvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     }
   }
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
-}
+}]
 
 resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
   name: cvulbName
