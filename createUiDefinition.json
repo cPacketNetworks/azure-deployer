@@ -133,9 +133,13 @@
                                 "resourceType": "Microsoft.Compute/galleries/images",
                                 "options": {
                                     "filter": {
-                                        "subscription": "onBasics",
+                                        "subscription": "all",
                                         "location": "onBasics"
                                     }
+                                },
+                                "constraints": {
+                                    "required": true,
+                                    "validationMessage": "The Image is required."
                                 }
                             },
                             {
@@ -191,9 +195,13 @@
                                 "resourceType": "Microsoft.Compute/galleries/images",
                                 "options": {
                                     "filter": {
-                                        "subscription": "onBasics",
+                                        "subscription": "all",
                                         "location": "onBasics"
                                     }
+                                },
+                                "constraints": {
+                                    "required": true,
+                                    "validationMessage": "The Image is required."
                                 }
                             },
                             {
@@ -212,11 +220,25 @@
                 "label": "cStor-V Configuration",
                 "elements": [
                     {
+                        "name": "cstorNumBox",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Number of cStors",
+                        "placeholder": "",
+                        "defaultValue": "1",
+                        "toolTip": "Number of cStors",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[1-9]{1}$",
+                            "validationMessage": "Only numeric characters are allowed, and the value must be 1-9."
+                        },
+                        "visible": true
+                    },
+                    {
                         "name": "cstorVmName",
                         "type": "Microsoft.Common.TextBox",
-                        "label": "Virtual Machine name",
-                        "toolTip": "The name of the Virtual Machine.",
-                        "defaultValue": "cstor-01",
+                        "label": "Virtual Machine Base Name",
+                        "toolTip": "The Base Name of the Virtual Machine. A number will be appended to the end. Ex. cstor-01.",
+                        "defaultValue": "cstor",
                         "constraints": {
                             "required": true,
                             "regex": "^[a-z0-9A-Z-]{3,79}$",
@@ -235,9 +257,13 @@
                                 "resourceType": "Microsoft.Compute/galleries/images",
                                 "options": {
                                     "filter": {
-                                        "subscription": "onBasics",
+                                        "subscription": "all",
                                         "location": "onBasics"
                                     }
+                                },
+                                "constraints": {
+                                    "required": true,
+                                    "validationMessage": "The Image is required."
                                 }
                             },
                             {
@@ -282,6 +308,7 @@
             "cvuVmName": "[steps('cvu').cvuVmName]",
             "cvuImage": "[steps('cvu').Image.ImageSelector]",
             "cvuVersion": "[steps('cvu').Image.VersionSelector]",
+            "cstorCount": "[steps('cstor').cstorNumBox]",
             "cstorVmName": "[steps('cstor').cstorVmName]",
             "cstorImage": "[steps('cstor').Image.ImageSelector]",
             "cstorVersion": "[steps('cstor').Image.VersionSelector]",
