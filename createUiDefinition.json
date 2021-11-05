@@ -154,6 +154,20 @@
                 "label": "cVu-V Configuration",
                 "elements": [
                     {
+                        "name": "cvuNumBox",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Number of cVus",
+                        "placeholder": "",
+                        "defaultValue": "3",
+                        "toolTip": "Number of cVus",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[1-9]{1}$",
+                            "validationMessage": "Only numeric characters are allowed, and the value must be 1-9."
+                        },
+                        "visible": true
+                    },
+                    {
                         "name": "cvuVmName",
                         "type": "Microsoft.Common.TextBox",
                         "label": "Virtual Machine Base Name",
@@ -264,6 +278,7 @@
             "cClearVmName": "[steps('cclear').cClearVmName]",
             "cClearImage": "[steps('cclear').Image.ImageSelector]",
             "cClearVersion": "[steps('cclear').Image.VersionSelector]",
+            "cvuCount": "[steps('cvu').cvuNumBox]",
             "cvuVmName": "[steps('cvu').cvuVmName]",
             "cvuImage": "[steps('cvu').Image.ImageSelector]",
             "cvuVersion": "[steps('cvu').Image.VersionSelector]",
