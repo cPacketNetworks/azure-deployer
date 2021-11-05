@@ -82,12 +82,42 @@ var linuxConfiguration = {
   }
 }
 
-var cstorLBackendpoolEnabled = {
-  id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend')
+var cstorilbPropertiesBackendpoolEnabled = {
+  subnet: {
+    id: cstorsubnetId
+  }
+  privateIPAllocationMethod: 'Dynamic'
+  loadBalancerBackendAddressPools: [ 
+    {
+      id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend')
+    }
+  ]
 }
 
-var cvuLBackendpoolEnabled = {
-  id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend')
+var cstorilbPropertiesBackendpoolDisabled = {
+  subnet: {
+    id: cstorsubnetId
+  }
+  privateIPAllocationMethod: 'Dynamic'
+}
+
+var cvuilbPropertiesBackendpoolEnabled = {
+  subnet: {
+    id: monsubnetId
+  }
+  privateIPAllocationMethod: 'Dynamic'
+  loadBalancerBackendAddressPools: [ 
+    {
+      id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend')
+    } 
+  ]
+}
+
+var cvuilbPropertiesBackendpoolDisabled = {
+  subnet: {
+    id: monsubnetId
+  }
+  privateIPAllocationMethod: 'Dynamic'
 }
 
 var mgmtsubnetId = virtualNetwork.newOrExisting == 'new' ? mgmtsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.mgmtSubnet.name)
@@ -210,15 +240,7 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for
     ipConfigurations: [
       {
         name: '${cstorVmName}-${i}-capture-ipconfig-nic'
-        properties: {
-          subnet: {
-            id: cstorsubnetId
-          }
-          privateIPAllocationMethod: 'Dynamic'
-          loadBalancerBackendAddressPools: [
-            any(cstorCount > 1 ? cstorLBackendpoolEnabled : null)
-          ]
-        }
+        properties: any(cstorCount > 1 ? cstorilbPropertiesBackendpoolEnabled : cstorilbPropertiesBackendpoolDisabled)
       }
     ]
     enableAcceleratedNetworking: true
@@ -316,15 +338,7 @@ resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i
     ipConfigurations: [
       {
         name: '${cvuVmName}-${i}-capture-ipconfig-nic'
-        properties: {
-          subnet: {
-            id: monsubnetId
-          }
-          privateIPAllocationMethod: 'Dynamic'
-          loadBalancerBackendAddressPools: [
-            any(cvuCount > 1 ? cvuLBackendpoolEnabled : null)
-          ]
-        }
+        properties: any(cvuCount > 1 ? cvuilbPropertiesBackendpoolEnabled : cvuilbPropertiesBackendpoolDisabled)
       }
     ]
     enableAcceleratedNetworking: true
