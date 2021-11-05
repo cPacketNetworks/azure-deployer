@@ -163,7 +163,7 @@
                         "label": "Number of cVus",
                         "placeholder": "",
                         "defaultValue": "3",
-                        "toolTip": "Number of cVus",
+                        "toolTip": "Each cVu supports ~4 Gbps throughput",
                         "constraints": {
                             "required": true,
                             "regex": "^[1-9]{1}$",
@@ -225,7 +225,7 @@
                         "label": "Number of cStors",
                         "placeholder": "",
                         "defaultValue": "1",
-                        "toolTip": "Number of cStors",
+                        "toolTip": "Each cStor supports ~ 2Gbps of throughput",
                         "constraints": {
                             "required": true,
                             "regex": "^[1-9]{1}$",
