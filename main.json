@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "16184360061808855131"
+      "templateHash": "12612769243918294680"
     }
   },
   "parameters": {
@@ -146,6 +146,12 @@
           }
         ]
       }
+    },
+    "cstorLBackendpoolEnabled": {
+      "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cstorlbName'), format('{0}-backend', variables('cstorlbName')))]"
+    },
+    "cvuLBackendpoolEnabled": {
+      "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cstorlbName'), format('{0}-backend', variables('cstorlbName')))]"
     },
     "mgmtsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name))]",
     "monsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name))]",
@@ -293,9 +299,7 @@
               },
               "privateIPAllocationMethod": "Dynamic",
               "loadBalancerBackendAddressPools": [
-                {
-                  "id": "[if(greater(parameters('cstorCount'), 1), resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cstorlbName'), format('{0}-backend', variables('cstorlbName'))), '')]"
-                }
+                "[if(greater(parameters('cstorCount'), 1), variables('cstorLBackendpoolEnabled'), null())]"
               ]
             }
           }
@@ -337,7 +341,7 @@
     },
     {
       "copy": {
-        "name": "cstorvm01",
+        "name": "cstorvm",
         "count": "[length(range(0, parameters('cstorCount')))]"
       },
       "type": "Microsoft.Compute/virtualMachines",
@@ -423,9 +427,7 @@
               },
               "privateIPAllocationMethod": "Dynamic",
               "loadBalancerBackendAddressPools": [
-                {
-                  "id": "[if(greater(parameters('cvuCount'), 1), resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cvulbName'), format('{0}-backend', variables('cvulbName'))), null())]"
-                }
+                "[if(greater(parameters('cvuCount'), 1), variables('cvuLBackendpoolEnabled'), null())]"
               ]
             }
           }

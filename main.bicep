@@ -82,6 +82,14 @@ var linuxConfiguration = {
   }
 }
 
+var cstorLBackendpoolEnabled = {
+  id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend')
+}
+
+var cvuLBackendpoolEnabled = {
+  id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend')
+}
+
 var mgmtsubnetId = virtualNetwork.newOrExisting == 'new' ? mgmtsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.mgmtSubnet.name)
 var monsubnetId = virtualNetwork.newOrExisting == 'new' ? monsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.monSubnet.name)
 var cstorsubnetId = virtualNetwork.newOrExisting == 'new' ? cstorsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.cstorSubnet.name)
@@ -195,7 +203,7 @@ resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   cStor Section
 */
 
-resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for i in range(0, cstorCount): {
+resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): {
   name: '${cstorVmName}-${i}-capture-nic'
   location: location
   properties: {
@@ -208,9 +216,7 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ fo
           }
           privateIPAllocationMethod: 'Dynamic'
           loadBalancerBackendAddressPools: [
-            {
-              id: any(cstorCount > 1 ? resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend') : '')
-            }
+            any(cstorCount > 1 ? cstorLBackendpoolEnabled : null)
           ]
         }
       }
@@ -221,7 +227,7 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ fo
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cstormgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for i in range(0, cstorCount): {
+resource cstormgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): {
   name: '${cstorVmName}-${i}-mgmt-nic'
   location: location
   properties: {
@@ -240,7 +246,7 @@ resource cstormgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for i
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = [ for i in range(0, cstorCount): {
+resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cstorCount): {
   name: '${cstorVmName}-${i}'
   location: location
   properties: {
@@ -295,13 +301,12 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = [ for i in r
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
       customData: loadFileAsBase64('./userdata-cstor.bash')
-      
     }
   }
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }]
 
-resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for i in range(0, cvuCount): {
+resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): {
   name: '${cvuVmName}-${i}-capture-nic'
   location: location
   dependsOn: [
@@ -317,9 +322,7 @@ resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for 
           }
           privateIPAllocationMethod: 'Dynamic'
           loadBalancerBackendAddressPools: [
-            {
-              id: any(cvuCount > 1 ? resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '${cvulbName}-backend') : null)
-            }
+            any(cvuCount > 1 ? cvuLBackendpoolEnabled : null)
           ]
         }
       }
@@ -330,7 +333,7 @@ resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for 
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cvumgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for i in range(0, cvuCount): {
+resource cvumgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): {
   name: '${cvuVmName}-${i}-mgmt-nic'
   location: location
   properties: {
@@ -349,7 +352,7 @@ resource cvumgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for i i
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [ for i in range(0, cvuCount): {
+resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cvuCount): {
   name: '${cvuVmName}-${i}'
   location: location
   properties: {
