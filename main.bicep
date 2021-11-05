@@ -363,7 +363,6 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
       customData: loadFileAsBase64('./userdata-cstor.bash')
-      //customData: loadTextContent('./userdata-cstor.bash')
       
     }
   }
@@ -392,8 +391,8 @@ resource cvupip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cvuPubl
 }
 */
 
-resource cvumonnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
-  name: '${cvuVmName}-01-mon-nic'
+resource cvucapturenic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
+  name: '${cvuVmName}-01-capture-nic'
   location: location
   dependsOn: [
     cvulb01
@@ -401,17 +400,12 @@ resource cvumonnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   properties: {
     ipConfigurations: [
       {
-        name: '${cvuVmName}-01-mon-ipconfig-nic'
+        name: '${cvuVmName}-01-capture-ipconfig-nic'
         properties: {
           subnet: {
             id: monsubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
-          /*
-          publicIPAddress: {
-            id: any(cvuPublicIpAddress01.newOrExistingOrNone == 'none' ? null : cvupublicIP01Id)
-          }
-          */
           loadBalancerBackendAddressPools: [
             {
               id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '${cvulbName}-backend')
@@ -422,6 +416,25 @@ resource cvumonnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
     ]
     enableAcceleratedNetworking: true
     enableIPForwarding: true
+  }
+  tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
+}
+
+resource cvumgmtnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
+  name: '${cvuVmName}-01-mgmt-nic'
+  location: location
+  properties: {
+    ipConfigurations: [
+      {
+        name: '${cvuVmName}-01-mgmt-ipconfig-nic'
+        properties: {
+          subnet: {
+            id: mgmtsubnetId
+          }
+          privateIPAllocationMethod: 'Dynamic'
+        }
+      }
+    ]
   }
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }
@@ -462,9 +475,15 @@ resource cvuvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: cvumonnic01.id
+          id: cvucapturenic01.id
           properties: {
             primary: true
+          }
+        }
+        {
+          id: cvumgmtnic01.id
+          properties: {
+            primary: false
           }
         }
       ]
@@ -474,6 +493,7 @@ resource cvuvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       adminUsername: adminUsername
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
+      customData: loadFileAsBase64('./userdata-cvu.bash')
     }
   }
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
