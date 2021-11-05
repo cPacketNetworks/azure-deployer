@@ -15,11 +15,6 @@ param authenticationType string
 @description('Password or ssh key for the Virtual Machine.')
 param adminPasswordOrKey string
 
-/*
-@description('storageAccount properties from storageAccountSelector')
-param storageAccount object
-*/
-
 @description('virtualNetwork properties from VirtualNetworkCombo')
 param virtualNetwork object
 
@@ -35,9 +30,6 @@ param VMSizeSettings object = {
 @description('cClear VM Name')
 param cClearVmName string
 
-//@description('public IP properties from PublicIpAddressCombo')
-//param cclearPublicIpAddress01 object
-
 @description('cClear Image URI')
 param cClearImage object
 
@@ -52,15 +44,6 @@ param cvuCount int = 3
 @description('cVu Base VM Name')
 param cvuVmName string
 
-//@description('public IP properties from PublicIpAddressCombo')
-//param cvuPublicIpAddress01 object
-
-//@description('public IP properties from PublicIpAddressCombo')
-//param cvuPublicIpAddress02 object
-
-//@description('public IP properties from PublicIpAddressCombo')
-//param cvuPublicIpAddress03 object
-
 @description('cvu Image URI')
 param cvuImage object
 
@@ -74,9 +57,6 @@ param cstorCount int = 1
 
 @description('cStor VM Name')
 param cstorVmName string
-
-//@description('public IP properties from PublicIpAddressCombo')
-//param cstorPublicIpAddress01 object
 
 @description('cstor Image URI')
 param cstorImage object
@@ -102,34 +82,13 @@ var linuxConfiguration = {
   }
 }
 
-// var storageAccountId = storageAccount.newOrExisting == 'new' ? sa.id : resourceId(storageAccount.resourceGroup, 'Microsoft.Storage/storageAccounts/', storageAccount.name)
-
 var mgmtsubnetId = virtualNetwork.newOrExisting == 'new' ? mgmtsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.mgmtSubnet.name)
 var monsubnetId = virtualNetwork.newOrExisting == 'new' ? monsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.monSubnet.name)
 var cstorsubnetId = virtualNetwork.newOrExisting == 'new' ? cstorsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.cstorSubnet.name)
 
-//var cclearpublicIPId = cclearPublicIpAddress01.newOrExistingOrNone == 'new' ? cclearpip01.id : resourceId(cclearPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cclearPublicIpAddress01.name)
 var cclearImageURI = empty(cClearVersion) ? cClearImage.id : '${cClearImage.id}/versions/${cClearVersion}'
-
-//var cstorpublicIPId = cstorPublicIpAddress01.newOrExistingOrNone == 'new' ? cstorpip01.id : resourceId(cstorPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cstorPublicIpAddress01.name)
 var cstorImageURI = empty(cstorVersion) ? cstorImage.id : '${cstorImage.id}/versions/${cstorVersion}'
-
 var cvuImageURI = empty(cvuVersion) ? cvuImage.id : '${cvuImage.id}/versions/${cvuVersion}'
-//var cvupublicIP01Id = cvuPublicIpAddress01.newOrExistingOrNone == 'new' ? cvupip01.id : resourceId(cvuPublicIpAddress01.resourceGroup, 'Microsoft.Network/publicIPAddresses', cvuPublicIpAddress01.name)
-//var cvupublicIP02Id = cvuPublicIpAddress02.newOrExistingOrNone == 'new' ? cvupip02.id : resourceId(cvuPublicIpAddress02.resourceGroup, 'Microsoft.Network/publicIPAddresses', cvuPublicIpAddress02.name)
-//var cvupublicIP03Id = cvuPublicIpAddress03.newOrExistingOrNone == 'new' ? cvupip03.id : resourceId(cvuPublicIpAddress03.resourceGroup, 'Microsoft.Network/publicIPAddresses', cvuPublicIpAddress03.name)
-
-/*
-resource sa 'Microsoft.Storage/storageAccounts@2021-04-01' = if (storageAccount.newOrExisting == 'new') {
-  kind: storageAccount.kind
-  location: location
-  name: storageAccount.name
-  sku: {
-    name: storageAccount.type
-  }
-  tags: contains(tagsByResource, 'Microsoft.Storage/storageAccounts') ? tagsByResource['Microsoft.Storage/storageAccounts'] : null
-}
-*/
 
 resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
   name: virtualNetwork.name
@@ -168,24 +127,6 @@ resource cstorsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if
 
 /*
   cClear Section
-*/
-
-/*
-resource cclearpip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cclearPublicIpAddress01.newOrExistingOrNone == 'new') {
-  name: cclearPublicIpAddress01.name
-  location: location
-  sku: {
-    name: 'Basic'
-    tier: 'Regional'
-  }
-  properties: {
-    publicIPAllocationMethod: cclearPublicIpAddress01.publicIPAllocationMethod
-    dnsSettings: {
-      domainNameLabel: cclearPublicIpAddress01.domainNameLabel
-    }
-  }
-  tags: contains(tagsByResource, 'Microsoft.Network/publicIPAddresses') ? tagsByResource['Microsoft.Network/publicIPAddresses'] : null
-}
 */
 
 resource cclearnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
@@ -257,24 +198,6 @@ resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
 
 /*
   cStor Section
-*/
-
-/*
-resource cstorpip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cstorPublicIpAddress01.newOrExistingOrNone == 'new') {
-  name: cstorPublicIpAddress01.name
-  location: location
-  sku: {
-    name: 'Basic'
-    tier: 'Regional'
-  }
-  properties: {
-    publicIPAllocationMethod: cstorPublicIpAddress01.publicIPAllocationMethod
-    dnsSettings: {
-      domainNameLabel: cstorPublicIpAddress01.domainNameLabel
-    }
-  }
-  tags: contains(tagsByResource, 'Microsoft.Network/publicIPAddresses') ? tagsByResource['Microsoft.Network/publicIPAddresses'] : null
-}
 */
 
 resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for i in range(0, cstorCount): {
@@ -382,28 +305,6 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = [ for i in r
   }
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }]
-
-/*
-  cVu Section
-*/
-
-/*
-resource cvupip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cvuPublicIpAddress01.newOrExistingOrNone == 'new') {
-  name: cvuPublicIpAddress01.name
-  location: location
-  sku: {
-    name: 'Standard'
-    tier: 'Regional'
-  }
-  properties: {
-    publicIPAllocationMethod: 'Static'
-    dnsSettings: {
-      domainNameLabel: cvuPublicIpAddress01.domainNameLabel
-    }
-  }
-  tags: contains(tagsByResource, 'Microsoft.Network/publicIPAddresses') ? tagsByResource['Microsoft.Network/publicIPAddresses'] : null
-}
-*/
 
 resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for i in range(0, cvuCount): {
   name: '${cvuVmName}-${i}-capture-nic'
