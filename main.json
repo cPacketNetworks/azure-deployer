@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "12920348663833112353"
+      "templateHash": "8396720051790913291"
     }
   },
   "parameters": {
@@ -97,6 +97,13 @@
       "defaultValue": "",
       "metadata": {
         "description": "cvu Image Version"
+      }
+    },
+    "cstorCount": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Number of cStors"
       }
     },
     "cstorVmName": {
@@ -267,14 +274,18 @@
       ]
     },
     {
+      "copy": {
+        "name": "cstorcapturenic",
+        "count": "[length(range(0, parameters('cstorCount')))]"
+      },
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
-      "name": "[format('{0}-capture-nic', parameters('cstorVmName'))]",
+      "name": "[format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()])]",
       "location": "[parameters('location')]",
       "properties": {
         "ipConfigurations": [
           {
-            "name": "[format('{0}-capture-ipconfig-nic', parameters('cstorVmName'))]",
+            "name": "[format('{0}-{1}-capture-ipconfig-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()])]",
             "properties": {
               "subnet": {
                 "id": "[variables('cstorsubnetId')]"
@@ -290,14 +301,18 @@
       ]
     },
     {
+      "copy": {
+        "name": "cstormgmtnic",
+        "count": "[length(range(0, parameters('cstorCount')))]"
+      },
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
-      "name": "[format('{0}-mgmt-nic', parameters('cstorVmName'))]",
+      "name": "[format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()])]",
       "location": "[parameters('location')]",
       "properties": {
         "ipConfigurations": [
           {
-            "name": "[format('{0}-mgmt-ipconfig-nic', parameters('cstorVmName'))]",
+            "name": "[format('{0}-{1}-mgmt-ipconfig-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()])]",
             "properties": {
               "subnet": {
                 "id": "[variables('mgmtsubnetId')]"
@@ -313,9 +328,13 @@
       ]
     },
     {
+      "copy": {
+        "name": "cstorvm01",
+        "count": "[length(range(0, parameters('cstorCount')))]"
+      },
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2021-03-01",
-      "name": "[parameters('cstorVmName')]",
+      "name": "[format('{0}-{1}', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()])]",
       "location": "[parameters('location')]",
       "properties": {
         "hardwareProfile": {
@@ -332,14 +351,14 @@
           },
           "dataDisks": [
             {
-              "name": "[format('{0}-DataDisk0', parameters('cstorVmName'))]",
+              "name": "[format('{0}-{1}-DataDisk0', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()])]",
               "lun": 0,
               "createOption": "Empty",
               "diskSizeGB": 500,
               "caching": "ReadWrite"
             },
             {
-              "name": "[format('{0}-DataDisk1', parameters('cstorVmName'))]",
+              "name": "[format('{0}-{1}-DataDisk1', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()])]",
               "lun": 1,
               "createOption": "Empty",
               "diskSizeGB": 500,
@@ -350,13 +369,13 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-capture-nic', parameters('cstorVmName')))]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]",
               "properties": {
                 "primary": true
               }
             },
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mgmt-nic', parameters('cstorVmName')))]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]",
               "properties": {
                 "primary": false
               }
@@ -373,8 +392,8 @@
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-capture-nic', parameters('cstorVmName')))]",
-        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-mgmt-nic', parameters('cstorVmName')))]"
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]"
       ]
     },
     {

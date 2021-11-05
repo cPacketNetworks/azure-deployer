@@ -69,6 +69,9 @@ param cvuVersion string = ''
 
 // cStor
 
+@description('Number of cStors')
+param cstorCount int = 1
+
 @description('cStor VM Name')
 param cstorVmName string
 
@@ -273,13 +276,13 @@ resource cstorpip01 'Microsoft.Network/publicIPAddresses@2020-11-01' = if (cstor
 }
 */
 
-resource cstorcapturenic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
-  name: '${cstorVmName}-capture-nic'
+resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for i in range(0, cstorCount): {
+  name: '${cstorVmName}-${i}-capture-nic'
   location: location
   properties: {
     ipConfigurations: [
       {
-        name: '${cstorVmName}-capture-ipconfig-nic'
+        name: '${cstorVmName}-${i}-capture-ipconfig-nic'
         properties: {
           subnet: {
             id: cstorsubnetId
@@ -290,15 +293,15 @@ resource cstorcapturenic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
     ]
   }
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
-}
+}]
 
-resource cstormgmtnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
-  name: '${cstorVmName}-mgmt-nic'
+resource cstormgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [ for i in range(0, cstorCount): {
+  name: '${cstorVmName}-${i}-mgmt-nic'
   location: location
   properties: {
     ipConfigurations: [
       {
-        name: '${cstorVmName}-mgmt-ipconfig-nic'
+        name: '${cstorVmName}-${i}-mgmt-ipconfig-nic'
         properties: {
           subnet: {
             id: mgmtsubnetId
@@ -309,10 +312,10 @@ resource cstormgmtnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
     ]
   }
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
-}
+}]
 
-resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
-  name: cstorVmName
+resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = [ for i in range(0, cstorCount): {
+  name: '${cstorVmName}-${i}'
   location: location
   properties: {
     hardwareProfile: {
@@ -329,14 +332,14 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
       }
       dataDisks: [
         {
-          name: '${cstorVmName}-DataDisk0'
+          name: '${cstorVmName}-${i}-DataDisk0'
           lun: 0
           createOption: 'Empty'
           diskSizeGB: 500
           caching: 'ReadWrite'
         }
         {
-          name: '${cstorVmName}-DataDisk1'
+          name: '${cstorVmName}-${i}-DataDisk1'
           lun: 1
           createOption: 'Empty'
           diskSizeGB: 500
@@ -347,13 +350,13 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     networkProfile: {
       networkInterfaces: [
         {
-          id: cstorcapturenic01.id
+          id: cstorcapturenic[i].id
           properties: {
             primary: true
           }
         }
         {
-          id: cstormgmtnic01.id
+          id: cstormgmtnic[i].id
           properties: {
             primary: false
           }
@@ -370,7 +373,7 @@ resource cstorvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
     }
   }
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
-}
+}]
 
 /*
   cVu Section
