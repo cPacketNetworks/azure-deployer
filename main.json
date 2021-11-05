@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "9300120781085563523"
+      "templateHash": "17831372204107882859"
     }
   },
   "parameters": {
@@ -147,40 +147,6 @@
         ]
       }
     },
-    "cstorilbPropertiesBackendpoolEnabled": {
-      "subnet": {
-        "id": "[variables('cstorsubnetId')]"
-      },
-      "privateIPAllocationMethod": "Dynamic",
-      "loadBalancerBackendAddressPools": [
-        {
-          "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cstorlbName'), format('{0}-backend', variables('cstorlbName')))]"
-        }
-      ]
-    },
-    "cstorilbPropertiesBackendpoolDisabled": {
-      "subnet": {
-        "id": "[variables('cstorsubnetId')]"
-      },
-      "privateIPAllocationMethod": "Dynamic"
-    },
-    "cvuilbPropertiesBackendpoolEnabled": {
-      "subnet": {
-        "id": "[variables('monsubnetId')]"
-      },
-      "privateIPAllocationMethod": "Dynamic",
-      "loadBalancerBackendAddressPools": [
-        {
-          "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cstorlbName'), format('{0}-backend', variables('cstorlbName')))]"
-        }
-      ]
-    },
-    "cvuilbPropertiesBackendpoolDisabled": {
-      "subnet": {
-        "id": "[variables('monsubnetId')]"
-      },
-      "privateIPAllocationMethod": "Dynamic"
-    },
     "mgmtsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name))]",
     "monsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name))]",
     "cstorsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name))]",
@@ -321,7 +287,17 @@
         "ipConfigurations": [
           {
             "name": "[format('{0}-{1}-capture-ipconfig-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()])]",
-            "properties": "[if(greater(parameters('cstorCount'), 1), variables('cstorilbPropertiesBackendpoolEnabled'), variables('cstorilbPropertiesBackendpoolDisabled'))]"
+            "properties": {
+              "subnet": {
+                "id": "[variables('cstorsubnetId')]"
+              },
+              "privateIPAllocationMethod": "Dynamic",
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cstorlbName'), format('{0}-backend', variables('cstorlbName')))]"
+                }
+              ]
+            }
           }
         ],
         "enableAcceleratedNetworking": true,
@@ -442,7 +418,17 @@
         "ipConfigurations": [
           {
             "name": "[format('{0}-{1}-capture-ipconfig-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[copyIndex()])]",
-            "properties": "[if(greater(parameters('cvuCount'), 1), variables('cvuilbPropertiesBackendpoolEnabled'), variables('cvuilbPropertiesBackendpoolDisabled'))]"
+            "properties": {
+              "subnet": {
+                "id": "[variables('monsubnetId')]"
+              },
+              "privateIPAllocationMethod": "Dynamic",
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cstorlbName'), format('{0}-backend', variables('cstorlbName')))]"
+                }
+              ]
+            }
           }
         ],
         "enableAcceleratedNetworking": true,
@@ -551,7 +537,6 @@
       ]
     },
     {
-      "condition": "[greater(parameters('cvuCount'), 1)]",
       "type": "Microsoft.Network/loadBalancers",
       "apiVersion": "2021-03-01",
       "name": "[variables('cvulbName')]",
@@ -613,7 +598,6 @@
       ]
     },
     {
-      "condition": "[greater(parameters('cstorCount'), 1)]",
       "type": "Microsoft.Network/loadBalancers",
       "apiVersion": "2021-03-01",
       "name": "[variables('cstorlbName')]",
