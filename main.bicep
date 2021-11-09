@@ -109,6 +109,11 @@ resource mgmtsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if 
   }
 }
 
+// The following resources are defined per subnet because we need to reference the subnets independently in other resources. 
+//   This causes the ARM templates to execute this subnet creation operation in parallel. However, there is a race condition where 
+//   subnets can't be executed at the same time.  In order to work around this, a explict dependency is created to serialize
+//   the execution and prevent the subnets from failing creation. 
+
 resource monsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
   name: virtualNetwork.subnets.monSubnet.name
   parent: vnet
