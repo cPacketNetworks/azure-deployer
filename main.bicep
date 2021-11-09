@@ -115,6 +115,9 @@ resource monsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (
   properties: {
     addressPrefix: virtualNetwork.subnets.monSubnet.addressPrefix
   }
+  dependsOn: [
+    mgmtsubnet
+  ]
 }
 
 resource cstorsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
@@ -123,6 +126,9 @@ resource cstorsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if
   properties: {
     addressPrefix: virtualNetwork.subnets.cstorSubnet.addressPrefix
   }
+  dependsOn: [
+    monsubnet
+  ]
 }
 
 /*
