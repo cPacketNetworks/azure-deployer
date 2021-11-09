@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "17831372204107882859"
+      "templateHash": "12483015495479562384"
     }
   },
   "parameters": {
@@ -189,6 +189,7 @@
         "addressPrefix": "[parameters('virtualNetwork').subnets.monSubnet.addressPrefix]"
       },
       "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name)]",
         "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetwork').name)]"
       ]
     },
@@ -201,6 +202,7 @@
         "addressPrefix": "[parameters('virtualNetwork').subnets.cstorSubnet.addressPrefix]"
       },
       "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name)]",
         "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetwork').name)]"
       ]
     },
