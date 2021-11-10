@@ -163,7 +163,7 @@
                         "label": "Number of cVus",
                         "placeholder": "",
                         "defaultValue": "3",
-                        "toolTip": "Each cVu supports ~2 Gbps throughput, without any VXLANs. For every tool which recieves a copy of traffic (VXLAN), divide the throughput by 1/2. Ex. 1 cVu with 1 VXLAN supports ~1 Gbps throughput, for 2 VXLANs the cVu supports ~.05 Gbps.",
+                        "toolTip": "To calculate the number of cVus needed for the cluster, contact a cPacket representative.",
                         "constraints": {
                             "required": true,
                             "regex": "^[1-9]{1}$",
