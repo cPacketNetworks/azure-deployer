@@ -331,7 +331,7 @@ resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i
           privateIPAllocationMethod: 'Dynamic'
           loadBalancerBackendAddressPools: [
             {
-              id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend')
+              id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '${cvulbName}-backend')
             }
           ]
         }
