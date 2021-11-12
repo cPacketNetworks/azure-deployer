@@ -535,3 +535,5 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
   }
   tags: contains(tagsByResource, 'Microsoft.Network/loadBalancers') ? tagsByResource['Microsoft.Network/loadBalancers'] : null
 }
+
+output cstorlb01_ip string = cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress

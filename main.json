@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "13784321579081715614"
+      "templateHash": "17647116480210291505"
     }
   },
   "parameters": {
@@ -660,5 +660,11 @@
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name)]"
       ]
     }
-  ]
+  ],
+  "outputs": {
+    "cstorlb01_ip": {
+      "type": "string",
+      "value": "[reference(resourceId('Microsoft.Network/loadBalancers', variables('cstorlbName'))).frontendIPConfigurations[0].properties.privateIPAddress]"
+    }
+  }
 }
