@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "3346261214615097389"
+      "templateHash": "13047150412027134247"
     }
   },
   "parameters": {
@@ -231,7 +231,7 @@
               "subnet": {
                 "id": "[variables('mgmtsubnetId')]"
               },
-              "privateIPAllocationMethod": "Static"
+              "privateIPAllocationMethod": "Dynamic"
             }
           }
         ]
@@ -311,7 +311,7 @@
               "subnet": {
                 "id": "[variables('toolssubnetId')]"
               },
-              "privateIPAllocationMethod": "Static",
+              "privateIPAllocationMethod": "Dynamic",
               "loadBalancerBackendAddressPools": [
                 {
                   "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cstorlbName'), format('{0}-backend', variables('cstorlbName')))]"
@@ -347,7 +347,7 @@
               "subnet": {
                 "id": "[variables('mgmtsubnetId')]"
               },
-              "privateIPAllocationMethod": "Static"
+              "privateIPAllocationMethod": "Dynamic"
             }
           }
         ]
@@ -445,7 +445,7 @@
               "subnet": {
                 "id": "[variables('monsubnetId')]"
               },
-              "privateIPAllocationMethod": "Static",
+              "privateIPAllocationMethod": "Dynamic",
               "loadBalancerBackendAddressPools": [
                 {
                   "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cvulbName'), format('{0}-backend', variables('cvulbName')))]"
@@ -481,7 +481,7 @@
               "subnet": {
                 "id": "[variables('mgmtsubnetId')]"
               },
-              "privateIPAllocationMethod": "Static"
+              "privateIPAllocationMethod": "Dynamic"
             }
           }
         ]

@@ -151,7 +151,7 @@ resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in 
           subnet: {
             id: mgmtsubnetId
           }
-          privateIPAllocationMethod: 'Static'
+          privateIPAllocationMethod: 'Dynamic'
         }
       }
     ]
@@ -221,7 +221,7 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for
           subnet: {
             id: toolssubnetId
           }
-          privateIPAllocationMethod: 'Static'
+          privateIPAllocationMethod: 'Dynamic'
           loadBalancerBackendAddressPools: [
             {
               id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend')
@@ -247,7 +247,7 @@ resource cstormgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i 
           subnet: {
             id: mgmtsubnetId
           }
-          privateIPAllocationMethod: 'Static'
+          privateIPAllocationMethod: 'Dynamic'
         }
       }
     ]
@@ -329,7 +329,7 @@ resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i
           subnet: {
             id: monsubnetId
           }
-          privateIPAllocationMethod: 'Static'
+          privateIPAllocationMethod: 'Dynamic'
           loadBalancerBackendAddressPools: [
             {
               id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '${cvulbName}-backend')
@@ -355,7 +355,7 @@ resource cvumgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in
           subnet: {
             id: mgmtsubnetId
           }
-          privateIPAllocationMethod: 'Static'
+          privateIPAllocationMethod: 'Dynamic'
         }
       }
     ]
