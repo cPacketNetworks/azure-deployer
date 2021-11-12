@@ -140,27 +140,28 @@ resource toolssubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if
   cClear Section
 */
 
-resource cclearnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = if (cClearCount > 1) {
-  name: '${cClearVmName}-nic'
+resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cClearCount): if (cClearCount > 1) {
+  name: '${cClearVmName}-${i}-nic'
   location: location
   properties: {
     ipConfigurations: [
       {
-        name: '${cClearVmName}-ipconfig-nic'
+        name: '${cClearVmName}-${i}-ipconfig-nic'
         properties: {
           subnet: {
             id: mgmtsubnetId
           }
-          privateIPAllocationMethod: 'Dynamic'
+          privateIPAllocationMethod: 'Static'
         }
       }
     ]
   }
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
-}
+}]
 
-resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = if (cClearCount > 1) {
-  name: cClearVmName
+
+resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cClearCount): if (cClearCount > 1) {
+  name: '${cClearVmName}-${i}'
   location: location
   properties: {
     hardwareProfile: {
@@ -177,7 +178,7 @@ resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = if (cClearC
       }
       dataDisks: [
         {
-          name: '${cClearVmName}-DataDisk1'
+          name: '${cClearVmName}-${i}-DataDisk1'
           lun: 1
           createOption: 'Empty'
           diskSizeGB: 500
@@ -188,19 +189,19 @@ resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = if (cClearC
     networkProfile: {
       networkInterfaces: [
         {
-          id: cclearnic01.id
+          id: cclearnic[i].id
         }
       ]
     }
     osProfile: {
-      computerName: cClearVmName
+      computerName: '${cClearVmName}-${i}'
       adminUsername: adminUsername
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
     }
   }
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
-}
+}]
 
 /*
   cStor Section
@@ -220,7 +221,7 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for
           subnet: {
             id: toolssubnetId
           }
-          privateIPAllocationMethod: 'Dynamic'
+          privateIPAllocationMethod: 'Static'
           loadBalancerBackendAddressPools: [
             {
               id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend')
@@ -246,7 +247,7 @@ resource cstormgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i 
           subnet: {
             id: mgmtsubnetId
           }
-          privateIPAllocationMethod: 'Dynamic'
+          privateIPAllocationMethod: 'Static'
         }
       }
     ]
@@ -304,7 +305,7 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
       ]
     }
     osProfile: {
-      computerName: cstorVmName
+      computerName: '${cstorVmName}-${i}'
       adminUsername: adminUsername
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
@@ -328,7 +329,7 @@ resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i
           subnet: {
             id: monsubnetId
           }
-          privateIPAllocationMethod: 'Dynamic'
+          privateIPAllocationMethod: 'Static'
           loadBalancerBackendAddressPools: [
             {
               id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '${cvulbName}-backend')
@@ -354,7 +355,7 @@ resource cvumgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in
           subnet: {
             id: mgmtsubnetId
           }
-          privateIPAllocationMethod: 'Dynamic'
+          privateIPAllocationMethod: 'Static'
         }
       }
     ]
@@ -412,7 +413,7 @@ resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(
       ]
     }
     osProfile: {
-      computerName: '${cvuVmName}-${cvuCount}'
+      computerName: '${cvuVmName}-${i}'
       adminUsername: adminUsername
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
@@ -536,7 +537,7 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorCount
   tags: contains(tagsByResource, 'Microsoft.Network/loadBalancers') ? tagsByResource['Microsoft.Network/loadBalancers'] : null
 }
 
-output cclear_mgmt_ip string = cvuCount > 1 ? 'http://${cclearnic01.properties.ipConfigurations[0].properties.privateIPAddress}' : ''
+output cclear_mgmt_ip string = cClearCount > 1 ? 'http://${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}' : ''
 output cstor_ilb_frontend_ip string = cstorCount > 1 ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 output cvu_ilb_frontend_ip string = cvuCount > 1 ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 

@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "11977519722247705171"
+      "templateHash": "3346261214615097389"
     }
   },
   "parameters": {
@@ -215,19 +215,23 @@
     },
     {
       "condition": "[greater(parameters('cClearCount'), 1)]",
+      "copy": {
+        "name": "cclearnic",
+        "count": "[length(range(0, parameters('cClearCount')))]"
+      },
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
-      "name": "[format('{0}-nic', parameters('cClearVmName'))]",
+      "name": "[format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[copyIndex()])]",
       "location": "[parameters('location')]",
       "properties": {
         "ipConfigurations": [
           {
-            "name": "[format('{0}-ipconfig-nic', parameters('cClearVmName'))]",
+            "name": "[format('{0}-{1}-ipconfig-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[copyIndex()])]",
             "properties": {
               "subnet": {
                 "id": "[variables('mgmtsubnetId')]"
               },
-              "privateIPAllocationMethod": "Dynamic"
+              "privateIPAllocationMethod": "Static"
             }
           }
         ]
@@ -239,9 +243,13 @@
     },
     {
       "condition": "[greater(parameters('cClearCount'), 1)]",
+      "copy": {
+        "name": "cclearvm",
+        "count": "[length(range(0, parameters('cClearCount')))]"
+      },
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2021-03-01",
-      "name": "[parameters('cClearVmName')]",
+      "name": "[format('{0}-{1}', parameters('cClearVmName'), range(0, parameters('cClearCount'))[copyIndex()])]",
       "location": "[parameters('location')]",
       "properties": {
         "hardwareProfile": {
@@ -258,7 +266,7 @@
           },
           "dataDisks": [
             {
-              "name": "[format('{0}-DataDisk1', parameters('cClearVmName'))]",
+              "name": "[format('{0}-{1}-DataDisk1', parameters('cClearVmName'), range(0, parameters('cClearCount'))[copyIndex()])]",
               "lun": 1,
               "createOption": "Empty",
               "diskSizeGB": 500,
@@ -269,12 +277,12 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('cClearVmName')))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[range(0, parameters('cClearCount'))[copyIndex()]]))]"
             }
           ]
         },
         "osProfile": {
-          "computerName": "[parameters('cClearVmName')]",
+          "computerName": "[format('{0}-{1}', parameters('cClearVmName'), range(0, parameters('cClearCount'))[copyIndex()])]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPasswordOrKey')]",
           "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]"
@@ -282,7 +290,7 @@
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('cClearVmName')))]"
+        "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[range(0, parameters('cClearCount'))[copyIndex()]]))]"
       ]
     },
     {
@@ -303,7 +311,7 @@
               "subnet": {
                 "id": "[variables('toolssubnetId')]"
               },
-              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAllocationMethod": "Static",
               "loadBalancerBackendAddressPools": [
                 {
                   "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cstorlbName'), format('{0}-backend', variables('cstorlbName')))]"
@@ -339,7 +347,7 @@
               "subnet": {
                 "id": "[variables('mgmtsubnetId')]"
               },
-              "privateIPAllocationMethod": "Dynamic"
+              "privateIPAllocationMethod": "Static"
             }
           }
         ]
@@ -406,7 +414,7 @@
           ]
         },
         "osProfile": {
-          "computerName": "[parameters('cstorVmName')]",
+          "computerName": "[format('{0}-{1}', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()])]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPasswordOrKey')]",
           "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]",
@@ -437,7 +445,7 @@
               "subnet": {
                 "id": "[variables('monsubnetId')]"
               },
-              "privateIPAllocationMethod": "Dynamic",
+              "privateIPAllocationMethod": "Static",
               "loadBalancerBackendAddressPools": [
                 {
                   "id": "[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', variables('cvulbName'), format('{0}-backend', variables('cvulbName')))]"
@@ -473,7 +481,7 @@
               "subnet": {
                 "id": "[variables('mgmtsubnetId')]"
               },
-              "privateIPAllocationMethod": "Dynamic"
+              "privateIPAllocationMethod": "Static"
             }
           }
         ]
@@ -540,7 +548,7 @@
           ]
         },
         "osProfile": {
-          "computerName": "[format('{0}-{1}', parameters('cvuVmName'), parameters('cvuCount'))]",
+          "computerName": "[format('{0}-{1}', parameters('cvuVmName'), range(0, parameters('cvuCount'))[copyIndex()])]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPasswordOrKey')]",
           "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]",
@@ -681,7 +689,7 @@
   "outputs": {
     "cclear_mgmt_ip": {
       "type": "string",
-      "value": "[if(greater(parameters('cvuCount'), 1), format('http://{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('cClearVmName')))).ipConfigurations[0].properties.privateIPAddress), '')]"
+      "value": "[if(greater(parameters('cClearCount'), 1), format('http://{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), '')]"
     },
     "cstor_ilb_frontend_ip": {
       "type": "string",
