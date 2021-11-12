@@ -88,10 +88,10 @@
                                     "requireContiguousAddresses": false
                                 }
                             },
-                            "cstorSubnet": {
-                                "label": "Packet Storage subnet",
+                            "toolsSubnet": {
+                                "label": "Packet Tools subnet",
                                 "defaultValue": {
-                                    "name": "cstor",
+                                    "name": "tools",
                                     "addressPrefixSize": "/24"
                                 },
                                 "constraints": {
@@ -110,11 +110,25 @@
                 "label": "cClear Configuration",
                 "elements": [
                     {
+                        "name": "cclearNumBox",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Number of cClear",
+                        "placeholder": "",
+                        "defaultValue": "1",
+                        "toolTip": "Number of cClears to manage the cCloud solution.",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[0-9]{1}$",
+                            "validationMessage": "Only numeric characters are allowed, and the value must be 0-9."
+                        },
+                        "visible": true
+                    },
+                    {
                         "name": "cClearVmName",
                         "type": "Microsoft.Common.TextBox",
                         "label": "Virtual Machine name",
-                        "toolTip": "The name of the Virtual Machine.",
-                        "defaultValue": "cclear-01",
+                        "toolTip": "The Base Name of the Virtual Machine. A number will be appended to the end. Ex. cclear-01.",
+                        "defaultValue": "cclear",
                         "constraints": {
                             "required": true,
                             "regex": "^[a-z0-9A-Z-]{3,79}$",
@@ -166,8 +180,8 @@
                         "toolTip": "To calculate the number of cVus needed for the cluster, contact a cPacket representative.",
                         "constraints": {
                             "required": true,
-                            "regex": "^[1-9]{1}$",
-                            "validationMessage": "Only numeric characters are allowed, and the value must be 1-9."
+                            "regex": "^[0-9]{1}$",
+                            "validationMessage": "Only numeric characters are allowed, and the value must be 0-9."
                         },
                         "visible": true
                     },
@@ -225,11 +239,11 @@
                         "label": "Number of cStors",
                         "placeholder": "",
                         "defaultValue": "1",
-                        "toolTip": "Each cStor supports ~ 2Gbps of throughput",
+                        "toolTip": "To calculate the number of cStors needed for the cluster, contact a cPacket representative.",
                         "constraints": {
                             "required": true,
-                            "regex": "^[1-9]{1}$",
-                            "validationMessage": "Only numeric characters are allowed, and the value must be 1-9."
+                            "regex": "^[0-9]{1}$",
+                            "validationMessage": "Only numeric characters are allowed, and the value must be 0-9."
                         },
                         "visible": true
                     },
@@ -301,6 +315,7 @@
             "authenticationType": "[basics('SSHCredentials').authenticationType]",
             "adminPasswordOrKey": "[coalesce(basics('SSHCredentials').password, basics('SSHCredentials').sshPublicKey)]",
             "virtualNetwork": "[steps('networkConfig').virtualNetwork]",
+            "cClearCount": "[steps('cclear').cclearNumBox]",
             "cClearVmName": "[steps('cclear').cClearVmName]",
             "cClearImage": "[steps('cclear').Image.ImageSelector]",
             "cClearVersion": "[steps('cclear').Image.VersionSelector]",

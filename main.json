@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "17647116480210291505"
+      "templateHash": "11977519722247705171"
     }
   },
   "parameters": {
@@ -52,6 +52,13 @@
       },
       "metadata": {
         "description": "defualt values for cclear VM"
+      }
+    },
+    "cClearCount": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "Number of cClears"
       }
     },
     "cClearVmName": {
@@ -149,7 +156,7 @@
     },
     "mgmtsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name))]",
     "monsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name))]",
-    "cstorsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name))]",
+    "toolssubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.toolsSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.toolsSubnet.name))]",
     "cclearImageURI": "[if(empty(parameters('cClearVersion')), parameters('cClearImage').id, format('{0}/versions/{1}', parameters('cClearImage').id, parameters('cClearVersion')))]",
     "cstorImageURI": "[if(empty(parameters('cstorVersion')), parameters('cstorImage').id, format('{0}/versions/{1}', parameters('cstorImage').id, parameters('cstorVersion')))]",
     "cvuImageURI": "[if(empty(parameters('cvuVersion')), parameters('cvuImage').id, format('{0}/versions/{1}', parameters('cvuImage').id, parameters('cvuVersion')))]"
@@ -197,9 +204,9 @@
       "condition": "[equals(parameters('virtualNetwork').newOrExisting, 'new')]",
       "type": "Microsoft.Network/virtualNetworks/subnets",
       "apiVersion": "2020-11-01",
-      "name": "[format('{0}/{1}', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name)]",
+      "name": "[format('{0}/{1}', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.toolsSubnet.name)]",
       "properties": {
-        "addressPrefix": "[parameters('virtualNetwork').subnets.cstorSubnet.addressPrefix]"
+        "addressPrefix": "[parameters('virtualNetwork').subnets.toolsSubnet.addressPrefix]"
       },
       "dependsOn": [
         "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name)]",
@@ -207,6 +214,7 @@
       ]
     },
     {
+      "condition": "[greater(parameters('cClearCount'), 1)]",
       "type": "Microsoft.Network/networkInterfaces",
       "apiVersion": "2020-11-01",
       "name": "[format('{0}-nic', parameters('cClearVmName'))]",
@@ -230,6 +238,7 @@
       ]
     },
     {
+      "condition": "[greater(parameters('cClearCount'), 1)]",
       "type": "Microsoft.Compute/virtualMachines",
       "apiVersion": "2021-03-01",
       "name": "[parameters('cClearVmName')]",
@@ -277,6 +286,7 @@
       ]
     },
     {
+      "condition": "[greater(parameters('cstorCount'), 1)]",
       "copy": {
         "name": "cstorcapturenic",
         "count": "[length(range(0, parameters('cstorCount')))]"
@@ -291,7 +301,7 @@
             "name": "[format('{0}-{1}-capture-ipconfig-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()])]",
             "properties": {
               "subnet": {
-                "id": "[variables('cstorsubnetId')]"
+                "id": "[variables('toolssubnetId')]"
               },
               "privateIPAllocationMethod": "Dynamic",
               "loadBalancerBackendAddressPools": [
@@ -308,10 +318,11 @@
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/networkInterfaces'), parameters('tagsByResource')['Microsoft.Network/networkInterfaces'], null())]",
       "dependsOn": [
         "[resourceId('Microsoft.Network/loadBalancers', variables('cstorlbName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name)]"
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.toolsSubnet.name)]"
       ]
     },
     {
+      "condition": "[greater(parameters('cstorCount'), 1)]",
       "copy": {
         "name": "cstormgmtnic",
         "count": "[length(range(0, parameters('cstorCount')))]"
@@ -339,6 +350,7 @@
       ]
     },
     {
+      "condition": "[greater(parameters('cstorCount'), 1)]",
       "copy": {
         "name": "cstorvm",
         "count": "[length(range(0, parameters('cstorCount')))]"
@@ -408,6 +420,7 @@
       ]
     },
     {
+      "condition": "[greater(parameters('cvuCount'), 1)]",
       "copy": {
         "name": "cvucapturenic",
         "count": "[length(range(0, parameters('cvuCount')))]"
@@ -443,6 +456,7 @@
       ]
     },
     {
+      "condition": "[greater(parameters('cvuCount'), 1)]",
       "copy": {
         "name": "cvumgmtnic",
         "count": "[length(range(0, parameters('cvuCount')))]"
@@ -470,6 +484,7 @@
       ]
     },
     {
+      "condition": "[greater(parameters('cvuCount'), 1)]",
       "copy": {
         "name": "cvuvm",
         "count": "[length(range(0, parameters('cvuCount')))]"
@@ -539,6 +554,7 @@
       ]
     },
     {
+      "condition": "[greater(parameters('cvuCount'), 1)]",
       "type": "Microsoft.Network/loadBalancers",
       "apiVersion": "2021-03-01",
       "name": "[variables('cvulbName')]",
@@ -600,6 +616,7 @@
       ]
     },
     {
+      "condition": "[greater(parameters('cstorCount'), 1)]",
       "type": "Microsoft.Network/loadBalancers",
       "apiVersion": "2021-03-01",
       "name": "[variables('cstorlbName')]",
@@ -614,7 +631,7 @@
             "name": "[format('{0}-frontend', variables('cstorlbName'))]",
             "properties": {
               "subnet": {
-                "id": "[variables('cstorsubnetId')]"
+                "id": "[variables('toolssubnetId')]"
               }
             }
           }
@@ -657,14 +674,22 @@
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Network/loadBalancers'), parameters('tagsByResource')['Microsoft.Network/loadBalancers'], null())]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.cstorSubnet.name)]"
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.toolsSubnet.name)]"
       ]
     }
   ],
   "outputs": {
-    "cstorlb01_ip": {
+    "cclear_mgmt_ip": {
       "type": "string",
-      "value": "[reference(resourceId('Microsoft.Network/loadBalancers', variables('cstorlbName'))).frontendIPConfigurations[0].properties.privateIPAddress]"
+      "value": "[if(greater(parameters('cvuCount'), 1), format('http://{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-nic', parameters('cClearVmName')))).ipConfigurations[0].properties.privateIPAddress), '')]"
+    },
+    "cstor_ilb_frontend_ip": {
+      "type": "string",
+      "value": "[if(greater(parameters('cstorCount'), 1), reference(resourceId('Microsoft.Network/loadBalancers', variables('cstorlbName'))).frontendIPConfigurations[0].properties.privateIPAddress, '')]"
+    },
+    "cvu_ilb_frontend_ip": {
+      "type": "string",
+      "value": "[if(greater(parameters('cvuCount'), 1), reference(resourceId('Microsoft.Network/loadBalancers', variables('cvulbName'))).frontendIPConfigurations[0].properties.privateIPAddress, '')]"
     }
   }
 }

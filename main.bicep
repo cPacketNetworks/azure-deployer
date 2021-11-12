@@ -26,6 +26,8 @@ param VMSizeSettings object = {
 }
 
 // cClear
+@description('Number of cClears')
+param cClearCount int = 0
 
 @description('cClear VM Name')
 param cClearVmName string
@@ -37,7 +39,6 @@ param cClearImage object
 param cClearVersion string = ''
 
 // cVu
-
 @description('Number of cVus')
 param cvuCount int = 3
 
@@ -51,7 +52,6 @@ param cvuImage object
 param cvuVersion string = ''
 
 // cStor
-
 @description('Number of cStors')
 param cstorCount int = 1
 
@@ -84,7 +84,7 @@ var linuxConfiguration = {
 
 var mgmtsubnetId = virtualNetwork.newOrExisting == 'new' ? mgmtsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.mgmtSubnet.name)
 var monsubnetId = virtualNetwork.newOrExisting == 'new' ? monsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.monSubnet.name)
-var cstorsubnetId = virtualNetwork.newOrExisting == 'new' ? cstorsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.cstorSubnet.name)
+var toolssubnetId = virtualNetwork.newOrExisting == 'new' ? toolssubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.toolsSubnet.name)
 
 var cclearImageURI = empty(cClearVersion) ? cClearImage.id : '${cClearImage.id}/versions/${cClearVersion}'
 var cstorImageURI = empty(cstorVersion) ? cstorImage.id : '${cstorImage.id}/versions/${cstorVersion}'
@@ -125,11 +125,11 @@ resource monsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (
   ]
 }
 
-resource cstorsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
-  name: virtualNetwork.subnets.cstorSubnet.name
+resource toolssubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
+  name: virtualNetwork.subnets.toolsSubnet.name
   parent: vnet
   properties: {
-    addressPrefix: virtualNetwork.subnets.cstorSubnet.addressPrefix
+    addressPrefix: virtualNetwork.subnets.toolsSubnet.addressPrefix
   }
   dependsOn: [
     monsubnet
@@ -140,7 +140,7 @@ resource cstorsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if
   cClear Section
 */
 
-resource cclearnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
+resource cclearnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = if (cClearCount > 1) {
   name: '${cClearVmName}-nic'
   location: location
   properties: {
@@ -159,7 +159,7 @@ resource cclearnic01 'Microsoft.Network/networkInterfaces@2020-11-01' = {
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }
 
-resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
+resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = if (cClearCount > 1) {
   name: cClearVmName
   location: location
   properties: {
@@ -206,7 +206,7 @@ resource cclearvm01 'Microsoft.Compute/virtualMachines@2021-03-01' = {
   cStor Section
 */
 
-resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): {
+resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): if (cstorCount > 1) {
   name: '${cstorVmName}-${i}-capture-nic'
   location: location
   dependsOn: [
@@ -218,7 +218,7 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for
         name: '${cstorVmName}-${i}-capture-ipconfig-nic'
         properties: {
           subnet: {
-            id: cstorsubnetId
+            id: toolssubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
           loadBalancerBackendAddressPools: [
@@ -235,7 +235,7 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cstormgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): {
+resource cstormgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): if (cstorCount > 1) {
   name: '${cstorVmName}-${i}-mgmt-nic'
   location: location
   properties: {
@@ -254,7 +254,7 @@ resource cstormgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i 
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cstorCount): {
+resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cstorCount): if (cstorCount > 1) {
   name: '${cstorVmName}-${i}'
   location: location
   properties: {
@@ -314,7 +314,7 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }]
 
-resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): {
+resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): if (cvuCount > 1) {
   name: '${cvuVmName}-${i}-capture-nic'
   location: location
   dependsOn: [
@@ -343,7 +343,7 @@ resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cvumgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): {
+resource cvumgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): if (cvuCount > 1) {
   name: '${cvuVmName}-${i}-mgmt-nic'
   location: location
   properties: {
@@ -362,7 +362,7 @@ resource cvumgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cvuCount): {
+resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cvuCount): if (cvuCount > 1) {
   name: '${cvuVmName}-${i}'
   location: location
   properties: {
@@ -422,7 +422,7 @@ resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }]
 
-resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
+resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cvuCount > 1) {
   name: cvulbName
   location: location
   sku: {
@@ -479,7 +479,7 @@ resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
   tags: contains(tagsByResource, 'Microsoft.Network/loadBalancers') ? tagsByResource['Microsoft.Network/loadBalancers'] : null
 }
 
-resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
+resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorCount > 1) {
   name: cstorlbName
   location: location
   sku: {
@@ -492,7 +492,7 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
         name: '${cstorlbName}-frontend'
         properties: {
           subnet: {
-            id: cstorsubnetId
+            id: toolssubnetId
           }
         }
       }
@@ -536,4 +536,20 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = {
   tags: contains(tagsByResource, 'Microsoft.Network/loadBalancers') ? tagsByResource['Microsoft.Network/loadBalancers'] : null
 }
 
-output cstorlb01_ip string = cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress
+output cclear_mgmt_ip string = cvuCount > 1 ? 'http://${cclearnic01.properties.ipConfigurations[0].properties.privateIPAddress}' : ''
+output cstor_ilb_frontend_ip string = cstorCount > 1 ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
+output cvu_ilb_frontend_ip string = cvuCount > 1 ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
+
+/*
+output endpoint string = deployStorage ? myStorageAccount.properties.primaryEndpoints.blob : ''
+
+output deployedNSGs array = [for (name, i) in orgNames: {
+  orgName: name
+  nsgName: nsg[i].name
+  resourceId: nsg[i].id
+}]
+
+[for <item> in <collection>: if(<condition>) {
+  ...
+}]
+*/
