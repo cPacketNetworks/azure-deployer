@@ -140,7 +140,7 @@ resource toolssubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if
   cClear Section
 */
 
-resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cClearCount): if (cClearCount > 1) {
+resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cClearCount): if (cClearCount > 0) {
   name: '${cClearVmName}-${i}-nic'
   location: location
   properties: {
@@ -160,7 +160,7 @@ resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in 
 }]
 
 
-resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cClearCount): if (cClearCount > 1) {
+resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cClearCount): if (cClearCount > 0) {
   name: '${cClearVmName}-${i}'
   location: location
   properties: {
@@ -207,7 +207,7 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in ran
   cStor Section
 */
 
-resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): if (cstorCount > 1) {
+resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): if (cstorCount > 0) {
   name: '${cstorVmName}-${i}-capture-nic'
   location: location
   dependsOn: [
@@ -236,7 +236,7 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cstormgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): if (cstorCount > 1) {
+resource cstormgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): if (cstorCount > 0) {
   name: '${cstorVmName}-${i}-mgmt-nic'
   location: location
   properties: {
@@ -255,7 +255,7 @@ resource cstormgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i 
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cstorCount): if (cstorCount > 1) {
+resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cstorCount): if (cstorCount > 0) {
   name: '${cstorVmName}-${i}'
   location: location
   properties: {
@@ -315,7 +315,7 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }]
 
-resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): if (cvuCount > 1) {
+resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): if (cvuCount > 0) {
   name: '${cvuVmName}-${i}-capture-nic'
   location: location
   dependsOn: [
@@ -344,7 +344,7 @@ resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cvumgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): if (cvuCount > 1) {
+resource cvumgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): if (cvuCount > 0) {
   name: '${cvuVmName}-${i}-mgmt-nic'
   location: location
   properties: {
@@ -363,7 +363,7 @@ resource cvumgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cvuCount): if (cvuCount > 1) {
+resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cvuCount): if (cvuCount > 0) {
   name: '${cvuVmName}-${i}'
   location: location
   properties: {
@@ -423,7 +423,7 @@ resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }]
 
-resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cvuCount > 1) {
+resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cvuCount > 0) {
   name: cvulbName
   location: location
   sku: {
@@ -480,7 +480,7 @@ resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cvuCount > 1
   tags: contains(tagsByResource, 'Microsoft.Network/loadBalancers') ? tagsByResource['Microsoft.Network/loadBalancers'] : null
 }
 
-resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorCount > 1) {
+resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorCount > 0) {
   name: cstorlbName
   location: location
   sku: {
@@ -537,9 +537,9 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorCount
   tags: contains(tagsByResource, 'Microsoft.Network/loadBalancers') ? tagsByResource['Microsoft.Network/loadBalancers'] : null
 }
 
-output cclear_mgmt_ip string = cClearCount > 1 ? 'http://${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}' : ''
-output cstor_ilb_frontend_ip string = cstorCount > 1 ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
-output cvu_ilb_frontend_ip string = cvuCount > 1 ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
+output cclear_mgmt_ip string = cClearCount > 0 ? 'http://${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}' : ''
+output cstor_ilb_frontend_ip string = cstorCount > 0 ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
+output cvu_ilb_frontend_ip string = cvuCount > 0 ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 
 /*
 output endpoint string = deployStorage ? myStorageAccount.properties.primaryEndpoints.blob : ''

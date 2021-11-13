@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "13047150412027134247"
+      "templateHash": "5225917187498859134"
     }
   },
   "parameters": {
@@ -214,7 +214,7 @@
       ]
     },
     {
-      "condition": "[greater(parameters('cClearCount'), 1)]",
+      "condition": "[greater(parameters('cClearCount'), 0)]",
       "copy": {
         "name": "cclearnic",
         "count": "[length(range(0, parameters('cClearCount')))]"
@@ -242,7 +242,7 @@
       ]
     },
     {
-      "condition": "[greater(parameters('cClearCount'), 1)]",
+      "condition": "[greater(parameters('cClearCount'), 0)]",
       "copy": {
         "name": "cclearvm",
         "count": "[length(range(0, parameters('cClearCount')))]"
@@ -294,7 +294,7 @@
       ]
     },
     {
-      "condition": "[greater(parameters('cstorCount'), 1)]",
+      "condition": "[greater(parameters('cstorCount'), 0)]",
       "copy": {
         "name": "cstorcapturenic",
         "count": "[length(range(0, parameters('cstorCount')))]"
@@ -330,7 +330,7 @@
       ]
     },
     {
-      "condition": "[greater(parameters('cstorCount'), 1)]",
+      "condition": "[greater(parameters('cstorCount'), 0)]",
       "copy": {
         "name": "cstormgmtnic",
         "count": "[length(range(0, parameters('cstorCount')))]"
@@ -358,7 +358,7 @@
       ]
     },
     {
-      "condition": "[greater(parameters('cstorCount'), 1)]",
+      "condition": "[greater(parameters('cstorCount'), 0)]",
       "copy": {
         "name": "cstorvm",
         "count": "[length(range(0, parameters('cstorCount')))]"
@@ -428,7 +428,7 @@
       ]
     },
     {
-      "condition": "[greater(parameters('cvuCount'), 1)]",
+      "condition": "[greater(parameters('cvuCount'), 0)]",
       "copy": {
         "name": "cvucapturenic",
         "count": "[length(range(0, parameters('cvuCount')))]"
@@ -464,7 +464,7 @@
       ]
     },
     {
-      "condition": "[greater(parameters('cvuCount'), 1)]",
+      "condition": "[greater(parameters('cvuCount'), 0)]",
       "copy": {
         "name": "cvumgmtnic",
         "count": "[length(range(0, parameters('cvuCount')))]"
@@ -492,7 +492,7 @@
       ]
     },
     {
-      "condition": "[greater(parameters('cvuCount'), 1)]",
+      "condition": "[greater(parameters('cvuCount'), 0)]",
       "copy": {
         "name": "cvuvm",
         "count": "[length(range(0, parameters('cvuCount')))]"
@@ -562,7 +562,7 @@
       ]
     },
     {
-      "condition": "[greater(parameters('cvuCount'), 1)]",
+      "condition": "[greater(parameters('cvuCount'), 0)]",
       "type": "Microsoft.Network/loadBalancers",
       "apiVersion": "2021-03-01",
       "name": "[variables('cvulbName')]",
@@ -624,7 +624,7 @@
       ]
     },
     {
-      "condition": "[greater(parameters('cstorCount'), 1)]",
+      "condition": "[greater(parameters('cstorCount'), 0)]",
       "type": "Microsoft.Network/loadBalancers",
       "apiVersion": "2021-03-01",
       "name": "[variables('cstorlbName')]",
@@ -689,15 +689,15 @@
   "outputs": {
     "cclear_mgmt_ip": {
       "type": "string",
-      "value": "[if(greater(parameters('cClearCount'), 1), format('http://{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), '')]"
+      "value": "[if(greater(parameters('cClearCount'), 0), format('http://{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), '')]"
     },
     "cstor_ilb_frontend_ip": {
       "type": "string",
-      "value": "[if(greater(parameters('cstorCount'), 1), reference(resourceId('Microsoft.Network/loadBalancers', variables('cstorlbName'))).frontendIPConfigurations[0].properties.privateIPAddress, '')]"
+      "value": "[if(greater(parameters('cstorCount'), 0), reference(resourceId('Microsoft.Network/loadBalancers', variables('cstorlbName'))).frontendIPConfigurations[0].properties.privateIPAddress, '')]"
     },
     "cvu_ilb_frontend_ip": {
       "type": "string",
-      "value": "[if(greater(parameters('cvuCount'), 1), reference(resourceId('Microsoft.Network/loadBalancers', variables('cvulbName'))).frontendIPConfigurations[0].properties.privateIPAddress, '')]"
+      "value": "[if(greater(parameters('cvuCount'), 0), reference(resourceId('Microsoft.Network/loadBalancers', variables('cvulbName'))).frontendIPConfigurations[0].properties.privateIPAddress, '')]"
     }
   }
 }
