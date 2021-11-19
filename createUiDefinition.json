@@ -156,7 +156,7 @@
                                 "name": "URISelector",
                                 "type": "Microsoft.Common.TextBox",
                                 "label": "Image Direct URI (Optional)",
-                                "toolTip": "If the image cannot be found by the above dropdown or a specific image is needed, paste the full URI of the image into this textbox."
+                                "toolTip": "If the image cannot be found by the above dropdown or a specific image is needed, paste the full URI of the image into this textbox.  Note: cross-tenant shared images are not supported by this solution."
                             }
                         ],
                         "visible": true
@@ -214,7 +214,7 @@
                                 "name": "URISelector",
                                 "type": "Microsoft.Common.TextBox",
                                 "label": "Image Direct URI (Optional)",
-                                "toolTip": "If the image cannot be found by the above dropdown or a specific image is needed, paste the full URI of the image into this textbox."
+                                "toolTip": "If the image cannot be found by the above dropdown or a specific image is needed, paste the full URI of the image into this textbox.  Note: cross-tenant shared images are not supported by this solution."
                             }
                         ],
                         "visible": true
@@ -272,7 +272,7 @@
                                 "name": "URISelector",
                                 "type": "Microsoft.Common.TextBox",
                                 "label": "Image Direct URI (Optional)",
-                                "toolTip": "If the image cannot be found by the above dropdown or a specific image is needed, paste the full URI of the image into this textbox."
+                                "toolTip": "If the image cannot be found by the above dropdown or a specific image is needed, paste the full URI of the image into this textbox.  Note: cross-tenant shared images are not supported by this solution."
                             }
                         ],
                         "visible": true
