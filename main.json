@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "5225917187498859134"
+      "templateHash": "16674773741971390637"
     }
   },
   "parameters": {
@@ -73,7 +73,7 @@
         "description": "cClear Image URI"
       }
     },
-    "cClearVersion": {
+    "cClearImageURI": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
@@ -99,7 +99,7 @@
         "description": "cvu Image URI"
       }
     },
-    "cvuVersion": {
+    "cVuImageURI": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
@@ -125,7 +125,7 @@
         "description": "cstor Image URI"
       }
     },
-    "cstorVersion": {
+    "cStorImageURI": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
@@ -157,9 +157,9 @@
     "mgmtsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name))]",
     "monsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name))]",
     "toolssubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.toolsSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.toolsSubnet.name))]",
-    "cclearImageURI": "[if(empty(parameters('cClearVersion')), parameters('cClearImage').id, format('{0}/versions/{1}', parameters('cClearImage').id, parameters('cClearVersion')))]",
-    "cstorImageURI": "[if(empty(parameters('cstorVersion')), parameters('cstorImage').id, format('{0}/versions/{1}', parameters('cstorImage').id, parameters('cstorVersion')))]",
-    "cvuImageURI": "[if(empty(parameters('cvuVersion')), parameters('cvuImage').id, format('{0}/versions/{1}', parameters('cvuImage').id, parameters('cvuVersion')))]"
+    "cclearImageURI": "[if(empty(parameters('cClearImageURI')), parameters('cClearImage').id, parameters('cClearImageURI'))]",
+    "cstorImageURI": "[if(empty(parameters('cStorImageURI')), parameters('cstorImage').id, parameters('cStorImageURI'))]",
+    "cvuImageURI": "[if(empty(parameters('cVuImageURI')), parameters('cvuImage').id, parameters('cVuImageURI'))]"
   },
   "resources": [
     {

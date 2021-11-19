@@ -148,19 +148,15 @@
                                 "options": {
                                     "filter": {
                                         "subscription": "all",
-                                        "location": "onBasics"
+                                        "location": "all"
                                     }
-                                },
-                                "constraints": {
-                                    "required": true,
-                                    "validationMessage": "The Image is required."
                                 }
                             },
                             {
-                                "name": "VersionSelector",
+                                "name": "URISelector",
                                 "type": "Microsoft.Common.TextBox",
-                                "label": "Image Version (Optional)",
-                                "toolTip": "The image version"
+                                "label": "Image Direct URI (Optional)",
+                                "toolTip": "If the image cannot be found by the above dropdown or a specific image is needed, paste the full URI of the image into this textbox."
                             }
                         ],
                         "visible": true
@@ -210,19 +206,15 @@
                                 "options": {
                                     "filter": {
                                         "subscription": "all",
-                                        "location": "onBasics"
+                                        "location": "all"
                                     }
-                                },
-                                "constraints": {
-                                    "required": true,
-                                    "validationMessage": "The Image is required."
                                 }
                             },
                             {
-                                "name": "VersionSelector",
+                                "name": "URISelector",
                                 "type": "Microsoft.Common.TextBox",
-                                "label": "Image Version (Optional)",
-                                "toolTip": "The image version"
+                                "label": "Image Direct URI (Optional)",
+                                "toolTip": "If the image cannot be found by the above dropdown or a specific image is needed, paste the full URI of the image into this textbox."
                             }
                         ],
                         "visible": true
@@ -272,19 +264,15 @@
                                 "options": {
                                     "filter": {
                                         "subscription": "all",
-                                        "location": "onBasics"
+                                        "location": "all"
                                     }
-                                },
-                                "constraints": {
-                                    "required": true,
-                                    "validationMessage": "The Image is required."
                                 }
                             },
                             {
-                                "name": "VersionSelector",
+                                "name": "URISelector",
                                 "type": "Microsoft.Common.TextBox",
-                                "label": "Image Version (Optional)",
-                                "toolTip": "The image version"
+                                "label": "Image Direct URI (Optional)",
+                                "toolTip": "If the image cannot be found by the above dropdown or a specific image is needed, paste the full URI of the image into this textbox."
                             }
                         ],
                         "visible": true
@@ -318,15 +306,15 @@
             "cClearCount": "[steps('cclear').cclearNumBox]",
             "cClearVmName": "[steps('cclear').cClearVmName]",
             "cClearImage": "[steps('cclear').Image.ImageSelector]",
-            "cClearVersion": "[steps('cclear').Image.VersionSelector]",
+            "cClearImageURI": "[steps('cclear').Image.URISelector]",
             "cvuCount": "[steps('cvu').cvuNumBox]",
             "cvuVmName": "[steps('cvu').cvuVmName]",
             "cvuImage": "[steps('cvu').Image.ImageSelector]",
-            "cvuVersion": "[steps('cvu').Image.VersionSelector]",
+            "cVuImageURI": "[steps('cvu').Image.URISelector]",
             "cstorCount": "[steps('cstor').cstorNumBox]",
             "cstorVmName": "[steps('cstor').cstorVmName]",
             "cstorImage": "[steps('cstor').Image.ImageSelector]",
-            "cstorVersion": "[steps('cstor').Image.VersionSelector]",
+            "cStorImageURI": "[steps('cstor').Image.URISelector]",
             "tagsByResource": "[steps('tags').tagsByResource]"
         }
     }

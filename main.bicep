@@ -36,7 +36,7 @@ param cClearVmName string
 param cClearImage object
 
 @description('cClear Image Version')
-param cClearVersion string = ''
+param cClearImageURI string = ''
 
 // cVu
 @description('Number of cVus')
@@ -49,7 +49,7 @@ param cvuVmName string
 param cvuImage object
 
 @description('cvu Image Version')
-param cvuVersion string = ''
+param cVuImageURI string = ''
 
 // cStor
 @description('Number of cStors')
@@ -62,7 +62,7 @@ param cstorVmName string
 param cstorImage object
 
 @description('cstor Image Version')
-param cstorVersion string = ''
+param cStorImageURI string = ''
 
 @description('tags from TagsByResource')
 param tagsByResource object
@@ -86,9 +86,9 @@ var mgmtsubnetId = virtualNetwork.newOrExisting == 'new' ? mgmtsubnet.id : resou
 var monsubnetId = virtualNetwork.newOrExisting == 'new' ? monsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.monSubnet.name)
 var toolssubnetId = virtualNetwork.newOrExisting == 'new' ? toolssubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.toolsSubnet.name)
 
-var cclearImageURI = empty(cClearVersion) ? cClearImage.id : '${cClearImage.id}/versions/${cClearVersion}'
-var cstorImageURI = empty(cstorVersion) ? cstorImage.id : '${cstorImage.id}/versions/${cstorVersion}'
-var cvuImageURI = empty(cvuVersion) ? cvuImage.id : '${cvuImage.id}/versions/${cvuVersion}'
+var cclearImageURI = empty(cClearImageURI) ? cClearImage.id : cClearImageURI
+var cstorImageURI = empty(cStorImageURI) ? cstorImage.id : cStorImageURI
+var cvuImageURI = empty(cVuImageURI) ? cvuImage.id : cVuImageURI
 
 resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
   name: virtualNetwork.name
