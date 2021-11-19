@@ -144,7 +144,7 @@
                                 "name": "ImageSelector",
                                 "type": "Microsoft.Solutions.ResourceSelector",
                                 "label": "Select image",
-                                "resourceType": "Microsoft.Compute/galleries/images",
+                                "resourceType": "Microsoft.Compute/images",
                                 "options": {
                                     "filter": {
                                         "subscription": "all",
@@ -202,7 +202,7 @@
                                 "name": "ImageSelector",
                                 "type": "Microsoft.Solutions.ResourceSelector",
                                 "label": "Select image",
-                                "resourceType": "Microsoft.Compute/galleries/images",
+                                "resourceType": "Microsoft.Compute/images",
                                 "options": {
                                     "filter": {
                                         "subscription": "all",
@@ -260,7 +260,7 @@
                                 "name": "ImageSelector",
                                 "type": "Microsoft.Solutions.ResourceSelector",
                                 "label": "Select image",
-                                "resourceType": "Microsoft.Compute/galleries/images",
+                                "resourceType": "Microsoft.Compute/images",
                                 "options": {
                                     "filter": {
                                         "subscription": "all",
