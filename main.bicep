@@ -82,6 +82,9 @@ var linuxConfiguration = {
   }
 }
 
+var cstorilb_enabled = cstorCount > 1 ? true : false
+var cvuilb_enabled = cvuCount > 1 ? true : false
+
 var mgmtsubnetId = virtualNetwork.newOrExisting == 'new' ? mgmtsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.mgmtSubnet.name)
 var monsubnetId = virtualNetwork.newOrExisting == 'new' ? monsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.monSubnet.name)
 var toolssubnetId = virtualNetwork.newOrExisting == 'new' ? toolssubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.toolsSubnet.name)
@@ -159,7 +162,6 @@ resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in 
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-
 resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cClearCount): if (cClearCount > 0) {
   name: '${cClearVmName}-${i}'
   location: location
@@ -210,9 +212,9 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in ran
 resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): if (cstorCount > 0) {
   name: '${cstorVmName}-${i}-capture-nic'
   location: location
-  dependsOn: [
+  dependsOn: any(cstorilb_enabled) ? [
     cstorlb01
-  ]
+  ] : []
   properties: {
     ipConfigurations: [
       {
@@ -222,11 +224,11 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for
             id: toolssubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
-          loadBalancerBackendAddressPools: [
+          loadBalancerBackendAddressPools: any(cstorilb_enabled) ? [
             {
               id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cstorlbName, '${cstorlbName}-backend')
             }
-          ]
+          ] : []
         }
       }
     ]
@@ -318,9 +320,9 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
 resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): if (cvuCount > 0) {
   name: '${cvuVmName}-${i}-capture-nic'
   location: location
-  dependsOn: [
+  dependsOn: any(cvuilb_enabled) ? [
     cvulb01
-  ]
+  ] : []
   properties: {
     ipConfigurations: [
       {
@@ -330,11 +332,11 @@ resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i
             id: monsubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
-          loadBalancerBackendAddressPools: [
+          loadBalancerBackendAddressPools: any(cvuilb_enabled) ? [
             {
               id: resourceId('Microsoft.Network/loadBalancers/backendAddressPools', cvulbName, '${cvulbName}-backend')
             }
-          ]
+          ] : []
         }
       }
     ]
@@ -423,7 +425,7 @@ resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }]
 
-resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cvuCount > 0) {
+resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cvuilb_enabled) {
   name: cvulbName
   location: location
   sku: {
@@ -480,7 +482,7 @@ resource cvulb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cvuCount > 0
   tags: contains(tagsByResource, 'Microsoft.Network/loadBalancers') ? tagsByResource['Microsoft.Network/loadBalancers'] : null
 }
 
-resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorCount > 0) {
+resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorilb_enabled) {
   name: cstorlbName
   location: location
   sku: {
@@ -538,8 +540,8 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorCount
 }
 
 output cclear_mgmt_ip string = cClearCount > 0 ? 'http://${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}' : ''
-output cstor_ilb_frontend_ip string = cstorCount > 0 ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
-output cvu_ilb_frontend_ip string = cvuCount > 0 ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
+output cstor_ilb_frontend_ip string = cstorilb_enabled ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
+output cvu_ilb_frontend_ip string = cvuilb_enabled ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 
 /*
 output endpoint string = deployStorage ? myStorageAccount.properties.primaryEndpoints.blob : ''
