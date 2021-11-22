@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "3822791114534594830"
+      "templateHash": "7877090977876310561"
     }
   },
   "parameters": {
@@ -699,6 +699,15 @@
         "count": "[length(range(0, parameters('cvuCount')))]",
         "input": {
           "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
+        }
+      }
+    },
+    "cstor_mgmt_ips": {
+      "type": "array",
+      "copy": {
+        "count": "[length(range(0, parameters('cstorCount')))]",
+        "input": {
+          "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
         }
       }
     }

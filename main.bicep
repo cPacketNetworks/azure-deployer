@@ -544,8 +544,12 @@ output cstor_ilb_frontend_ip string = cstorilb_enabled ? cstorlb01.properties.fr
 output cvu_ilb_frontend_ip string = cvuilb_enabled ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 
 output cvu_mgmt_ips array = [for i in range(0, cvuCount): {
-  '${cvumgmtnic[i].name}' : '${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
- }]
+  '${cvumgmtnic[i].name}': '${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
+}]
+
+output cstor_mgmt_ips array = [for i in range(0, cstorCount): {
+  '${cstormgmtnic[i].name}': '${cstormgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
+}]
 
 /*
 output endpoint string = deployStorage ? myStorageAccount.properties.primaryEndpoints.blob : ''
