@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "1638364944475058082"
+      "templateHash": "3822791114534594830"
     }
   },
   "parameters": {
@@ -681,9 +681,9 @@
     }
   ],
   "outputs": {
-    "cclear_mgmt_ip": {
+    "cclear_mgmt_url": {
       "type": "string",
-      "value": "[if(greater(parameters('cClearCount'), 0), format('http://{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), '')]"
+      "value": "[if(greater(parameters('cClearCount'), 0), format('https://{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), '')]"
     },
     "cstor_ilb_frontend_ip": {
       "type": "string",
@@ -692,6 +692,15 @@
     "cvu_ilb_frontend_ip": {
       "type": "string",
       "value": "[if(variables('cvuilb_enabled'), reference(resourceId('Microsoft.Network/loadBalancers', variables('cvulbName'))).frontendIPConfigurations[0].properties.privateIPAddress, '')]"
+    },
+    "cvu_mgmt_ips": {
+      "type": "array",
+      "copy": {
+        "count": "[length(range(0, parameters('cvuCount')))]",
+        "input": {
+          "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
+        }
+      }
     }
   }
 }
