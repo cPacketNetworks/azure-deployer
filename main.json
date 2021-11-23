@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "17989113387179566089"
+      "templateHash": "16719900076727920456"
     }
   },
   "parameters": {
@@ -43,15 +43,10 @@
         "description": "virtualNetwork properties from VirtualNetworkCombo"
       }
     },
-    "VMSizeSettings": {
-      "type": "object",
-      "defaultValue": {
-        "cclear": "Standard_D4s_v3",
-        "cvu": "Standard_D4s_v3",
-        "cstor": "Standard_D4s_v3"
-      },
+    "cClearVMSize": {
+      "type": "string",
       "metadata": {
-        "description": "defualt values for cclear VM"
+        "description": "cclear VM size"
       }
     },
     "cClearCount": {
@@ -80,6 +75,12 @@
         "description": "cClear Image Version"
       }
     },
+    "cvuVMSize": {
+      "type": "string",
+      "metadata": {
+        "description": "cvu VM size"
+      }
+    },
     "cvuCount": {
       "type": "int",
       "defaultValue": 3,
@@ -104,6 +105,12 @@
       "defaultValue": "",
       "metadata": {
         "description": "cvu Image Version"
+      }
+    },
+    "cstorVMSize": {
+      "type": "string",
+      "metadata": {
+        "description": "cvu VM size"
       }
     },
     "cstorCount": {
@@ -255,7 +262,7 @@
       "location": "[parameters('location')]",
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[parameters('VMSizeSettings').cclear]"
+          "vmSize": "[parameters('cClearVMSize')]"
         },
         "storageProfile": {
           "imageReference": {
@@ -367,7 +374,7 @@
       "location": "[parameters('location')]",
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[parameters('VMSizeSettings').cstor]"
+          "vmSize": "[parameters('cstorVMSize')]"
         },
         "storageProfile": {
           "imageReference": {
@@ -497,7 +504,7 @@
       "location": "[parameters('location')]",
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[parameters('VMSizeSettings').cvu]"
+          "vmSize": "[parameters('cvuVMSize')]"
         },
         "storageProfile": {
           "imageReference": {

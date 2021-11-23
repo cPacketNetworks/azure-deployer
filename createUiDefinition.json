@@ -110,6 +110,36 @@
                 "label": "cClear Configuration",
                 "elements": [
                     {
+                        "name": "vmSizeSelector",
+                        "type": "Microsoft.Compute.SizeSelector",
+                        "label": "Size",
+                        "toolTip": "",
+                        "recommendedSizes": [
+                            "Standard_D3"
+                        ],
+                        "constraints": {
+                            "allowedSizes": [
+                                "Standard_D4s_v3",
+                                "Standard_D4s_v4",
+                                "Standard_D4s_v5"
+                            ],
+                            "excludedSizes": [],
+                            "numAvailabilityZonesRequired": 1,
+                            "zone": "1"
+                        },
+                        "options": {
+                            "hideDiskTypeFilter": false
+                        },
+                        "osPlatform": "Linux",
+                        "imageReference": {
+                            "publisher": "Canonical",
+                            "offer": "UbuntuServer",
+                            "sku": "18.04-LTS"
+                        },
+                        "count": 1,
+                        "visible": true
+                    },
+                    {
                         "name": "cclearNumBox",
                         "type": "Microsoft.Common.TextBox",
                         "label": "Number of cClear",
@@ -168,6 +198,36 @@
                 "label": "cVu-V Configuration",
                 "elements": [
                     {
+                        "name": "vmSizeSelector",
+                        "type": "Microsoft.Compute.SizeSelector",
+                        "label": "Size",
+                        "toolTip": "",
+                        "recommendedSizes": [
+                            "Standard_D3"
+                        ],
+                        "constraints": {
+                            "allowedSizes": [
+                                "Standard_D4s_v3",
+                                "Standard_D4s_v4",
+                                "Standard_D4s_v5"
+                            ],
+                            "excludedSizes": [],
+                            "numAvailabilityZonesRequired": 1,
+                            "zone": "1"
+                        },
+                        "options": {
+                            "hideDiskTypeFilter": false
+                        },
+                        "osPlatform": "Linux",
+                        "imageReference": {
+                            "publisher": "Canonical",
+                            "offer": "UbuntuServer",
+                            "sku": "18.04-LTS"
+                        },
+                        "count": 1,
+                        "visible": true
+                    },
+                    {
                         "name": "cvuNumBox",
                         "type": "Microsoft.Common.TextBox",
                         "label": "Number of cVus",
@@ -225,6 +285,36 @@
                 "name": "cstor",
                 "label": "cStor-V Configuration",
                 "elements": [
+                    {
+                        "name": "vmSizeSelector",
+                        "type": "Microsoft.Compute.SizeSelector",
+                        "label": "Size",
+                        "toolTip": "",
+                        "recommendedSizes": [
+                            "Standard_D3"
+                        ],
+                        "constraints": {
+                            "allowedSizes": [
+                                "Standard_D4s_v3",
+                                "Standard_D4s_v4",
+                                "Standard_D4s_v5"
+                            ],
+                            "excludedSizes": [],
+                            "numAvailabilityZonesRequired": 1,
+                            "zone": "1"
+                        },
+                        "options": {
+                            "hideDiskTypeFilter": false
+                        },
+                        "osPlatform": "Linux",
+                        "imageReference": {
+                            "publisher": "Canonical",
+                            "offer": "UbuntuServer",
+                            "sku": "18.04-LTS"
+                        },
+                        "count": 1,
+                        "visible": true
+                    },
                     {
                         "name": "cstorNumBox",
                         "type": "Microsoft.Common.TextBox",
@@ -303,14 +393,17 @@
             "authenticationType": "[basics('SSHCredentials').authenticationType]",
             "adminPasswordOrKey": "[coalesce(basics('SSHCredentials').password, basics('SSHCredentials').sshPublicKey)]",
             "virtualNetwork": "[steps('networkConfig').virtualNetwork]",
+            "cClearVMSize": "[steps('cclear').vmSizeSelector]",
             "cClearCount": "[steps('cclear').cclearNumBox]",
             "cClearVmName": "[steps('cclear').cClearVmName]",
             "cClearImage": "[steps('cclear').Image.ImageSelector]",
             "cClearImageURI": "[steps('cclear').Image.URISelector]",
+            "cvuVMSize": "[steps('cvu').vmSizeSelector]",
             "cvuCount": "[steps('cvu').cvuNumBox]",
             "cvuVmName": "[steps('cvu').cvuVmName]",
             "cvuImage": "[steps('cvu').Image.ImageSelector]",
             "cVuImageURI": "[steps('cvu').Image.URISelector]",
+            "cstorVMSize": "[steps('cstor').vmSizeSelector]",
             "cstorCount": "[steps('cstor').cstorNumBox]",
             "cstorVmName": "[steps('cstor').cstorVmName]",
             "cstorImage": "[steps('cstor').Image.ImageSelector]",

@@ -18,14 +18,12 @@ param adminPasswordOrKey string
 @description('virtualNetwork properties from VirtualNetworkCombo')
 param virtualNetwork object
 
-@description('defualt values for cclear VM')
-param VMSizeSettings object = {
-  cclear: 'Standard_D4s_v3'
-  cvu: 'Standard_D4s_v3'
-  cstor: 'Standard_D4s_v3'
-}
+
 
 // cClear
+@description('cclear VM size')
+param cClearVMSize string
+
 @description('Number of cClears')
 param cClearCount int = 0
 
@@ -39,6 +37,9 @@ param cClearImage object
 param cClearImageURI string = ''
 
 // cVu
+@description('cvu VM size')
+param cvuVMSize string
+
 @description('Number of cVus')
 param cvuCount int = 3
 
@@ -52,6 +53,9 @@ param cvuImage object
 param cVuImageURI string = ''
 
 // cStor
+@description('cvu VM size')
+param cstorVMSize string
+
 @description('Number of cStors')
 param cstorCount int = 1
 
@@ -167,7 +171,7 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in ran
   location: location
   properties: {
     hardwareProfile: {
-      vmSize: VMSizeSettings.cclear
+      vmSize: cClearVMSize
     }
     storageProfile: {
       imageReference: {
@@ -262,7 +266,7 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
   location: location
   properties: {
     hardwareProfile: {
-      vmSize: VMSizeSettings.cstor
+      vmSize: cstorVMSize
     }
     storageProfile: {
       imageReference: {
@@ -370,7 +374,7 @@ resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(
   location: location
   properties: {
     hardwareProfile: {
-      vmSize: VMSizeSettings.cvu
+      vmSize: cvuVMSize
     }
     storageProfile: {
       imageReference: {
