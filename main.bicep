@@ -540,9 +540,8 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorilb_e
 }
 
 output cclear_mgmt_url string = cClearCount > 0 ? 'https://${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}' : ''
-output cstor_ilb_frontend_ip string = cstorilb_enabled ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
-output cvu_ilb_frontend_ip string = cvuilb_enabled ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 
+output cvu_ilb_frontend_ip string = cvuilb_enabled ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 output cvu_mgmt_urls array = [for i in range(0, cvuCount): {
   '${cvumgmtnic[i].name}': 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
@@ -550,6 +549,7 @@ output cvu_capture_ips array = [for i in range(0, cvuCount): {
   '${cvucapturenic[i].name}': '${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
 
+output cstor_ilb_frontend_ip string = cstorilb_enabled ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 output cstor_mgmt_urls array = [for i in range(0, cstorCount): {
   '${cstormgmtnic[i].name}': 'https://${cstormgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
