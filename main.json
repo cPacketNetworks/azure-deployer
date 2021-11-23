@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "7877090977876310561"
+      "templateHash": "16500880879934925313"
     }
   },
   "parameters": {
@@ -693,21 +693,39 @@
       "type": "string",
       "value": "[if(variables('cvuilb_enabled'), reference(resourceId('Microsoft.Network/loadBalancers', variables('cvulbName'))).frontendIPConfigurations[0].properties.privateIPAddress, '')]"
     },
-    "cvu_mgmt_ips": {
+    "cvu_mgmt_urls": {
       "type": "array",
       "copy": {
         "count": "[length(range(0, parameters('cvuCount')))]",
         "input": {
-          "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
+          "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('https://{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
         }
       }
     },
-    "cstor_mgmt_ips": {
+    "cvu_capture_ips": {
+      "type": "array",
+      "copy": {
+        "count": "[length(range(0, parameters('cvuCount')))]",
+        "input": {
+          "[format('{0}', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
+        }
+      }
+    },
+    "cstor_mgmt_urls": {
       "type": "array",
       "copy": {
         "count": "[length(range(0, parameters('cstorCount')))]",
         "input": {
-          "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
+          "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]": "[format('https://{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
+        }
+      }
+    },
+    "cstor_capture_ips": {
+      "type": "array",
+      "copy": {
+        "count": "[length(range(0, parameters('cstorCount')))]",
+        "input": {
+          "[format('{0}', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
         }
       }
     }
