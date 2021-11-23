@@ -115,13 +115,16 @@
                         "label": "Size",
                         "toolTip": "",
                         "recommendedSizes": [
-                            "Standard_D4s_v3"
+                            "Standard_D8s_v5"
                         ],
                         "constraints": {
                             "allowedSizes": [
-                                "Standard_D4s_v3",
+                                "Standard_D8s_v5",
+                                "Standard_D4s_v5",
+                                "Standard_D8s_v4",
                                 "Standard_D4s_v4",
-                                "Standard_D4s_v5"
+                                "Standard_D8s_v3",
+                                "Standard_D4s_v3"
                             ],
                             "excludedSizes": [],
                             "numAvailabilityZonesRequired": 1,
@@ -203,13 +206,17 @@
                         "label": "Size",
                         "toolTip": "",
                         "recommendedSizes": [
-                            "Standard_D4s_v3"
+                            "Standard_D2s_v5"
                         ],
                         "constraints": {
                             "allowedSizes": [
-                                "Standard_D4s_v3",
+                                "Standard_D2s_v5",
+                                "Standard_D4s_v5",
+                                "Standard_D8s_v5",
+                                "Standard_D2s_v4",
                                 "Standard_D4s_v4",
-                                "Standard_D4s_v5"
+                                "Standard_D4s_v3",
+                                "Standard_D8s_v3"
                             ],
                             "excludedSizes": [],
                             "numAvailabilityZonesRequired": 1,
@@ -291,13 +298,16 @@
                         "label": "Size",
                         "toolTip": "",
                         "recommendedSizes": [
-                            "Standard_D4s_v3"
+                            "Standard_D4s_v5"
                         ],
                         "constraints": {
                             "allowedSizes": [
-                                "Standard_D4s_v3",
+                                "Standard_D4s_v5",
+                                "Standard_D8s_v5",
                                 "Standard_D4s_v4",
-                                "Standard_D4s_v5"
+                                "Standard_D8s_v4",
+                                "Standard_D4s_v3",
+                                "Standard_D8s_v3"
                             ],
                             "excludedSizes": [],
                             "numAvailabilityZonesRequired": 1,
