@@ -115,7 +115,7 @@
                         "label": "Size",
                         "toolTip": "",
                         "recommendedSizes": [
-                            "Standard_D3"
+                            "Standard_D4s_v3"
                         ],
                         "constraints": {
                             "allowedSizes": [
@@ -203,7 +203,7 @@
                         "label": "Size",
                         "toolTip": "",
                         "recommendedSizes": [
-                            "Standard_D3"
+                            "Standard_D4s_v3"
                         ],
                         "constraints": {
                             "allowedSizes": [
@@ -291,7 +291,7 @@
                         "label": "Size",
                         "toolTip": "",
                         "recommendedSizes": [
-                            "Standard_D3"
+                            "Standard_D4s_v3"
                         ],
                         "constraints": {
                             "allowedSizes": [
