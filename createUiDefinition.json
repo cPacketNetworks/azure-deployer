@@ -115,20 +115,33 @@
                         "label": "Size",
                         "toolTip": "",
                         "recommendedSizes": [
-                            "Standard_D8s_v5"
+                            "Standard_D8s_v5",
+							"Standard_D8s_v4",
+							"Standard_D8s_v3"
                         ],
                         "constraints": {
                             "allowedSizes": [
-                                "Standard_D8s_v5",
                                 "Standard_D4s_v5",
-                                "Standard_D8s_v4",
+                                "Standard_D8s_v5",
+                                "Standard_D16s_v5",
+                                "Standard_D32s_v5",
+                                "Standard_D48s_v5",
+                                "Standard_D64s_v5",
+                                "Standard_D96s_v5",
                                 "Standard_D4s_v4",
+                                "Standard_D8s_v4",
+                                "Standard_D16s_v4",
+                                "Standard_D32s_v4",
+                                "Standard_D48s_v4",
+                                "Standard_D64s_v4",
+                                "Standard_D4s_v3",
                                 "Standard_D8s_v3",
-                                "Standard_D4s_v3"
+                                "Standard_D16s_v3",
+                                "Standard_D32s_v3",
+                                "Standard_D48s_v3",
+                                "Standard_D64s_v3"
                             ],
-                            "excludedSizes": [],
-                            "numAvailabilityZonesRequired": 1,
-                            "zone": "1"
+                            "excludedSizes": []
                         },
                         "options": {
                             "hideDiskTypeFilter": false
@@ -206,7 +219,9 @@
                         "label": "Size",
                         "toolTip": "",
                         "recommendedSizes": [
-                            "Standard_D2s_v5"
+                            "Standard_D2s_v5",
+							"Standard_D2s_v4",
+							"Standard_D4s_v3"
                         ],
                         "constraints": {
                             "allowedSizes": [
@@ -215,12 +230,12 @@
                                 "Standard_D8s_v5",
                                 "Standard_D2s_v4",
                                 "Standard_D4s_v4",
+                                "Standard_D8s_v4",
                                 "Standard_D4s_v3",
-                                "Standard_D8s_v3"
+                                "Standard_D8s_v3",
+                                "Standard_D16s_v3"
                             ],
-                            "excludedSizes": [],
-                            "numAvailabilityZonesRequired": 1,
-                            "zone": "1"
+                            "excludedSizes": []
                         },
                         "options": {
                             "hideDiskTypeFilter": false
@@ -298,20 +313,33 @@
                         "label": "Size",
                         "toolTip": "",
                         "recommendedSizes": [
-                            "Standard_D4s_v5"
+                            "Standard_D4s_v5",
+							"Standard_D4s_v4",
+							"Standard_D4s_v3"
                         ],
                         "constraints": {
                             "allowedSizes": [
                                 "Standard_D4s_v5",
                                 "Standard_D8s_v5",
+                                "Standard_D16s_v5",
+                                "Standard_D32s_v5",
+                                "Standard_D48s_v5",
+                                "Standard_D64s_v5",
+                                "Standard_D96s_v5",
                                 "Standard_D4s_v4",
                                 "Standard_D8s_v4",
+                                "Standard_D16s_v4",
+                                "Standard_D32s_v4",
+                                "Standard_D48s_v4",
+                                "Standard_D64s_v4",
                                 "Standard_D4s_v3",
-                                "Standard_D8s_v3"
+                                "Standard_D8s_v3",
+                                "Standard_D16s_v3",
+                                "Standard_D32s_v3",
+                                "Standard_D48s_v3",
+                                "Standard_D64s_v3"
                             ],
-                            "excludedSizes": [],
-                            "numAvailabilityZonesRequired": 1,
-                            "zone": "1"
+                            "excludedSizes": []
                         },
                         "options": {
                             "hideDiskTypeFilter": false
