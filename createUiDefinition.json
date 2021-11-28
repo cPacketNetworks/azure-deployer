@@ -362,7 +362,7 @@
                         "toolTip": "To calculate the number of cStors needed for the cluster, contact a cPacket representative.",
                         "constraints": {
                             "required": true,
-                            "regex": "^[0-3]{1}$",
+                            "regex": "^[0-9]{1}$",
                             "validationMessage": "Only numeric characters are allowed, and the value must be 0-9."
                         },
                         "visible": true
