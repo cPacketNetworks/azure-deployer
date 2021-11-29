@@ -18,8 +18,6 @@ param adminPasswordOrKey string
 @description('virtualNetwork properties from VirtualNetworkCombo')
 param virtualNetwork object
 
-
-
 // cClear
 @description('cclear VM size')
 param cClearVMSize string
