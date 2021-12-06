@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "8990619522565723051"
+      "templateHash": "12559544721004738546"
     }
   },
   "parameters": {
@@ -47,71 +47,71 @@
     "cClearVMSize": {
       "type": "string",
       "metadata": {
-        "description": "cClear VM size"
+        "description": "cClear-V VM size"
       }
     },
     "cClearCount": {
       "type": "int",
       "defaultValue": 0,
       "metadata": {
-        "description": "Number of cClears"
+        "description": "Number of cClear-Vs"
       }
     },
     "cClearVmName": {
       "type": "string",
       "metadata": {
-        "description": "cClear VM Name"
+        "description": "cClear-V VM Name"
       }
     },
     "cClearImage": {
       "type": "object",
       "metadata": {
-        "description": "cClear Image URI"
+        "description": "cClear-V Image URI"
       }
     },
     "cClearImageURI": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "cClear Image Version"
+        "description": "cClear-V Image Version"
       }
     },
     "cvuVMSize": {
       "type": "string",
       "metadata": {
-        "description": "cvu VM size"
+        "description": "cVu-V VM size"
       }
     },
     "cvuCount": {
       "type": "int",
       "defaultValue": 3,
       "metadata": {
-        "description": "Number of cVus"
+        "description": "Number of cVu-Vs"
       }
     },
     "cvuVmName": {
       "type": "string",
       "metadata": {
-        "description": "cVu Base VM Name"
+        "description": "cVu-V Base VM Name"
       }
     },
     "cvuImage": {
       "type": "object",
       "metadata": {
-        "description": "cvu Image URI"
+        "description": "cVu-V Image URI"
       }
     },
     "cVuImageURI": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "cvu Image Version"
+        "description": "cVu-V Image Version"
       }
     },
     "cstorVMSize": {
       "type": "string",
       "metadata": {
-        "description": "cvu VM size"
+        "description": "cStor-V VM size"
       }
     },
     "cstorCount": {
@@ -124,20 +124,20 @@
     "cstorVmName": {
       "type": "string",
       "metadata": {
-        "description": "cStor VM Name"
+        "description": "cStor-V VM Name"
       }
     },
     "cstorImage": {
       "type": "object",
       "metadata": {
-        "description": "cstor Image URI"
+        "description": "cStor-V Image URI"
       }
     },
     "cStorImageURI": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "cstor Image Version"
+        "description": "cStor-V Image Version"
       }
     },
     "tagsByResource": {
