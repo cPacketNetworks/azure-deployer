@@ -2,7 +2,7 @@
 param location string
 
 @description('User name for the Virtual Machine.')
-param adminUsername string
+param adminUsername string = 'ubuntu'
 
 @allowed([
   'password'
@@ -19,51 +19,51 @@ param adminPasswordOrKey string
 param virtualNetwork object
 
 // cClear
-@description('cclear VM size')
+@description('cClear-V VM size')
 param cClearVMSize string
 
-@description('Number of cClears')
+@description('Number of cClear-Vs')
 param cClearCount int = 0
 
-@description('cClear VM Name')
+@description('cClear-V VM Name')
 param cClearVmName string
 
-@description('cClear Image URI')
+@description('cClear-V Image URI')
 param cClearImage object
 
-@description('cClear Image Version')
+@description('cClear-V Image Version')
 param cClearImageURI string = ''
 
 // cVu
-@description('cvu VM size')
+@description('cVu-V VM size')
 param cvuVMSize string
 
-@description('Number of cVus')
+@description('Number of cVu-Vs')
 param cvuCount int = 3
 
-@description('cVu Base VM Name')
+@description('cVu-V Base VM Name')
 param cvuVmName string
 
-@description('cvu Image URI')
+@description('cVu-V Image URI')
 param cvuImage object
 
-@description('cvu Image Version')
+@description('cVu-V Image Version')
 param cVuImageURI string = ''
 
 // cStor
-@description('cvu VM size')
+@description('cStor-V VM size')
 param cstorVMSize string
 
 @description('Number of cStors')
 param cstorCount int = 1
 
-@description('cStor VM Name')
+@description('cStor-V VM Name')
 param cstorVmName string
 
-@description('cstor Image URI')
+@description('cStor-V Image URI')
 param cstorImage object
 
-@description('cstor Image Version')
+@description('cStor-V Image Version')
 param cStorImageURI string = ''
 
 @description('tags from TagsByResource')
@@ -115,9 +115,9 @@ resource mgmtsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if 
 }
 
 // The following resources are defined per subnet because we need to reference the subnets independently in other resources. 
-//   This causes the ARM templates to execute this subnet creation operation in parallel. However, there is a race condition where 
-//   subnets can't be executed at the same time.  In order to work around this, a explict dependency is created to serialize
-//   the execution and prevent the subnets from failing creation. 
+// This causes the ARM templates to execute this subnet creation operation in parallel. However, there is a race condition where 
+// subnets can't be created at the same time. In order to work around this, a explicit dependency is specified to serialize
+// the execution and prevent the race condition.
 
 resource monsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
   name: virtualNetwork.subnets.monSubnet.name

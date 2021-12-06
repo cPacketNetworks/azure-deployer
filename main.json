@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "16719900076727920456"
+      "templateHash": "8990619522565723051"
     }
   },
   "parameters": {
@@ -17,6 +17,7 @@
     },
     "adminUsername": {
       "type": "string",
+      "defaultValue": "ubuntu",
       "metadata": {
         "description": "User name for the Virtual Machine."
       }
@@ -46,7 +47,7 @@
     "cClearVMSize": {
       "type": "string",
       "metadata": {
-        "description": "cclear VM size"
+        "description": "cClear VM size"
       }
     },
     "cClearCount": {
