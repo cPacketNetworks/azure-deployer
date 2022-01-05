@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "16719900076727920456"
+      "templateHash": "12789889162020582598"
     }
   },
   "parameters": {
@@ -688,9 +688,14 @@
     }
   ],
   "outputs": {
-    "cclear_mgmt_url": {
-      "type": "string",
-      "value": "[if(greater(parameters('cClearCount'), 0), format('https://{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), '')]"
+    "cclear_mgmt_urls": {
+      "type": "array",
+      "copy": {
+        "count": "[length(range(0, parameters('cClearCount')))]",
+        "input": {
+          "[format('{0}', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[range(0, parameters('cClearCount'))[copyIndex()]]))]": "[format('https://{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[range(0, parameters('cClearCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
+        }
+      }
     },
     "cvu_ilb_frontend_ip": {
       "type": "string",

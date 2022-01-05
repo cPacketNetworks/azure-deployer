@@ -541,7 +541,10 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorilb_e
   tags: contains(tagsByResource, 'Microsoft.Network/loadBalancers') ? tagsByResource['Microsoft.Network/loadBalancers'] : null
 }
 
-output cclear_mgmt_url string = cClearCount > 0 ? 'https://${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}' : ''
+
+output cclear_mgmt_urls array = [for i in range(0, cClearCount): {
+  '${cclearnic[i].name}': 'https://${cclearnic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
+}]
 
 output cvu_ilb_frontend_ip string = cvuilb_enabled ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 output cvu_mgmt_urls array = [for i in range(0, cvuCount): {
