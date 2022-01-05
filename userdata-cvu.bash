@@ -16,7 +16,7 @@ cat <<EOF_BOOTCFG >/home/cpacket/boot_config.txt
 'capture_mode'          : 'cvuv',
 'cvuv_mode'             : 'inline',
 'cvuv_inline_mode'      : 'tctap',
-'cvuv_mirror_eth_0'     : 'eth0',
+'cvuv_mirror_eth_0'     : 'eth1',
 'cvuv_max_vxlan_ports'  : 3,
 
 'cvuv_vxlan_dev_0'      : 'vxlan0',
@@ -46,8 +46,8 @@ cat <<EOF_BOOTCFG >/home/cpacket/boot_config.txt
 'burnside_mode'         : False,
 'cstor_lite_mode'       : False,
 'ssh'                   : {'enabled': True},
-'capture_nic_eth' 	    : 'eth0',
-'management_nic_eth'	: 'eth1',
+'capture_nic_eth' 	    : 'eth1',
+'management_nic_eth'	: 'eth0',
 }
 EOF_BOOTCFG
 

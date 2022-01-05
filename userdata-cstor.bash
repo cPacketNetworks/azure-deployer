@@ -6,9 +6,9 @@ cat <<EOF_BOOTCFG >/home/cpacket/boot_config.txt
 'capture_mode': 'libpcap',
 'decap_mode': 'vxlan',
 'num_pcap_bufs': 2,
-'capture_nic_index': 0,
+'capture_nic_index': 1,
 'pci_whitelist': '0001:00:02.0',
-'eth_dev': 'eth0',
+'eth_dev': 'eth1',
 'core_mask': '0x3',
 'burnside_mode': False,
 'cstor_lite_mode': False,
@@ -16,8 +16,8 @@ cat <<EOF_BOOTCFG >/home/cpacket/boot_config.txt
 'cleanup_threshold': 50,
 'use_compression': False,
 'tiered_stor_en': False,
-'capture_nic_eth': 'eth0',
-'management_nic_eth': 'eth1',
+'capture_nic_eth': 'eth1',
+'management_nic_eth': 'eth0',
 }
 EOF_BOOTCFG
 

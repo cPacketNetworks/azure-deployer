@@ -292,15 +292,15 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
     networkProfile: {
       networkInterfaces: [
         {
-          id: cstorcapturenic[i].id
-          properties: {
-            primary: false
-          }
-        }
-        {
           id: cstormgmtnic[i].id
           properties: {
             primary: true
+          }
+        }
+        {
+          id: cstorcapturenic[i].id
+          properties: {
+            primary: false
           }
         }
       ]
@@ -384,15 +384,15 @@ resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(
     networkProfile: {
       networkInterfaces: [
         {
-          id: cvucapturenic[i].id
-          properties: {
-            primary: false
-          }
-        }
-        {
           id: cvumgmtnic[i].id
           properties: {
             primary: true
+          }
+        }        
+        {
+          id: cvucapturenic[i].id
+          properties: {
+            primary: false
           }
         }
       ]
@@ -543,13 +543,27 @@ output cstor_capture_ips array = [for i in range(0, cstorCount): {
   '${cstorcapturenic[i].name}': '${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
 
-/*
 output cvu_provisioning_vxlan0 array = [for i in range(0, cvuCount): {
-  '${cvumgmtnic[i].name}': 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?cvuv_vxlan_srcip_0=${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_remoteip_0=${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
+  '${cvumgmtnic[i].name}' : 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?cvuv_vxlan_srcip_0=${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_remoteip_0=<MY_TOOL_IP>'
 }]
 
+output cvu_provisioning_vxlan1 array = [for i in range(0, cvuCount): {
+  '${cvumgmtnic[i].name}' : 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?cvuv_vxlan_srcip_1=${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_remoteip_1=<MY_TOOL_IP>'
+}]
+
+// add cvu & cstor stats-db 
+output cvu_provisioning_statsdb array = [for i in range(0, cvuCount): {
+  '${cvumgmtnic[i].name}' : 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?stats_db_server=https://${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
+}]
 
 output cvu_provisioning_restart array = [for i in range(0, cvuCount): {
-  '${cvumgmtnic[i].name}': 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/20141028/restartAll'
+  '${cvumgmtnic[i].name}' : 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/20141028/restartAll'
 }]
-*/
+
+output cstor_provisioning_statsdb array = [for i in range(0, cstorCount): {
+  '${cstormgmtnic[i].name}': 'https://${cstormgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?stats_db_server=https://${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
+}]
+
+output cstor_provisioning_restart array = [for i in range(0, cstorCount): {
+  '${cstormgmtnic[i].name}' : 'https://${cstormgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/20141028/restartAll'
+}]
