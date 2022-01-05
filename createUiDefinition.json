@@ -402,8 +402,8 @@
                         "toolTip": "To calculate the size of cStor Disks needed, contact a cPacket representative.",
                         "constraints": {
                             "required": true,
-                            "regex": "^[2-9]{1}[0-9]{1,3}$",
-                            "validationMessage": "Only numeric characters are allowed, and the value must be 200-9999."
+                            "regex": "^[1-9]{1}[0-9]{1,3}$",
+                            "validationMessage": "Only numeric characters are allowed, and the value must be 100-9999."
                         },
                         "visible": true
                     },
