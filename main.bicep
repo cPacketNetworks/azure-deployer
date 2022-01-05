@@ -380,22 +380,6 @@ resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(
         createOption: 'FromImage'
         caching: 'ReadWrite'
       }
-      dataDisks: [
-        {
-          name: '${cvuVmName}-${i}-DataDisk0'
-          lun: 0
-          createOption: 'Empty'
-          diskSizeGB: 500
-          caching: 'ReadWrite'
-        }
-        {
-          name: '${cvuVmName}-${i}-DataDisk1'
-          lun: 1
-          createOption: 'Empty'
-          diskSizeGB: 500
-          caching: 'ReadWrite'
-        }
-      ]
     }
     networkProfile: {
       networkInterfaces: [

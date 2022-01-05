@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "13060843328703438108"
+      "templateHash": "11961822296892772109"
     }
   },
   "parameters": {
@@ -523,23 +523,7 @@
             "osType": "Linux",
             "createOption": "FromImage",
             "caching": "ReadWrite"
-          },
-          "dataDisks": [
-            {
-              "name": "[format('{0}-{1}-DataDisk0', parameters('cvuVmName'), range(0, parameters('cvuCount'))[copyIndex()])]",
-              "lun": 0,
-              "createOption": "Empty",
-              "diskSizeGB": 500,
-              "caching": "ReadWrite"
-            },
-            {
-              "name": "[format('{0}-{1}-DataDisk1', parameters('cvuVmName'), range(0, parameters('cvuCount'))[copyIndex()])]",
-              "lun": 1,
-              "createOption": "Empty",
-              "diskSizeGB": 500,
-              "caching": "ReadWrite"
-            }
-          ]
+          }
         },
         "networkProfile": {
           "networkInterfaces": [
