@@ -60,6 +60,12 @@ param cstorCount int = 1
 @description('cStor VM Name')
 param cstorVmName string
 
+@description('cStor Disk Count')
+param cstorDiskCount int
+
+@description('cStor Size Count')
+param cstorDiskSize int
+
 @description('cstor Image URI')
 param cstorImage object
 
@@ -275,22 +281,13 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
         createOption: 'FromImage'
         caching: 'ReadWrite'
       }
-      dataDisks: [
-        {
-          name: '${cstorVmName}-${i}-DataDisk0'
-          lun: 0
-          createOption: 'Empty'
-          diskSizeGB: 500
-          caching: 'ReadWrite'
-        }
-        {
-          name: '${cstorVmName}-${i}-DataDisk1'
-          lun: 1
-          createOption: 'Empty'
-          diskSizeGB: 500
-          caching: 'ReadWrite'
-        }
-      ]
+      dataDisks: [ for j in range(0, cstorDiskCount): {
+        name: '${cstorVmName}-${i}-DataDisk-${j}'
+        lun: j
+        createOption: 'Empty'
+        diskSizeGB: cstorDiskSize
+        caching: 'ReadWrite'
+      }]
     }
     networkProfile: {
       networkInterfaces: [

@@ -380,6 +380,34 @@
                         }
                     },
                     {
+                        "name": "cstorNumDisksBox",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Number of Disks per cStor",
+                        "placeholder": "",
+                        "defaultValue": "2",
+                        "toolTip": "To calculate the number of cStor Disks needed, contact a cPacket representative.",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[2-9]{1}$",
+                            "validationMessage": "Only numeric characters are allowed, and the value must be 2-9."
+                        },
+                        "visible": true
+                    },
+                    {
+                        "name": "cstorDiskSizeBox",
+                        "type": "Microsoft.Common.TextBox",
+                        "label": "Size of Disk per cStor",
+                        "placeholder": "",
+                        "defaultValue": "500",
+                        "toolTip": "To calculate the size of cStor Disks needed, contact a cPacket representative.",
+                        "constraints": {
+                            "required": true,
+                            "regex": "^[2-9]{1}[0-9]{1,3}$",
+                            "validationMessage": "Only numeric characters are allowed, and the value must be 200-9999."
+                        },
+                        "visible": true
+                    },
+                    {
                         "name": "Image",
                         "type": "Microsoft.Common.Section",
                         "label": "Image Selection",
@@ -443,6 +471,8 @@
             "cVuImageURI": "[steps('cvu').Image.URISelector]",
             "cstorVMSize": "[steps('cstor').vmSizeSelector]",
             "cstorCount": "[steps('cstor').cstorNumBox]",
+            "cstorDiskCount": "[steps('cstor').cstorNumDisksBox]",
+            "cstorDiskSize": "[steps('cstor').cstorDiskSizeBox]",
             "cstorVmName": "[steps('cstor').cstorVmName]",
             "cstorImage": "[steps('cstor').Image.ImageSelector]",
             "cStorImageURI": "[steps('cstor').Image.URISelector]",

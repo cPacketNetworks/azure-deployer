@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "12789889162020582598"
+      "templateHash": "13060843328703438108"
     }
   },
   "parameters": {
@@ -124,6 +124,18 @@
       "type": "string",
       "metadata": {
         "description": "cStor VM Name"
+      }
+    },
+    "cstorDiskCount": {
+      "type": "int",
+      "metadata": {
+        "description": "cStor Disk Count"
+      }
+    },
+    "cstorDiskSize": {
+      "type": "int",
+      "metadata": {
+        "description": "cStor Size Count"
       }
     },
     "cstorImage": {
@@ -377,6 +389,19 @@
           "vmSize": "[parameters('cstorVMSize')]"
         },
         "storageProfile": {
+          "copy": [
+            {
+              "name": "dataDisks",
+              "count": "[length(range(0, parameters('cstorDiskCount')))]",
+              "input": {
+                "name": "[format('{0}-{1}-DataDisk-{2}', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()], range(0, parameters('cstorDiskCount'))[copyIndex('dataDisks')])]",
+                "lun": "[range(0, parameters('cstorDiskCount'))[copyIndex('dataDisks')]]",
+                "createOption": "Empty",
+                "diskSizeGB": "[parameters('cstorDiskSize')]",
+                "caching": "ReadWrite"
+              }
+            }
+          ],
           "imageReference": {
             "id": "[variables('cstorImageURI')]"
           },
@@ -384,23 +409,7 @@
             "osType": "Linux",
             "createOption": "FromImage",
             "caching": "ReadWrite"
-          },
-          "dataDisks": [
-            {
-              "name": "[format('{0}-{1}-DataDisk0', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()])]",
-              "lun": 0,
-              "createOption": "Empty",
-              "diskSizeGB": 500,
-              "caching": "ReadWrite"
-            },
-            {
-              "name": "[format('{0}-{1}-DataDisk1', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()])]",
-              "lun": 1,
-              "createOption": "Empty",
-              "diskSizeGB": 500,
-              "caching": "ReadWrite"
-            }
-          ]
+          }
         },
         "networkProfile": {
           "networkInterfaces": [
