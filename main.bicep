@@ -294,13 +294,13 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
         {
           id: cstorcapturenic[i].id
           properties: {
-            primary: true
+            primary: false
           }
         }
         {
           id: cstormgmtnic[i].id
           properties: {
-            primary: false
+            primary: true
           }
         }
       ]
@@ -386,13 +386,13 @@ resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(
         {
           id: cvucapturenic[i].id
           properties: {
-            primary: true
+            primary: false
           }
         }
         {
           id: cvumgmtnic[i].id
           properties: {
-            primary: false
+            primary: true
           }
         }
       ]
@@ -541,4 +541,12 @@ output cstor_mgmt_urls array = [for i in range(0, cstorCount): {
 }]
 output cstor_capture_ips array = [for i in range(0, cstorCount): {
   '${cstorcapturenic[i].name}': '${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
+}]
+
+output cvu_provisioning_vxlan0 array = [for i in range(0, cvuCount): {
+  '${cvumgmtnic[i].name}': 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?cvuv_vxlan_srcip_0=${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_remoteip_0=${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
+}]
+
+output cvu_provisioning_restart array = [for i in range(0, cvuCount): {
+  '${cvumgmtnic[i].name}': 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/20141028/restartAll'
 }]

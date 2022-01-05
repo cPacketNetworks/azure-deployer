@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "11961822296892772109"
+      "templateHash": "3993928885681479433"
     }
   },
   "parameters": {
@@ -416,13 +416,13 @@
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]",
               "properties": {
-                "primary": true
+                "primary": false
               }
             },
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]",
               "properties": {
-                "primary": false
+                "primary": true
               }
             }
           ]
@@ -530,13 +530,13 @@
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]",
               "properties": {
-                "primary": true
+                "primary": false
               }
             },
             {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]",
               "properties": {
-                "primary": false
+                "primary": true
               }
             }
           ]
@@ -731,6 +731,24 @@
         "count": "[length(range(0, parameters('cstorCount')))]",
         "input": {
           "[format('{0}', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
+        }
+      }
+    },
+    "cvu_provisioning_vxlan0": {
+      "type": "array",
+      "copy": {
+        "count": "[length(range(0, parameters('cvuCount')))]",
+        "input": {
+          "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('https://{0}/sys/10/updateASingleSystemSetting?cvuv_vxlan_srcip_0={1}&cvuv_vxlan_remoteip_0={2}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
+        }
+      }
+    },
+    "cvu_provisioning_restart": {
+      "type": "array",
+      "copy": {
+        "count": "[length(range(0, parameters('cvuCount')))]",
+        "input": {
+          "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('https://{0}/sys/20141028/restartAll', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
         }
       }
     }
