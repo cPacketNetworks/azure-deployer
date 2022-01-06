@@ -553,7 +553,7 @@ output cvu_provisioning_vxlan1 array = [for i in range(0, cvuCount): {
 
 // add cvu & cstor stats-db 
 output cvu_provisioning_statsdb array = [for i in range(0, cvuCount): {
-  '${cvumgmtnic[i].name}' : 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?stats_db_server=https://${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
+  '${cvumgmtnic[i].name}' : 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
 
 output cvu_provisioning_restart array = [for i in range(0, cvuCount): {
@@ -561,7 +561,7 @@ output cvu_provisioning_restart array = [for i in range(0, cvuCount): {
 }]
 
 output cstor_provisioning_statsdb array = [for i in range(0, cstorCount): {
-  '${cstormgmtnic[i].name}': 'https://${cstormgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?stats_db_server=https://${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
+  '${cstormgmtnic[i].name}': 'https://${cstormgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
 
 output cstor_provisioning_restart array = [for i in range(0, cstorCount): {
