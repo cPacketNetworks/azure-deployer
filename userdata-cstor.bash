@@ -3,6 +3,7 @@
 # cVu-V-k inline boot config settings
 cat <<EOF_BOOTCFG >/home/cpacket/boot_config.txt
 {
+'vm_type': 'azure',
 'capture_mode': 'libpcap',
 'decap_mode': 'vxlan',
 'num_pcap_bufs': 2,

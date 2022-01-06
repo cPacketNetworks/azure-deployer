@@ -13,6 +13,7 @@
 # cVu-V-k inline
 cat <<EOF_BOOTCFG >/home/cpacket/boot_config.txt
 {
+'vm_type'               : 'azure',
 'capture_mode'          : 'cvuv',
 'cvuv_mode'             : 'inline',
 'cvuv_inline_mode'      : 'tctap',
