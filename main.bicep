@@ -92,6 +92,7 @@ var linuxConfiguration = {
 
 var cstorilb_enabled = cstorCount > 1 ? true : false
 var cvuilb_enabled = cvuCount > 1 ? true : false
+var cstor_deployed = cstorCount > 0 ? true : false
 
 var mgmtsubnetId = virtualNetwork.newOrExisting == 'new' ? mgmtsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.mgmtSubnet.name)
 var monsubnetId = virtualNetwork.newOrExisting == 'new' ? monsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.monSubnet.name)
@@ -292,15 +293,16 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
     networkProfile: {
       networkInterfaces: [
         {
-          id: cstormgmtnic[i].id
-          properties: {
-            primary: true
-          }
-        }
-        {
           id: cstorcapturenic[i].id
           properties: {
             primary: false
+          }
+        }
+        {
+          id: cstormgmtnic[i].id  
+          properties: {
+            // Azure assigns a default gateway to the first (primary) network interface attached to the virtual machine.
+            primary: true
           }
         }
       ]
@@ -384,15 +386,16 @@ resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(
     networkProfile: {
       networkInterfaces: [
         {
-          id: cvumgmtnic[i].id
-          properties: {
-            primary: true
-          }
-        }        
-        {
           id: cvucapturenic[i].id
           properties: {
             primary: false
+          }
+        }        
+        {
+          id: cvumgmtnic[i].id
+          properties: {
+            // Azure assigns a default gateway to the first (primary) network interface attached to the virtual machine.
+            primary: true
           }
         }
       ]
@@ -543,17 +546,17 @@ output cstor_capture_ips array = [for i in range(0, cstorCount): {
   '${cstorcapturenic[i].name}': '${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
 
+// There is no current way in bicep to perform a nested for loop in the output context. 
+// This means a the following provisioning outputs can't create a URL string for each cvu with each cstor.  The default is to deploy only 1 cstor so only 1 cstor is assumed.
+output cvu_provisioning_vxlan0_note string = 'The following URL will only add the first cstor.  If more than one cstor is deployed manually configure URLs for cvuv_vxlan_remoteip_0 for each cstor.'
+var first_cstor_capture_ip = cstor_deployed ? '${cstorcapturenic[0].properties.ipConfigurations[0].properties.privateIPAddress}' : ''
+
 output cvu_provisioning_vxlan0 array = [for i in range(0, cvuCount): {
-  '${cvumgmtnic[i].name}' : 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?cvuv_vxlan_srcip_0=${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_remoteip_0=<MY_TOOL_IP>'
+  '${cvumgmtnic[i].name}' : 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?management_nic_ip=${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}&stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_srcip_0=${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_remoteip_0=${first_cstor_capture_ip}'
 }]
 
 output cvu_provisioning_vxlan1 array = [for i in range(0, cvuCount): {
   '${cvumgmtnic[i].name}' : 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?cvuv_vxlan_srcip_1=${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_remoteip_1=<MY_TOOL_IP>'
-}]
-
-// add cvu & cstor stats-db 
-output cvu_provisioning_statsdb array = [for i in range(0, cvuCount): {
-  '${cvumgmtnic[i].name}' : 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
 
 output cvu_provisioning_restart array = [for i in range(0, cvuCount): {
@@ -561,7 +564,7 @@ output cvu_provisioning_restart array = [for i in range(0, cvuCount): {
 }]
 
 output cstor_provisioning_statsdb array = [for i in range(0, cstorCount): {
-  '${cstormgmtnic[i].name}': 'https://${cstormgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
+  '${cstormgmtnic[i].name}': 'https://${cstormgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?management_nic_ip=${cstormgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}&stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
 
 output cstor_provisioning_restart array = [for i in range(0, cstorCount): {

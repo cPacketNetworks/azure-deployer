@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "10581460973028620354"
+      "templateHash": "14157704049609044874"
     }
   },
   "parameters": {
@@ -175,6 +175,7 @@
     },
     "cstorilb_enabled": "[if(greater(parameters('cstorCount'), 1), true(), false())]",
     "cvuilb_enabled": "[if(greater(parameters('cvuCount'), 1), true(), false())]",
+    "cstor_deployed": "[if(greater(parameters('cstorCount'), 0), true(), false())]",
     "mgmtsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.mgmtSubnet.name))]",
     "monsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name))]",
     "toolssubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.toolsSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.toolsSubnet.name))]",
@@ -414,15 +415,15 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]",
-              "properties": {
-                "primary": true
-              }
-            },
-            {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]",
               "properties": {
                 "primary": false
+              }
+            },
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]",
+              "properties": {
+                "primary": true
               }
             }
           ]
@@ -432,7 +433,7 @@
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPasswordOrKey')]",
           "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]",
-          "customData": "IyEvYmluL2Jhc2gKCiMgY1Z1LVYtayBpbmxpbmUgYm9vdCBjb25maWcgc2V0dGluZ3MKY2F0IDw8RU9GX0JPT1RDRkcgPi9ob21lL2NwYWNrZXQvYm9vdF9jb25maWcudHh0CnsKJ2NhcHR1cmVfbW9kZSc6ICdsaWJwY2FwJywKJ2RlY2FwX21vZGUnOiAndnhsYW4nLAonbnVtX3BjYXBfYnVmcyc6IDIsCidjYXB0dXJlX25pY19pbmRleCc6IDEsCidwY2lfd2hpdGVsaXN0JzogJzAwMDE6MDA6MDIuMCcsCidldGhfZGV2JzogJ2V0aDEnLAonY29yZV9tYXNrJzogJzB4MycsCididXJuc2lkZV9tb2RlJzogRmFsc2UsCidjc3Rvcl9saXRlX21vZGUnOiBGYWxzZSwKJ3NzaCc6IHsnZW5hYmxlZCc6IFRydWV9LAonY2xlYW51cF90aHJlc2hvbGQnOiA1MCwKJ3VzZV9jb21wcmVzc2lvbic6IEZhbHNlLAondGllcmVkX3N0b3JfZW4nOiBGYWxzZSwKJ2NhcHR1cmVfbmljX2V0aCc6ICdldGgxJywKJ21hbmFnZW1lbnRfbmljX2V0aCc6ICdldGgwJywKfQpFT0ZfQk9PVENGRwoKY2htb2QgdWcrdyAvaG9tZS9jcGFja2V0L2Jvb3RfY29uZmlnLnR4dAoKZWNobyAiY2xvdWQtaW5pdCByYW4gdXNlci1kYXRhIGF0OiAiICQoZGF0ZSkgPj4vaG9tZS9jcGFja2V0L3ByZWJvb3Rtc2cudHh0"
+          "customData": "IyEvYmluL2Jhc2gKCiMgY1Z1LVYtayBpbmxpbmUgYm9vdCBjb25maWcgc2V0dGluZ3MKY2F0IDw8RU9GX0JPT1RDRkcgPi9ob21lL2NwYWNrZXQvYm9vdF9jb25maWcudHh0CnsKJ3ZtX3R5cGUnOiAnYXp1cmUnLAonY2FwdHVyZV9tb2RlJzogJ2xpYnBjYXAnLAonZGVjYXBfbW9kZSc6ICd2eGxhbicsCidudW1fcGNhcF9idWZzJzogMiwKJ2NhcHR1cmVfbmljX2luZGV4JzogMSwKJ3BjaV93aGl0ZWxpc3QnOiAnMDAwMTowMDowMi4wJywKJ2V0aF9kZXYnOiAnZXRoMScsCidjb3JlX21hc2snOiAnMHgzJywKJ2J1cm5zaWRlX21vZGUnOiBGYWxzZSwKJ2NzdG9yX2xpdGVfbW9kZSc6IEZhbHNlLAonc3NoJzogeydlbmFibGVkJzogVHJ1ZX0sCidjbGVhbnVwX3RocmVzaG9sZCc6IDUwLAondXNlX2NvbXByZXNzaW9uJzogRmFsc2UsCid0aWVyZWRfc3Rvcl9lbic6IEZhbHNlLAonY2FwdHVyZV9uaWNfZXRoJzogJ2V0aDEnLAonbWFuYWdlbWVudF9uaWNfZXRoJzogJ2V0aDAnLAp9CkVPRl9CT09UQ0ZHCgpjaG1vZCB1Zyt3IC9ob21lL2NwYWNrZXQvYm9vdF9jb25maWcudHh0CgplY2hvICJjbG91ZC1pbml0IHJhbiB1c2VyLWRhdGEgYXQ6ICIgJChkYXRlKSA+Pi9ob21lL2NwYWNrZXQvcHJlYm9vdG1zZy50eHQ="
         }
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
@@ -528,15 +529,15 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]",
-              "properties": {
-                "primary": true
-              }
-            },
-            {
               "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]",
               "properties": {
                 "primary": false
+              }
+            },
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]",
+              "properties": {
+                "primary": true
               }
             }
           ]
@@ -546,7 +547,7 @@
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPasswordOrKey')]",
           "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]",
-          "customData": "IyEvYmluL2Jhc2gKCiMgY1Z1LVYtayBpbmxpbmUgbW9kZSBjb25maWcgZXhhbXBsZQoKIyBjdnV2X25hdF94eHggdmFsdWVzIGRlZmluZSBOQVQgcGFzc3Rocm91Z2hzIC0gdXAgdG8gNCBhbGxvd2VkCiMgICAoc3VmZml4IF8wLF8xLF8yLCBfMykKIyAgICBOT1RFIDogbG9jYWwgUkVTRVJWRUQgcG9ydHMgNDQzLDgwLDIyLDE2MSwxNjIKIyBjdnV2X25hdF9sb2NfaXAsIGN2dXZfbmF0X2RzdF9pcCA6IGVtcHRyeSBzdHJpbmdzICgnJykgd2lsbCBkaXNhYmxlIHRoYXQgbmF0IHBvcnQKCiMgZm9yIGN2dXZfdnhsYW5fc3JjaXAsIGN2dXZfdnhsYW5fcmVtb3RlaXAgOiBlbXB0eSBzdHJpbmdzICgnJykgd2lsbCBkaXNhYmxlCiMgdGhlIHZ4bGFuIG91dHB1dCBwb3J0LgoKIyBjVnUtVi1rIGlubGluZQpjYXQgPDxFT0ZfQk9PVENGRyA+L2hvbWUvY3BhY2tldC9ib290X2NvbmZpZy50eHQKewonY2FwdHVyZV9tb2RlJyAgICAgICAgICA6ICdjdnV2JywKJ2N2dXZfbW9kZScgICAgICAgICAgICAgOiAnaW5saW5lJywKJ2N2dXZfaW5saW5lX21vZGUnICAgICAgOiAndGN0YXAnLAonY3Z1dl9taXJyb3JfZXRoXzAnICAgICA6ICdldGgxJywKJ2N2dXZfbWF4X3Z4bGFuX3BvcnRzJyAgOiAzLAoKJ2N2dXZfdnhsYW5fZGV2XzAnICAgICAgOiAndnhsYW4wJywKJ2N2dXZfdnhsYW5fc3JjaXBfMCcgICAgOiAnJywKJ2N2dXZfdnhsYW5fcmVtb3RlaXBfMCcgOiAnJywKJ2N2dXZfdnhsYW5faWRfMCcgICAgICAgOiAnMjExMCcsCidjdnV2X3Z4bGFuX2V0aF8wJyAgICAgIDogJ2N2dXZfbWlycm9yX2V0aF8wJywKCidjdnV2X3Z4bGFuX2Rldl8xJyAgICAgIDogJ3Z4bGFuMScsCidjdnV2X3Z4bGFuX3NyY2lwXzEnICAgIDogJycsCidjdnV2X3Z4bGFuX3JlbW90ZWlwXzEnIDogJycsCidjdnV2X3Z4bGFuX2lkXzEnICAgICAgIDogJzIyMTEnLAonY3Z1dl92eGxhbl9ldGhfMScgICAgICA6ICdjdnV2X21pcnJvcl9ldGhfMCcsCgonY3Z1dl92eGxhbl9kZXZfMicgICAgICA6ICd2eGxhbjInLAonY3Z1dl92eGxhbl9zcmNpcF8yJyAgICA6ICcnLAonY3Z1dl92eGxhbl9yZW1vdGVpcF8yJyA6ICcnLAonY3Z1dl92eGxhbl9pZF8yJyAgICAgICA6ICcyMjEyJywKJ2N2dXZfdnhsYW5fZXRoXzInICAgICAgOiAnY3Z1dl9taXJyb3JfZXRoXzAnLAoKJ2N2dXZfbmF0X2xvY19wcm90b18wJyAgOiAndGNwJywKJ2N2dXZfbmF0X2xvY19pcF8wJyAgICAgOiAnJywKJ2N2dXZfbmF0X2xvY19wb3J0XzAnICAgOiAnJywKJ2N2dXZfbmF0X2RzdF9pcF8wJyAgICAgOiAnJywKJ2N2dXZfbmF0X2RzdF9wb3J0XzAnICAgOiAnJywKCididXJuc2lkZV9tb2RlJyAgICAgICAgIDogRmFsc2UsCidjc3Rvcl9saXRlX21vZGUnICAgICAgIDogRmFsc2UsCidzc2gnICAgICAgICAgICAgICAgICAgIDogeydlbmFibGVkJzogVHJ1ZX0sCidjYXB0dXJlX25pY19ldGgnIAkgICAgOiAnZXRoMScsCidtYW5hZ2VtZW50X25pY19ldGgnCTogJ2V0aDAnLAp9CkVPRl9CT09UQ0ZHCgojIG1ha2Ugd3JpdGFibGUgc28gdGhhdCBuZXh0IGJvb3QgY2FuIG92ZXJ3cml0ZSBpZiBuZWVkIGJlCmNobW9kIHVnK3cgL2hvbWUvY3BhY2tldC9ib290X2NvbmZpZy50eHQKCmVjaG8gImNsb3VkLWluaXQgcmFuIHVzZXItZGF0YSBhdDogIiAkKGRhdGUpID4+L2hvbWUvY3BhY2tldC9wcmVib290bXNnLnR4dA=="
+          "customData": "IyEvYmluL2Jhc2gKCiMgY1Z1LVYtayBpbmxpbmUgbW9kZSBjb25maWcgZXhhbXBsZQoKIyBjdnV2X25hdF94eHggdmFsdWVzIGRlZmluZSBOQVQgcGFzc3Rocm91Z2hzIC0gdXAgdG8gNCBhbGxvd2VkCiMgICAoc3VmZml4IF8wLF8xLF8yLCBfMykKIyAgICBOT1RFIDogbG9jYWwgUkVTRVJWRUQgcG9ydHMgNDQzLDgwLDIyLDE2MSwxNjIKIyBjdnV2X25hdF9sb2NfaXAsIGN2dXZfbmF0X2RzdF9pcCA6IGVtcHRyeSBzdHJpbmdzICgnJykgd2lsbCBkaXNhYmxlIHRoYXQgbmF0IHBvcnQKCiMgZm9yIGN2dXZfdnhsYW5fc3JjaXAsIGN2dXZfdnhsYW5fcmVtb3RlaXAgOiBlbXB0eSBzdHJpbmdzICgnJykgd2lsbCBkaXNhYmxlCiMgdGhlIHZ4bGFuIG91dHB1dCBwb3J0LgoKIyBjVnUtVi1rIGlubGluZQpjYXQgPDxFT0ZfQk9PVENGRyA+L2hvbWUvY3BhY2tldC9ib290X2NvbmZpZy50eHQKewondm1fdHlwZScgICAgICAgICAgICAgICA6ICdhenVyZScsCidjYXB0dXJlX21vZGUnICAgICAgICAgIDogJ2N2dXYnLAonY3Z1dl9tb2RlJyAgICAgICAgICAgICA6ICdpbmxpbmUnLAonY3Z1dl9pbmxpbmVfbW9kZScgICAgICA6ICd0Y3RhcCcsCidjdnV2X21pcnJvcl9ldGhfMCcgICAgIDogJ2V0aDEnLAonY3Z1dl9tYXhfdnhsYW5fcG9ydHMnICA6IDMsCgonY3Z1dl92eGxhbl9kZXZfMCcgICAgICA6ICd2eGxhbjAnLAonY3Z1dl92eGxhbl9zcmNpcF8wJyAgICA6ICcnLAonY3Z1dl92eGxhbl9yZW1vdGVpcF8wJyA6ICcnLAonY3Z1dl92eGxhbl9pZF8wJyAgICAgICA6ICcyMTEwJywKJ2N2dXZfdnhsYW5fZXRoXzAnICAgICAgOiAnY3Z1dl9taXJyb3JfZXRoXzAnLAoKJ2N2dXZfdnhsYW5fZGV2XzEnICAgICAgOiAndnhsYW4xJywKJ2N2dXZfdnhsYW5fc3JjaXBfMScgICAgOiAnJywKJ2N2dXZfdnhsYW5fcmVtb3RlaXBfMScgOiAnJywKJ2N2dXZfdnhsYW5faWRfMScgICAgICAgOiAnMjIxMScsCidjdnV2X3Z4bGFuX2V0aF8xJyAgICAgIDogJ2N2dXZfbWlycm9yX2V0aF8wJywKCidjdnV2X3Z4bGFuX2Rldl8yJyAgICAgIDogJ3Z4bGFuMicsCidjdnV2X3Z4bGFuX3NyY2lwXzInICAgIDogJycsCidjdnV2X3Z4bGFuX3JlbW90ZWlwXzInIDogJycsCidjdnV2X3Z4bGFuX2lkXzInICAgICAgIDogJzIyMTInLAonY3Z1dl92eGxhbl9ldGhfMicgICAgICA6ICdjdnV2X21pcnJvcl9ldGhfMCcsCgonY3Z1dl9uYXRfbG9jX3Byb3RvXzAnICA6ICd0Y3AnLAonY3Z1dl9uYXRfbG9jX2lwXzAnICAgICA6ICcnLAonY3Z1dl9uYXRfbG9jX3BvcnRfMCcgICA6ICcnLAonY3Z1dl9uYXRfZHN0X2lwXzAnICAgICA6ICcnLAonY3Z1dl9uYXRfZHN0X3BvcnRfMCcgICA6ICcnLAoKJ2J1cm5zaWRlX21vZGUnICAgICAgICAgOiBGYWxzZSwKJ2NzdG9yX2xpdGVfbW9kZScgICAgICAgOiBGYWxzZSwKJ3NzaCcgICAgICAgICAgICAgICAgICAgOiB7J2VuYWJsZWQnOiBUcnVlfSwKJ2NhcHR1cmVfbmljX2V0aCcgCSAgICA6ICdldGgxJywKJ21hbmFnZW1lbnRfbmljX2V0aCcJOiAnZXRoMCcsCn0KRU9GX0JPT1RDRkcKCiMgbWFrZSB3cml0YWJsZSBzbyB0aGF0IG5leHQgYm9vdCBjYW4gb3ZlcndyaXRlIGlmIG5lZWQgYmUKY2htb2QgdWcrdyAvaG9tZS9jcGFja2V0L2Jvb3RfY29uZmlnLnR4dAoKZWNobyAiY2xvdWQtaW5pdCByYW4gdXNlci1kYXRhIGF0OiAiICQoZGF0ZSkgPj4vaG9tZS9jcGFja2V0L3ByZWJvb3Rtc2cudHh0"
         }
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
@@ -734,12 +735,16 @@
         }
       }
     },
+    "cvu_provisioning_vxlan0_note": {
+      "type": "string",
+      "value": "The following URL will only add the first cstor.  If more than one cstor is deployed manually configure URLs for cvuv_vxlan_remoteip_0 for each cstor."
+    },
     "cvu_provisioning_vxlan0": {
       "type": "array",
       "copy": {
         "count": "[length(range(0, parameters('cvuCount')))]",
         "input": {
-          "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('https://{0}/sys/10/updateASingleSystemSetting?cvuv_vxlan_srcip_0={1}&cvuv_vxlan_remoteip_0=<MY_TOOL_IP>', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
+          "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('https://{0}/sys/10/updateASingleSystemSetting?management_nic_ip={1}&stats_db_server={2}&cvuv_vxlan_srcip_0={3}&cvuv_vxlan_remoteip_0={4}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, if(variables('cstor_deployed'), format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), ''))]"
         }
       }
     },
@@ -749,15 +754,6 @@
         "count": "[length(range(0, parameters('cvuCount')))]",
         "input": {
           "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('https://{0}/sys/10/updateASingleSystemSetting?cvuv_vxlan_srcip_1={1}&cvuv_vxlan_remoteip_1=<MY_TOOL_IP>', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
-        }
-      }
-    },
-    "cvu_provisioning_statsdb": {
-      "type": "array",
-      "copy": {
-        "count": "[length(range(0, parameters('cvuCount')))]",
-        "input": {
-          "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('https://{0}/sys/10/updateASingleSystemSetting?stats_db_server={1}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress)]"
         }
       }
     },
@@ -775,7 +771,7 @@
       "copy": {
         "count": "[length(range(0, parameters('cstorCount')))]",
         "input": {
-          "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]": "[format('https://{0}/sys/10/updateASingleSystemSetting?stats_db_server={1}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress)]"
+          "[format('{0}', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]": "[format('https://{0}/sys/10/updateASingleSystemSetting?management_nic_ip={1}&stats_db_server={2}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-mgmt-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress)]"
         }
       }
     },
