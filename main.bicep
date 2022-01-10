@@ -477,7 +477,7 @@ output cvu_provisioning_restart array = [for i in range(0, cvuCount): {
 }]
 
 output cstor_provisioning_statsdb array = [for i in range(0, cstorCount): {
-  '${cstorcapturenic[i].name}': 'https://${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?management_nic_ip=${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
+  '${cstorcapturenic[i].name}': 'https://${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
 
 output cstor_provisioning_restart array = [for i in range(0, cstorCount): {
