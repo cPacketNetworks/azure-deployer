@@ -94,9 +94,7 @@ var cstorilb_enabled = cstorCount > 1 ? true : false
 var cvuilb_enabled = cvuCount > 1 ? true : false
 var cstor_deployed = cstorCount > 0 ? true : false
 
-var mgmtsubnetId = virtualNetwork.newOrExisting == 'new' ? mgmtsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.mgmtSubnet.name)
 var monsubnetId = virtualNetwork.newOrExisting == 'new' ? monsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.monSubnet.name)
-var toolssubnetId = virtualNetwork.newOrExisting == 'new' ? toolssubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.toolsSubnet.name)
 
 var cclearImageURI = empty(cClearImageURI) ? cClearImage.id : cClearImageURI
 var cstorImageURI = empty(cStorImageURI) ? cstorImage.id : cStorImageURI
@@ -113,39 +111,12 @@ resource vnet 'Microsoft.Network/virtualNetworks@2020-11-01' = if (virtualNetwor
   tags: contains(tagsByResource, 'Microsoft.Network/virtualNetworks') ? tagsByResource['Microsoft.Network/virtualNetworks'] : null
 }
 
-resource mgmtsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
-  name: virtualNetwork.subnets.mgmtSubnet.name
-  parent: vnet
-  properties: {
-    addressPrefix: virtualNetwork.subnets.mgmtSubnet.addressPrefix
-  }
-}
-
-// The following resources are defined per subnet because we need to reference the subnets independently in other resources. 
-//   This causes the ARM templates to execute this subnet creation operation in parallel. However, there is a race condition where 
-//   subnets can't be executed at the same time.  In order to work around this, a explict dependency is created to serialize
-//   the execution and prevent the subnets from failing creation. 
-
 resource monsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
   name: virtualNetwork.subnets.monSubnet.name
   parent: vnet
   properties: {
     addressPrefix: virtualNetwork.subnets.monSubnet.addressPrefix
   }
-  dependsOn: [
-    mgmtsubnet
-  ]
-}
-
-resource toolssubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (virtualNetwork.newOrExisting == 'new') {
-  name: virtualNetwork.subnets.toolsSubnet.name
-  parent: vnet
-  properties: {
-    addressPrefix: virtualNetwork.subnets.toolsSubnet.addressPrefix
-  }
-  dependsOn: [
-    monsubnet
-  ]
 }
 
 /*
@@ -161,7 +132,7 @@ resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in 
         name: '${cClearVmName}-${i}-ipconfig-nic'
         properties: {
           subnet: {
-            id: mgmtsubnetId
+            id: monsubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
         }
@@ -230,7 +201,7 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for
         name: '${cstorVmName}-${i}-capture-ipconfig-nic'
         properties: {
           subnet: {
-            id: toolssubnetId
+            id: monsubnetId
           }
           privateIPAllocationMethod: 'Dynamic'
           loadBalancerBackendAddressPools: any(cstorilb_enabled) ? [
@@ -243,25 +214,6 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for
     ]
     enableAcceleratedNetworking: true
     enableIPForwarding: true
-  }
-  tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
-}]
-
-resource cstormgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): if (cstorCount > 0) {
-  name: '${cstorVmName}-${i}-mgmt-nic'
-  location: location
-  properties: {
-    ipConfigurations: [
-      {
-        name: '${cstorVmName}-${i}-mgmt-ipconfig-nic'
-        properties: {
-          subnet: {
-            id: mgmtsubnetId
-          }
-          privateIPAllocationMethod: 'Dynamic'
-        }
-      }
-    ]
   }
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
@@ -295,13 +247,6 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
         {
           id: cstorcapturenic[i].id
           properties: {
-            primary: false
-          }
-        }
-        {
-          id: cstormgmtnic[i].id  
-          properties: {
-            // Azure assigns a default gateway to the first (primary) network interface attached to the virtual machine.
             primary: true
           }
         }
@@ -347,25 +292,6 @@ resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cvumgmtnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): if (cvuCount > 0) {
-  name: '${cvuVmName}-${i}-mgmt-nic'
-  location: location
-  properties: {
-    ipConfigurations: [
-      {
-        name: '${cvuVmName}-${i}-mgmt-ipconfig-nic'
-        properties: {
-          subnet: {
-            id: mgmtsubnetId
-          }
-          privateIPAllocationMethod: 'Dynamic'
-        }
-      }
-    ]
-  }
-  tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
-}]
-
 resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cvuCount): if (cvuCount > 0) {
   name: '${cvuVmName}-${i}'
   location: location
@@ -389,13 +315,6 @@ resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(
           id: cvucapturenic[i].id
           properties: {
             primary: false
-          }
-        }        
-        {
-          id: cvumgmtnic[i].id
-          properties: {
-            // Azure assigns a default gateway to the first (primary) network interface attached to the virtual machine.
-            primary: true
           }
         }
       ]
@@ -481,7 +400,7 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorilb_e
         name: '${cstorlbName}-frontend'
         properties: {
           subnet: {
-            id: toolssubnetId
+            id: monsubnetId
           }
         }
       }
@@ -531,17 +450,11 @@ output cclear_mgmt_urls array = [for i in range(0, cClearCount): {
 }]
 
 output cvu_ilb_frontend_ip string = cvuilb_enabled ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
-output cvu_mgmt_urls array = [for i in range(0, cvuCount): {
-  '${cvumgmtnic[i].name}': 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
-}]
 output cvu_capture_ips array = [for i in range(0, cvuCount): {
   '${cvucapturenic[i].name}': '${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
 
 output cstor_ilb_frontend_ip string = cstorilb_enabled ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
-output cstor_mgmt_urls array = [for i in range(0, cstorCount): {
-  '${cstormgmtnic[i].name}': 'https://${cstormgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
-}]
 output cstor_capture_ips array = [for i in range(0, cstorCount): {
   '${cstorcapturenic[i].name}': '${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
@@ -552,21 +465,21 @@ output cvu_provisioning_vxlan0_note string = 'The following URL will only add th
 var first_cstor_capture_ip = cstor_deployed ? '${cstorcapturenic[0].properties.ipConfigurations[0].properties.privateIPAddress}' : ''
 
 output cvu_provisioning_vxlan0 array = [for i in range(0, cvuCount): {
-  '${cvumgmtnic[i].name}' : 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?management_nic_ip=${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}&stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_srcip_0=${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_remoteip_0=${first_cstor_capture_ip}'
+  '${cvucapturenic[i].name}' : 'https://${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?&stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_srcip_0=${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_remoteip_0=${first_cstor_capture_ip}'
 }]
 
 output cvu_provisioning_vxlan1 array = [for i in range(0, cvuCount): {
-  '${cvumgmtnic[i].name}' : 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?cvuv_vxlan_srcip_1=${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_remoteip_1=<MY_TOOL_IP>'
+  '${cvucapturenic[i].name}' : 'https://${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?cvuv_vxlan_srcip_1=${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_remoteip_1=<MY_TOOL_IP>'
 }]
 
 output cvu_provisioning_restart array = [for i in range(0, cvuCount): {
-  '${cvumgmtnic[i].name}' : 'https://${cvumgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/20141028/restartAll'
+  '${cvucapturenic[i].name}' : 'https://${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/20141028/restartAll'
 }]
 
 output cstor_provisioning_statsdb array = [for i in range(0, cstorCount): {
-  '${cstormgmtnic[i].name}': 'https://${cstormgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?management_nic_ip=${cstormgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}&stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
+  '${cstorcapturenic[i].name}': 'https://${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?management_nic_ip=${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
 
 output cstor_provisioning_restart array = [for i in range(0, cstorCount): {
-  '${cstormgmtnic[i].name}' : 'https://${cstormgmtnic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/20141028/restartAll'
+  '${cstorcapturenic[i].name}' : 'https://${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/20141028/restartAll'
 }]

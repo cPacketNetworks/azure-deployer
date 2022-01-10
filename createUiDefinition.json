@@ -64,18 +64,6 @@
                             "hideExisting": false
                         },
                         "subnets": {
-                            "mgmtSubnet": {
-                                "label": "Management subnet",
-                                "defaultValue": {
-                                    "name": "mgmt",
-                                    "addressPrefixSize": "/24"
-                                },
-                                "constraints": {
-                                    "minAddressPrefixSize": "/24",
-                                    "minAddressCount": 12,
-                                    "requireContiguousAddresses": false
-                                }
-                            },
                             "monSubnet": {
                                 "label": "Monitoring subnet",
                                 "defaultValue": {
@@ -83,18 +71,7 @@
                                     "addressPrefixSize": "/24"
                                 },
                                 "constraints": {
-                                    "minAddressPrefixSize": "/24",
-                                    "minAddressCount": 12,
-                                    "requireContiguousAddresses": false
-                                }
-                            },
-                            "toolsSubnet": {
-                                "label": "Packet Tools subnet",
-                                "defaultValue": {
-                                    "name": "tools",
-                                    "addressPrefixSize": "/24"
-                                },
-                                "constraints": {
+                                    "required": true,
                                     "minAddressPrefixSize": "/24",
                                     "minAddressCount": 12,
                                     "requireContiguousAddresses": false
