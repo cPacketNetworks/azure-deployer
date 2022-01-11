@@ -147,6 +147,9 @@ if debug: print(cvu_ilb_frontend_ip)
 cvu_provisioning = get_valid_json("cvu_provisioning: ")
 if debug: print(cvu_provisioning)
 
+cstor_ilb_frontend_ip = get_valid_ip("cstor_ilb_frontend_ip: ")
+if debug: print(cstor_ilb_frontend_ip)
+
 cstor_provisioning = get_valid_json("cstor_provisioning: ")
 if debug: print(cstor_provisioning)
 num_cstors = len(cstor_provisioning)
@@ -206,7 +209,6 @@ if debug: print(json.dumps(cur_ss_cstor, sort_keys=False, indent=4))
 
 restart_services(cvu_provisioning)
 restart_services(cstor_provisioning)
-
 
 EOF_DEPLOYER
 
