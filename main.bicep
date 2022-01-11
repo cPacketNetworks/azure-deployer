@@ -444,7 +444,7 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorilb_e
   tags: contains(tagsByResource, 'Microsoft.Network/loadBalancers') ? tagsByResource['Microsoft.Network/loadBalancers'] : null
 }
 
-output provisioning_instuctions string = '1) ssh from a machine that has access to the monitoring subnet\n2) run the cclear_provisioning_script at the prompt'
+output provisioning_instuctions string = '1) ssh to the cclear then run the cclear_provisioning_script at the prompt'
 output cclear_ssh string = 'ssh ${adminUsername}@${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
 output cclear_provisioning_script string = 'until [ -x /opt/cloud/deployer.py ]; do echo "still deploying, please wait..."; sleep 5; done; /opt/cloud/deployer.py'
 

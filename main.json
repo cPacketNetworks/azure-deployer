@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "5106117127602687225"
+      "templateHash": "17650887037035039826"
     }
   },
   "parameters": {
@@ -586,7 +586,7 @@
   "outputs": {
     "provisioning_instuctions": {
       "type": "string",
-      "value": "1) ssh from a machine that has access to the monitoring subnet\n2) run the cclear_provisioning_script at the prompt"
+      "value": "1) ssh to the cclear then run the cclear_provisioning_script at the prompt"
     },
     "cclear_ssh": {
       "type": "string",
