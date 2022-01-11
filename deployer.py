@@ -135,6 +135,18 @@ def restart_services(provisioning):
 
 
 # Inputs
+
+instruction = """
+This script will configure the Azure Cloud products using the output from the ARM Templates.
+After the ARM Template is finished deploying, copy/paste the output variables when prompted.
+
+If the cVu deployment will be sending packet data to a 3rd packet tool, have the IP address(s) 
+of the tools ready before running this script.
+
+This script can be re-run to reconfigure the solution.
+"""
+print(instruction)
+
 cclear_ip = get_valid_ip("cclear_ip: ")
 
 cvu_ilb_frontend_ip = get_valid_ip("cvu_ilb_frontend_ip: ")
