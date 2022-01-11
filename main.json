@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "17650887037035039826"
+      "templateHash": "1901238733185200253"
     }
   },
   "parameters": {
@@ -586,7 +586,7 @@
   "outputs": {
     "provisioning_instuctions": {
       "type": "string",
-      "value": "1) ssh to the cclear then run the cclear_provisioning_script at the prompt"
+      "value": "ssh to the cclear then run the cclear_provisioning_script at the prompt"
     },
     "cclear_ssh": {
       "type": "string",
