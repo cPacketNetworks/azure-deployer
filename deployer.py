@@ -128,7 +128,7 @@ def restart_services(provisioning):
     for key in provisioning:
         url = "https://{}/sys/20141028/restartAll".format(key['private_ip'])
         try:
-            s = requests.get(url, auth=HTTPBasicAuth('cpacket', 'cpacketpw'), verify=False)
+            s = requests.get(url, auth=HTTPBasicAuth(user, password), verify=False)
         except requests.exceptions.RequestException as e:
             raise SystemExit(e)
         print("Restarting Services on {}".format(key['name']))
