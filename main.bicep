@@ -92,7 +92,6 @@ var linuxConfiguration = {
 
 var cstorilb_enabled = cstorCount > 1 ? true : false
 var cvuilb_enabled = cvuCount > 1 ? true : false
-var cstor_deployed = cstorCount > 0 ? true : false
 
 var monsubnetId = virtualNetwork.newOrExisting == 'new' ? monsubnet.id : resourceId(virtualNetwork.resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', virtualNetwork.name, virtualNetwork.subnets.monSubnet.name)
 
@@ -445,41 +444,19 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorilb_e
 }
 
 
-output cclear_mgmt_urls array = [for i in range(0, cClearCount): {
-  '${cclearnic[i].name}': 'https://${cclearnic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
-}]
+output cclear_mgmt_ssh string = 'ssh ${adminUsername}@${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
+output cclear_mgmt_urls string = 'https://${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
 
 output cvu_ilb_frontend_ip string = cvuilb_enabled ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 output cvu_capture_ips array = [for i in range(0, cvuCount): {
-  '${cvucapturenic[i].name}': '${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
+  'index': i
+  'name': '${cvucapturenic[i].name}'
+  'private_ip': '${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
 
 output cstor_ilb_frontend_ip string = cstorilb_enabled ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 output cstor_capture_ips array = [for i in range(0, cstorCount): {
-  '${cstorcapturenic[i].name}': '${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
-}]
-
-// There is no current way in bicep to perform a nested for loop in the output context. 
-// This means a the following provisioning outputs can't create a URL string for each cvu with each cstor.  The default is to deploy only 1 cstor so only 1 cstor is assumed.
-output cvu_provisioning_vxlan0_note string = 'The following URL will only add the first cstor.  If more than one cstor is deployed manually configure URLs for cvuv_vxlan_remoteip_0 for each cstor.'
-var first_cstor_capture_ip = cstor_deployed ? '${cstorcapturenic[0].properties.ipConfigurations[0].properties.privateIPAddress}' : ''
-
-output cvu_provisioning_vxlan0 array = [for i in range(0, cvuCount): {
-  '${cvucapturenic[i].name}' : 'https://${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?&stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_srcip_0=${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_remoteip_0=${first_cstor_capture_ip}'
-}]
-
-output cvu_provisioning_vxlan1 array = [for i in range(0, cvuCount): {
-  '${cvucapturenic[i].name}' : 'https://${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?cvuv_vxlan_srcip_1=${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}&cvuv_vxlan_remoteip_1=<MY_TOOL_IP>'
-}]
-
-output cvu_provisioning_restart array = [for i in range(0, cvuCount): {
-  '${cvucapturenic[i].name}' : 'https://${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/20141028/restartAll'
-}]
-
-output cstor_provisioning_statsdb array = [for i in range(0, cstorCount): {
-  '${cstorcapturenic[i].name}': 'https://${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/10/updateASingleSystemSetting?stats_db_server=${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
-}]
-
-output cstor_provisioning_restart array = [for i in range(0, cstorCount): {
-  '${cstorcapturenic[i].name}' : 'https://${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}/sys/20141028/restartAll'
+  'index': i
+  'name': '${cstorcapturenic[i].name}'
+  'private_ip': '${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]

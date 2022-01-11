@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "9841313543557441079"
+      "templateHash": "16918227511956228813"
     }
   },
   "parameters": {
@@ -175,7 +175,6 @@
     },
     "cstorilb_enabled": "[if(greater(parameters('cstorCount'), 1), true(), false())]",
     "cvuilb_enabled": "[if(greater(parameters('cvuCount'), 1), true(), false())]",
-    "cstor_deployed": "[if(greater(parameters('cstorCount'), 0), true(), false())]",
     "monsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name))]",
     "cclearImageURI": "[if(empty(parameters('cClearImageURI')), parameters('cClearImage').id, parameters('cClearImageURI'))]",
     "cstorImageURI": "[if(empty(parameters('cStorImageURI')), parameters('cstorImage').id, parameters('cStorImageURI'))]",
@@ -584,14 +583,13 @@
     }
   ],
   "outputs": {
+    "cclear_mgmt_ssh": {
+      "type": "string",
+      "value": "[format('ssh {0}@{1}', parameters('adminUsername'), reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress)]"
+    },
     "cclear_mgmt_urls": {
-      "type": "array",
-      "copy": {
-        "count": "[length(range(0, parameters('cClearCount')))]",
-        "input": {
-          "[format('{0}', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[range(0, parameters('cClearCount'))[copyIndex()]]))]": "[format('https://{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[range(0, parameters('cClearCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
-        }
-      }
+      "type": "string",
+      "value": "[format('https://{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress)]"
     },
     "cvu_ilb_frontend_ip": {
       "type": "string",
@@ -602,7 +600,9 @@
       "copy": {
         "count": "[length(range(0, parameters('cvuCount')))]",
         "input": {
-          "[format('{0}', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
+          "index": "[range(0, parameters('cvuCount'))[copyIndex()]]",
+          "name": "[format('{0}', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]",
+          "private_ip": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
         }
       }
     },
@@ -615,56 +615,9 @@
       "copy": {
         "count": "[length(range(0, parameters('cstorCount')))]",
         "input": {
-          "[format('{0}', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
-        }
-      }
-    },
-    "cvu_provisioning_vxlan0_note": {
-      "type": "string",
-      "value": "The following URL will only add the first cstor.  If more than one cstor is deployed manually configure URLs for cvuv_vxlan_remoteip_0 for each cstor."
-    },
-    "cvu_provisioning_vxlan0": {
-      "type": "array",
-      "copy": {
-        "count": "[length(range(0, parameters('cvuCount')))]",
-        "input": {
-          "[format('{0}', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('https://{0}/sys/10/updateASingleSystemSetting?&stats_db_server={1}&cvuv_vxlan_srcip_0={2}&cvuv_vxlan_remoteip_0={3}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, if(variables('cstor_deployed'), format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), ''))]"
-        }
-      }
-    },
-    "cvu_provisioning_vxlan1": {
-      "type": "array",
-      "copy": {
-        "count": "[length(range(0, parameters('cvuCount')))]",
-        "input": {
-          "[format('{0}', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('https://{0}/sys/10/updateASingleSystemSetting?cvuv_vxlan_srcip_1={1}&cvuv_vxlan_remoteip_1=<MY_TOOL_IP>', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
-        }
-      }
-    },
-    "cvu_provisioning_restart": {
-      "type": "array",
-      "copy": {
-        "count": "[length(range(0, parameters('cvuCount')))]",
-        "input": {
-          "[format('{0}', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]": "[format('https://{0}/sys/20141028/restartAll', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
-        }
-      }
-    },
-    "cstor_provisioning_statsdb": {
-      "type": "array",
-      "copy": {
-        "count": "[length(range(0, parameters('cstorCount')))]",
-        "input": {
-          "[format('{0}', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]": "[format('https://{0}/sys/10/updateASingleSystemSetting?stats_db_server={1}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress, reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress)]"
-        }
-      }
-    },
-    "cstor_provisioning_restart": {
-      "type": "array",
-      "copy": {
-        "count": "[length(range(0, parameters('cstorCount')))]",
-        "input": {
-          "[format('{0}', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]": "[format('https://{0}/sys/20141028/restartAll', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
+          "index": "[range(0, parameters('cstorCount'))[copyIndex()]]",
+          "name": "[format('{0}', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]",
+          "private_ip": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
         }
       }
     }
