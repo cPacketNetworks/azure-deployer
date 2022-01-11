@@ -2,7 +2,6 @@
 
 import ipaddress
 import json
-from os import confstr
 import requests
 from requests.auth import HTTPBasicAuth
 import urllib3
