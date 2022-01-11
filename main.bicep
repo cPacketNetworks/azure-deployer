@@ -179,6 +179,7 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in ran
       adminUsername: adminUsername
       adminPassword: adminPasswordOrKey
       linuxConfiguration: any(authenticationType == 'password' ? null : linuxConfiguration) // TODO: workaround for https://github.com/Azure/bicep/issues/449
+      customData: loadFileAsBase64('./userdata-cclear.bash')
     }
   }
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
@@ -444,19 +445,21 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorilb_e
 }
 
 
-output cclear_mgmt_ssh string = 'ssh ${adminUsername}@${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
-output cclear_mgmt_urls string = 'https://${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
+output cclear_ssh string = 'ssh ${adminUsername}@${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
+output cclear_ip string = '${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
 
 output cvu_ilb_frontend_ip string = cvuilb_enabled ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
-output cvu_capture_ips array = [for i in range(0, cvuCount): {
+output cvu_provisioning array = [for i in range(0, cvuCount): {
   'index': i
-  'name': '${cvucapturenic[i].name}'
+  'name': '${cvuvm[i].name}'
+  'nic_name': '${cvucapturenic[i].name}'
   'private_ip': '${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
 
 output cstor_ilb_frontend_ip string = cstorilb_enabled ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
-output cstor_capture_ips array = [for i in range(0, cstorCount): {
+output cstor_provisioning array = [for i in range(0, cstorCount): {
   'index': i
-  'name': '${cstorcapturenic[i].name}'
+  'name': '${cvuvm[i].name}'
+  'nic_name': '${cstorcapturenic[i].name}'
   'private_ip': '${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
 }]
