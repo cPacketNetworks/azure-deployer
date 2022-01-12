@@ -90,9 +90,9 @@ var linuxConfiguration = {
   }
 }
 
-var cclear_enabled = cClearCount > 1 ? true : false
-var cvu_enabled = cvuCount > 1 ? true : false
-var cstor_enabled = cstorCount > 1 ? true : false
+var cclear_enabled = cClearCount > 0 ? true : false
+var cvu_enabled = cvuCount > 0 ? true : false
+var cstor_enabled = cstorCount > 0 ? true : false
 
 var cstorilb_enabled = cstorCount > 1 ? true : false
 var cvuilb_enabled = cvuCount > 1 ? true : false
@@ -466,7 +466,7 @@ output cvu_provisioning array = [for i in range(0, cvuCount): cvu_enabled ? {
 output cstor_ilb_frontend_ip string = cstorilb_enabled ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 output cstor_provisioning array = [for i in range(0, cstorCount): cstor_enabled ? {
   'index': i
-  'name': '${cvuvm[i].name}'
+  'name': '${cstorvm[i].name}'
   'nic_name': '${cstorcapturenic[i].name}'
   'private_ip': '${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
 } : []]

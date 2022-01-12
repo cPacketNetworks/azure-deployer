@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "5863418631640484543"
+      "templateHash": "17028955604320067704"
     }
   },
   "parameters": {
@@ -173,9 +173,9 @@
         ]
       }
     },
-    "cclear_enabled": "[if(greater(parameters('cClearCount'), 1), true(), false())]",
-    "cvu_enabled": "[if(greater(parameters('cvuCount'), 1), true(), false())]",
-    "cstor_enabled": "[if(greater(parameters('cstorCount'), 1), true(), false())]",
+    "cclear_enabled": "[if(greater(parameters('cClearCount'), 0), true(), false())]",
+    "cvu_enabled": "[if(greater(parameters('cvuCount'), 0), true(), false())]",
+    "cstor_enabled": "[if(greater(parameters('cstorCount'), 0), true(), false())]",
     "cstorilb_enabled": "[if(greater(parameters('cstorCount'), 1), true(), false())]",
     "cvuilb_enabled": "[if(greater(parameters('cvuCount'), 1), true(), false())]",
     "monsubnetId": "[if(equals(parameters('virtualNetwork').newOrExisting, 'new'), resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name), resourceId(parameters('virtualNetwork').resourceGroup, 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetwork').name, parameters('virtualNetwork').subnets.monSubnet.name))]",
@@ -622,7 +622,7 @@
       "type": "array",
       "copy": {
         "count": "[length(range(0, parameters('cstorCount')))]",
-        "input": "[if(variables('cstor_enabled'), createObject('index', range(0, parameters('cstorCount'))[copyIndex()], 'name', format('{0}', format('{0}-{1}', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cstorCount'))[copyIndex()]])), 'nic_name', format('{0}', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]])), 'private_ip', format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)), createArray())]"
+        "input": "[if(variables('cstor_enabled'), createObject('index', range(0, parameters('cstorCount'))[copyIndex()], 'name', format('{0}', format('{0}-{1}', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]])), 'nic_name', format('{0}', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]])), 'private_ip', format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)), createArray())]"
       }
     }
   }
