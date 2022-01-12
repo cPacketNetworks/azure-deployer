@@ -451,17 +451,17 @@ output cclear_provisioning_script string = 'until [ -x /opt/cloud/deployer.py ];
 output cclear_ip string = '${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
 
 output cvu_ilb_frontend_ip string = cvuilb_enabled ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
-output cvu_provisioning array = [for i in range(0, cvuCount): {
+output cvu_provisioning array = [for i in range(0, cvuCount): cvuCount > 0 ? {
   'index': i
   'name': '${cvuvm[i].name}'
   'nic_name': '${cvucapturenic[i].name}'
   'private_ip': '${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
-}]
+} : []]
 
 output cstor_ilb_frontend_ip string = cstorilb_enabled ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
-output cstor_provisioning array = [for i in range(0, cstorCount): {
+output cstor_provisioning array = [for i in range(0, cstorCount): cstorCount > 0 ? {
   'index': i
   'name': '${cvuvm[i].name}'
   'nic_name': '${cstorcapturenic[i].name}'
   'private_ip': '${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
-}]
+} : []]

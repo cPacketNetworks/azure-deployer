@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "1901238733185200253"
+      "templateHash": "17407084307050544524"
     }
   },
   "parameters": {
@@ -608,12 +608,7 @@
       "type": "array",
       "copy": {
         "count": "[length(range(0, parameters('cvuCount')))]",
-        "input": {
-          "index": "[range(0, parameters('cvuCount'))[copyIndex()]]",
-          "name": "[format('{0}', format('{0}-{1}', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]",
-          "nic_name": "[format('{0}', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))]",
-          "private_ip": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
-        }
+        "input": "[if(greater(parameters('cvuCount'), 0), createObject('index', range(0, parameters('cvuCount'))[copyIndex()], 'name', format('{0}', format('{0}-{1}', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]])), 'nic_name', format('{0}', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]])), 'private_ip', format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cvuCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)), createArray())]"
       }
     },
     "cstor_ilb_frontend_ip": {
@@ -624,12 +619,7 @@
       "type": "array",
       "copy": {
         "count": "[length(range(0, parameters('cstorCount')))]",
-        "input": {
-          "index": "[range(0, parameters('cstorCount'))[copyIndex()]]",
-          "name": "[format('{0}', format('{0}-{1}', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]",
-          "nic_name": "[format('{0}', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))]",
-          "private_ip": "[format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)]"
-        }
+        "input": "[if(greater(parameters('cstorCount'), 0), createObject('index', range(0, parameters('cstorCount'))[copyIndex()], 'name', format('{0}', format('{0}-{1}', parameters('cvuVmName'), range(0, parameters('cvuCount'))[range(0, parameters('cstorCount'))[copyIndex()]])), 'nic_name', format('{0}', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]])), 'private_ip', format('{0}', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[range(0, parameters('cstorCount'))[copyIndex()]]))).ipConfigurations[0].properties.privateIPAddress)), createArray())]"
       }
     }
   }
