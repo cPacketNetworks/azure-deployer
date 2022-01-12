@@ -90,6 +90,10 @@ var linuxConfiguration = {
   }
 }
 
+var cclear_enabled = cClearCount > 1 ? true : false
+var cvu_enabled = cvuCount > 1 ? true : false
+var cstor_enabled = cstorCount > 1 ? true : false
+
 var cstorilb_enabled = cstorCount > 1 ? true : false
 var cvuilb_enabled = cvuCount > 1 ? true : false
 
@@ -122,7 +126,7 @@ resource monsubnet 'Microsoft.Network/virtualNetworks/subnets@2020-11-01' = if (
   cClear Section
 */
 
-resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cClearCount): if (cClearCount > 0) {
+resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cClearCount): if (cclear_enabled) {
   name: '${cClearVmName}-${i}-nic'
   location: location
   properties: {
@@ -141,7 +145,7 @@ resource cclearnic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in 
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cClearCount): if (cClearCount > 0) {
+resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cClearCount): if (cclear_enabled) {
   name: '${cClearVmName}-${i}'
   location: location
   properties: {
@@ -189,7 +193,7 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in ran
   cStor Section
 */
 
-resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): if (cstorCount > 0) {
+resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cstorCount): if (cstor_enabled) {
   name: '${cstorVmName}-${i}-capture-nic'
   location: location
   dependsOn: any(cstorilb_enabled) ? [
@@ -218,7 +222,7 @@ resource cstorcapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cstorCount): if (cstorCount > 0) {
+resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cstorCount): if (cstor_enabled) {
   name: '${cstorVmName}-${i}'
   location: location
   properties: {
@@ -263,7 +267,7 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
   tags: contains(tagsByResource, 'Microsoft.Compute/virtualMachines') ? tagsByResource['Microsoft.Compute/virtualMachines'] : null
 }]
 
-resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): if (cvuCount > 0) {
+resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i in range(0, cvuCount): if (cvu_enabled) {
   name: '${cvuVmName}-${i}-capture-nic'
   location: location
   dependsOn: any(cvuilb_enabled) ? [
@@ -292,7 +296,7 @@ resource cvucapturenic 'Microsoft.Network/networkInterfaces@2020-11-01' = [for i
   tags: contains(tagsByResource, 'Microsoft.Network/networkInterfaces') ? tagsByResource['Microsoft.Network/networkInterfaces'] : null
 }]
 
-resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cvuCount): if (cvuCount > 0) {
+resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(0, cvuCount): if (cvu_enabled) {
   name: '${cvuVmName}-${i}'
   location: location
   properties: {
@@ -445,13 +449,14 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorilb_e
 }
 
 output provisioning_instuctions string = 'ssh to the cclear then run the cclear_provisioning_script at the prompt'
-output cclear_ssh string = 'ssh ${adminUsername}@${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
+// sshCommand string = 'ssh ${adminUsername}@${publicIP.properties.dnsSettings.fqdn}'
+output cclear_ssh string = cclear_enabled ? 'ssh ${adminUsername}@${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}' : ''
 output cclear_provisioning_script string = 'until [ -x /opt/cloud/deployer.py ]; do echo "still deploying, please wait..."; sleep 5; done; /opt/cloud/deployer.py'
 
-output cclear_ip string = '${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}'
+output cclear_ip string = cclear_enabled ? cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress : ''
 
 output cvu_ilb_frontend_ip string = cvuilb_enabled ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
-output cvu_provisioning array = [for i in range(0, cvuCount): cvuCount > 0 ? {
+output cvu_provisioning array = [for i in range(0, cvuCount): cvu_enabled ? {
   'index': i
   'name': '${cvuvm[i].name}'
   'nic_name': '${cvucapturenic[i].name}'
@@ -459,7 +464,7 @@ output cvu_provisioning array = [for i in range(0, cvuCount): cvuCount > 0 ? {
 } : []]
 
 output cstor_ilb_frontend_ip string = cstorilb_enabled ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
-output cstor_provisioning array = [for i in range(0, cstorCount): cstorCount > 0 ? {
+output cstor_provisioning array = [for i in range(0, cstorCount): cstor_enabled ? {
   'index': i
   'name': '${cvuvm[i].name}'
   'nic_name': '${cstorcapturenic[i].name}'
