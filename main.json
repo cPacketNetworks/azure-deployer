@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "17028955604320067704"
+      "templateHash": "12065079069957338616"
     }
   },
   "parameters": {
@@ -589,15 +589,15 @@
   "outputs": {
     "provisioning_instuctions": {
       "type": "string",
-      "value": "ssh to the cclear then run the cclear_provisioning_script at the prompt"
+      "value": "[if(variables('cclear_enabled'), 'ssh to the cclear then run the cclear_provisioning_script at the prompt', 'No cClear Deployed, provisioning script not deployed')]"
     },
     "cclear_ssh": {
       "type": "string",
-      "value": "[if(variables('cclear_enabled'), format('ssh {0}@{1}', parameters('adminUsername'), reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), '')]"
+      "value": "[if(variables('cclear_enabled'), format('ssh {0}@{1}', parameters('adminUsername'), reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), 'No cClear Deployed')]"
     },
     "cclear_provisioning_script": {
       "type": "string",
-      "value": "until [ -x /opt/cloud/deployer.py ]; do echo \"still deploying, please wait...\"; sleep 5; done; /opt/cloud/deployer.py"
+      "value": "[if(variables('cclear_enabled'), 'until [ -x /opt/cloud/deployer.py ]; do echo \"still deploying, please wait...\"; sleep 5; done; /opt/cloud/deployer.py', 'No cClear Deployed')]"
     },
     "cclear_ip": {
       "type": "string",
