@@ -46,7 +46,8 @@ def get_passwd():
 def get_valid_ip(prompt):
     while True:
         try:
-            value = ipaddress.ip_address(input(prompt))
+            value = input(prompt)
+            value = '' if len(value) < 1 else ipaddress.ip_address(value)
         except ValueError:
             print("This is not a valid IP address")
             continue
