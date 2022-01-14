@@ -222,7 +222,7 @@ if debug: print(json.dumps(cur_ss_cstor, sort_keys=False, indent=4))
 
 restart_services(cvu_provisioning)
 restart_services(cstor_provisioning)
+print("Finished VXLAN provisioning")
 
 EOF_DEPLOYER
-
 chmod +x /opt/cloud/deployer.py
