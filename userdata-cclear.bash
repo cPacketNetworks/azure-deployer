@@ -4,6 +4,7 @@ mkdir -p /opt/cloud/
 cat <<EOF_DEPLOYER >/opt/cloud/deployer.py
 #!/usr/bin/env python3
 
+from os import environ
 import ipaddress
 import json
 import requests
@@ -15,6 +16,12 @@ from getpass import getpass
 urllib3.disable_warnings()
 
 debug = False
+debug_mode = False
+
+def set_debug_env(debug_dict):
+    for i in debug_dict:
+        if debug: print(i)
+        environ[i['key']] = i['value']
 
 
 def get_user(prompt):
@@ -64,11 +71,11 @@ def get_valid_ips(prompt):
     while True:
         try:
             value = input(prompt).split()
-            isValidIP = all(ipaddress.ip_address(ip) for ip in value)
+            is_valid_ip = all(ipaddress.ip_address(ip) for ip in value)
         except ValueError:
             print("The list caused an error, does the list contain an invalid IP address?")
             continue
-        if not isValidIP:
+        if not is_valid_ip:
             print("The list contains an invalid IP address")
             continue
         else:
@@ -98,6 +105,15 @@ def get_requests(url):
     else:
         return None
 
+
+def post_request(url, post_payload):
+    post_headers = {'Content-Type': 'application/json'}
+    try:
+        s = requests.post(url, auth=HTTPBasicAuth(user, password), verify=False, headers=post_headers, json=post_payload)
+    except requests.exceptions.RequestException as e:
+        raise SystemExit(e)
+    if debug: print("{}  {}  {}".format(url, post_payload, s))
+    return s
 
 def get_system_settings(provisioning):
     # the structure of the provisioning input is assumed to be a dictionary like this:
@@ -139,6 +155,26 @@ def restart_services(provisioning):
         print("Restarting Services on {}".format(key['name']))
 
 
+def add_devices_to_cclear(provisioning):
+    for key in provisioning:
+        print("adding {} to cclear: {}".format(key['name'], cclear_ip), end =": ")
+        modify_payload = {'ip': key['private_ip'], 'name': key['name'], 'deviceType': 'cstor10', 'verify_ssl': False}
+        modify_ss = post_request(url="https://{}/rt/data/cstor/modify".format(cclear_ip), post_payload=modify_payload)
+        if debug: print(json.dumps(modify_ss.json(), sort_keys=False, indent=4))
+        if 200 <= modify_ss.status_code <= 229:
+            devauth_payload = {'devId': modify_ss.json()['_id'], "user": user, "pwd": password}
+            devauth_ss = post_request(url="https://{}/rt/data/devauth/modify".format(cclear_ip), post_payload=devauth_payload)
+            if debug: print(json.dumps(devauth_ss.json(), sort_keys=False, indent=4))
+            if 200 <= devauth_ss.status_code <= 229:
+                print("OK")
+            else: 
+                print("Failed {}".format(devauth_ss.status_code))
+        elif modify_ss.status_code == 500:
+            print("Device Already Exists - Skipping")
+        else:
+            print("Failed {}".format(modify_ss.status_code))
+        
+
 # Inputs
 
 instruction = """
@@ -152,27 +188,31 @@ This script can be re-run to reconfigure the solution.
 """
 print(instruction)
 
-cclear_ip = get_valid_ip("cclear_ip: ")
+# value_when_true if condition else value_when_false
 
-cvu_ilb_frontend_ip = get_valid_ip("cvu_ilb_frontend_ip: ")
+cclear_ip = environ.get('CCLEAR_IP') if environ.get('CCLEAR_IP') is not None else get_valid_ip("cclear_ip: ")
+if debug: print(cclear_ip)
+
+cvu_ilb_frontend_ip = environ.get('CVU_ILB_FRONTEND_IP') if environ.get('CVU_ILB_FRONTEND_IP') is not None else get_valid_ip("cvu_ilb_frontend_ip: ")
 if debug: print(cvu_ilb_frontend_ip)
 
-cvu_provisioning = get_valid_json("cvu_provisioning: ")
+cvu_provisioning = json.loads(environ.get('CVU_PROVISIONING')) if environ.get('CVU_PROVISIONING') is not None else get_valid_json("cvu_provisioning: ")
 if debug: print(cvu_provisioning)
 
-cstor_ilb_frontend_ip = get_valid_ip("cstor_ilb_frontend_ip: ")
+cstor_ilb_frontend_ip = environ.get('CSTOR_ILB_FRONTEND_IP') if environ.get('CSTOR_ILB_FRONTEND_IP') is not None else get_valid_ip("cstor_ilb_frontend_ip: ")
 if debug: print(cstor_ilb_frontend_ip)
 
-cstor_provisioning = get_valid_json("cstor_provisioning: ")
+cstor_provisioning = json.loads(environ.get('CSTOR_PROVISIONING')) if environ.get('CSTOR_PROVISIONING') is not None else get_valid_json("cstor_provisioning: ")
 if debug: print(cstor_provisioning)
 num_cstors = len(cstor_provisioning)
 
-cvu_tool_ip = get_valid_ips('To provision the cvu to send to a packet based tool, enter space separated IP address(s). Leave blank for no tool provisioning. Example: 10.101.3.100 10.101.3.101: ')
+tool_ip_prompt = 'To provision the cvu to send to a packet based tool, enter space separated IP address(s). Leave blank for no tool provisioning. Example: 10.101.3.100 10.101.3.101: '
+cvu_tool_ip = environ.get('CVU_TOOL_IP').split() if environ.get('CVU_TOOL_IP') is not None else get_valid_ips(tool_ip_prompt)
 if debug: print(cvu_tool_ip)
 num_tools = len(cvu_tool_ip)
 
-user = get_user("Web UI Username: ")
-password = get_passwd()
+user = environ.get('CPKT_USER') if environ.get('CPKT_USER') is not None else get_user("Web UI Username: ")
+password = environ.get('CPKT_PASSWORD') if environ.get('CPKT_USER') is not None else get_passwd()
 
 
 # main 
@@ -223,6 +263,10 @@ if debug: print(json.dumps(cur_ss_cstor, sort_keys=False, indent=4))
 restart_services(cvu_provisioning)
 restart_services(cstor_provisioning)
 print("Finished VXLAN provisioning")
+
+add_devices_to_cclear(cvu_provisioning)
+add_devices_to_cclear(cstor_provisioning)
+print("Finished cClear provisioning")
 
 EOF_DEPLOYER
 chmod +x /opt/cloud/deployer.py
