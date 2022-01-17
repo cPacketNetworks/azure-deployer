@@ -141,6 +141,47 @@ def set_system_settings(t_settings, provisioning):
             curss[key['name']] = ss
 
 
+def create_cvu_provisioining_settings():
+    t_cvu_ss = dict()
+    for cvukey in cvu_provisioning:
+        settings = None
+        i = 0
+        vxlan_id_start = 200
+        settings = dict(cvuv_max_vxlan_ports=num_cstors + num_tools)
+        settings['stats_db_server'] = cclear_ip
+        for cstorkey in cstor_provisioning:
+            settings['cvuv_vxlan_dev_{}'.format(i)] = 'vxlan{}'.format(i)
+            settings['cvuv_vxlan_srcip_{}'.format(i)] = cvukey['private_ip']
+            settings['cvuv_vxlan_remoteip_{}'.format(i)] = cstorkey['private_ip']
+            settings['cvuv_vxlan_id_{}'.format(i)] = vxlan_id_start + i
+            # only supports single interface deployment 
+            settings['cvuv_vxlan_eth_{}'.format(i)] = 'cvuv_mirror_eth_0'
+            i = i + 1
+        for ip in cvu_tool_ip:
+            settings['cvuv_vxlan_dev_{}'.format(i)] = 'vxlan{}'.format(i)
+            settings['cvuv_vxlan_srcip_{}'.format(i)] = cvukey['private_ip']
+            settings['cvuv_vxlan_remoteip_{}'.format(i)] = ip
+            settings['cvuv_vxlan_id_{}'.format(i)] = vxlan_id_start + i
+            # only supports single interface deployment 
+            settings['cvuv_vxlan_eth_{}'.format(i)] = 'cvuv_mirror_eth_0'
+            i = i + 1
+        t_cvu_ss[cvukey['name']] = settings
+    if debug: print(json.dumps(t_cvu_ss, sort_keys=False, indent=4))
+    return t_cvu_ss
+
+
+def create_cstor_provisioning_settings():
+    t_cstor_ss = dict()
+    for cstorkey in cstor_provisioning:
+        settings = None
+        i = 0
+        settings = dict()
+        settings['stats_db_server'] = cclear_ip
+        t_cstor_ss[cstorkey['name']] = settings
+    if debug: print(json.dumps(t_cstor_ss, sort_keys=False, indent=4))
+    return t_cstor_ss
+
+
 def restart_services(provisioning):
     for key in provisioning:
         url = "https://{}/sys/20141028/restartAll".format(key['private_ip'])
@@ -184,8 +225,6 @@ This script can be re-run to reconfigure the solution.
 """
 print(instruction)
 
-# value_when_true if condition else value_when_false
-
 cclear_ip = environ.get('CCLEAR_IP') if environ.get('CCLEAR_IP') is not None else get_valid_ip("cclear_ip: ")
 if debug: print(cclear_ip)
 
@@ -210,50 +249,13 @@ num_tools = len(cvu_tool_ip)
 user = environ.get('CPKT_USER') if environ.get('CPKT_USER') is not None else get_user("Web UI Username: ")
 password = environ.get('CPKT_PASSWORD') if environ.get('CPKT_USER') is not None else get_passwd()
 
-
 # main 
-
 cur_ss_cvu = get_system_settings(cvu_provisioning)
 cur_ss_cstor = get_system_settings(cstor_provisioning)
 
-t_cvu_ss = dict()
-for cvukey in cvu_provisioning:
-    settings = None
-    i = 0
-    vxlan_id_start = 200
-    settings = dict(cvuv_max_vxlan_ports=num_cstors + num_tools)
-    settings['stats_db_server'] = cclear_ip
-    for cstorkey in cstor_provisioning:
-        settings['cvuv_vxlan_dev_{}'.format(i)] = 'vxlan{}'.format(i)
-        settings['cvuv_vxlan_srcip_{}'.format(i)] = cvukey['private_ip']
-        settings['cvuv_vxlan_remoteip_{}'.format(i)] = cstorkey['private_ip']
-        settings['cvuv_vxlan_id_{}'.format(i)] = vxlan_id_start + i
-        # only supports single interface deployment 
-        settings['cvuv_vxlan_eth_{}'.format(i)] = 'cvuv_mirror_eth_0'
-        i = i + 1
-    for ip in cvu_tool_ip:
-        settings['cvuv_vxlan_dev_{}'.format(i)] = 'vxlan{}'.format(i)
-        settings['cvuv_vxlan_srcip_{}'.format(i)] = cvukey['private_ip']
-        settings['cvuv_vxlan_remoteip_{}'.format(i)] = ip
-        settings['cvuv_vxlan_id_{}'.format(i)] = vxlan_id_start + i
-        # only supports single interface deployment 
-        settings['cvuv_vxlan_eth_{}'.format(i)] = 'cvuv_mirror_eth_0'
-        i = i + 1
-    t_cvu_ss[cvukey['name']] = settings
-if debug: print(json.dumps(t_cvu_ss, sort_keys=False, indent=4))
-
-t_cstor_ss = dict()
-for cstorkey in cstor_provisioning:
-    settings = None
-    i = 0
-    settings = dict()
-    settings['stats_db_server'] = cclear_ip
-    t_cstor_ss[cstorkey['name']] = settings
-if debug: print(json.dumps(t_cstor_ss, sort_keys=False, indent=4))
-
-cur_ss_cvu = set_system_settings(t_cvu_ss, cvu_provisioning)
+cur_ss_cvu = set_system_settings(create_cvu_provisioining_settings(), cvu_provisioning)
 if debug: print(json.dumps(cur_ss_cvu, sort_keys=False, indent=4))
-cur_ss_cstor = set_system_settings(t_cstor_ss, cstor_provisioning)
+cur_ss_cstor = set_system_settings(create_cstor_provisioning_settings(), cstor_provisioning)
 if debug: print(json.dumps(cur_ss_cstor, sort_keys=False, indent=4))
 
 restart_services(cvu_provisioning)
