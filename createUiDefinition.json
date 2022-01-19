@@ -71,7 +71,7 @@
                             "monSubnet": {
                                 "label": "Monitoring subnet",
                                 "defaultValue": {
-                                    "name": "mon",
+                                    "name": "monitor",
                                     "addressPrefixSize": "/24"
                                 },
                                 "constraints": {
