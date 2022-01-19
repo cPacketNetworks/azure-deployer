@@ -246,8 +246,8 @@ cvu_tool_ip = environ.get('CVU_TOOL_IP').split() if environ.get('CVU_TOOL_IP') i
 if debug: print(cvu_tool_ip)
 num_tools = len(cvu_tool_ip)
 
-user = environ.get('CPKT_USER') if environ.get('CPKT_USER') is not None else get_user("Web UI Username: ")
-password = environ.get('CPKT_PASSWORD') if environ.get('CPKT_USER') is not None else get_passwd()
+user = environ.get('CPKT_USER') if environ.get('CPKT_USER') is not None else get_user("cClear Web UI Username: ")
+password = environ.get('CPKT_PASSWORD') if environ.get('CPKT_USER') is not None else get_passwd("cClear Web UI Password: ")
 
 # main 
 cur_ss_cvu = get_system_settings(cvu_provisioning)
