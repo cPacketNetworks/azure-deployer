@@ -38,10 +38,10 @@ def get_user(prompt):
     return value
 
 
-def get_passwd():
+def get_passwd(prompt):
     while True:
         try: 
-            value = getpass()
+            value = getpass(prompt)
         except ValueError:
             print("Not a valid entry")
             continue
