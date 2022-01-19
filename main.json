@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "2638736201362340137"
+      "templateHash": "14018338925008109765"
     }
   },
   "parameters": {
@@ -589,7 +589,7 @@
   "outputs": {
     "provisioning_instuctions": {
       "type": "string",
-      "value": "[if(variables('cclear_enabled'), format('ssh ({0}@{1}) to the cclear then run the cclear_provisioning_script at the prompt', parameters('adminUsername'), reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), 'No cClear Deployed, provisioning script not deployed')]"
+      "value": "[if(variables('cclear_enabled'), format('ssh {0}@{1} (cclear). At the prompt, run the contents of cclear_provisioning_script variable (below).', parameters('adminUsername'), reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), 'No cClear Deployed, provisioning script not deployed')]"
     },
     "cclear_provisioning_script": {
       "type": "string",
