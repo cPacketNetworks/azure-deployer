@@ -18,10 +18,10 @@
                 "name": "SSHCredentials",
                 "type": "Microsoft.Compute.CredentialsCombo",
                 "label": {
-                    "authenticationType": "Authentication type",
-                    "password": "Password",
-                    "confirmPassword": "Confirm password",
-                    "sshPublicKey": "SSH public key"
+                  "authenticationType": "Authentication type",
+                  "password": "Password",
+                  "confirmPassword": "Confirm password",
+                  "sshPublicKey": "SSH public key"
                 },
                 "toolTip": {
                     "authenticationType": "Authentication Type for the Virtual Machines",
@@ -29,13 +29,17 @@
                     "sshPublicKey": "SSH Public Key for the Virtual Machines"
                 },
                 "constraints": {
-                    "required": true
+                  "required": true,
+                  "customPasswordRegex": "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{12,}$",
+                  "customValidationMessage": "The password must be alphanumeric, contain at least 12 characters, and have at least 1 letter and 1 number."
                 },
                 "options": {
-                    "hideConfirmation": false
+                  "hideConfirmation": false,
+                  "hidePassword": false
                 },
-                "osPlatform": "Linux"
-            }
+                "osPlatform": "Linux",
+                "visible": true
+              }
         ],
         "steps": [
             {
