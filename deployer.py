@@ -262,6 +262,5 @@ restart_services(cvu_provisioning)
 restart_services(cstor_provisioning)
 print("Finished VXLAN provisioning")
 
-add_devices_to_cclear(cvu_provisioning)
 add_devices_to_cclear(cstor_provisioning)
 print("Finished cClear provisioning")
