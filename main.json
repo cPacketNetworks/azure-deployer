@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.4.1008.15138",
-      "templateHash": "13553473556081388925"
+      "version": "0.4.1272.37030",
+      "templateHash": "9255860451772824903"
     }
   },
   "parameters": {
@@ -158,7 +158,6 @@
       }
     }
   },
-  "functions": [],
   "variables": {
     "cvulbName": "[format('{0}_iLB', parameters('cvuVmName'))]",
     "cstorlbName": "[format('{0}_iLB', parameters('cstorVmName'))]",
@@ -589,7 +588,7 @@
   "outputs": {
     "To_Finish_Provisioning": {
       "type": "string",
-      "value": "[if(variables('cclear_enabled'), format('ssh {0}@{1} (cclear). At the prompt, run the contents of cclear_provisioning_script variable (below).', parameters('adminUsername'), reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), 'No cClear is Deployed. There is no action to take.')]"
+      "value": "[if(variables('cclear_enabled'), format('ssh {0}@{1}', parameters('adminUsername'), reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-nic', parameters('cClearVmName'), range(0, parameters('cClearCount'))[0]))).ipConfigurations[0].properties.privateIPAddress), 'No cClear is Deployed. There is no action to take.')]"
     },
     "Copy_This_and_Paste_Into_ssh_Prompt": {
       "type": "string",

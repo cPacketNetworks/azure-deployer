@@ -448,8 +448,7 @@ resource cstorlb01 'Microsoft.Network/loadBalancers@2021-03-01' = if (cstorilb_e
   tags: contains(tagsByResource, 'Microsoft.Network/loadBalancers') ? tagsByResource['Microsoft.Network/loadBalancers'] : null
 }
 
-output To_Finish_Provisioning string = cclear_enabled ? 'ssh ${adminUsername}@${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress} (cclear). At the prompt, run the contents of cclear_provisioning_script variable (below).' : 'No cClear is Deployed. There is no action to take.'
-// sshCommand string = 'ssh ${adminUsername}@${publicIP.properties.dnsSettings.fqdn}'
+output To_Finish_Provisioning string = cclear_enabled ? 'ssh ${adminUsername}@${cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress}' : 'No cClear is Deployed. There is no action to take.'
 output Copy_This_and_Paste_Into_ssh_Prompt string = cclear_enabled ? 'until [ -x /opt/cloud/deployer.py ]; do echo "still deploying, please wait..."; sleep 5; done; /opt/cloud/deployer.py' : 'No cClear is Deployed. There is no action to take.'
 output cclear_ip string = cclear_enabled ? cclearnic[0].properties.ipConfigurations[0].properties.privateIPAddress : ''
 
