@@ -3,7 +3,7 @@
 build: build-bicep
 
 build-bicep:
-	bicep build main.bicep
+	az bicep build --file main.bicep
 	# inject deployer.py into cclear userdata 
 	echo '#!/bin/bash' > userdata-cclear.bash
 	echo 'mkdir -p /opt/cloud/' >> userdata-cclear.bash
