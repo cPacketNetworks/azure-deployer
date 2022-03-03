@@ -8,9 +8,10 @@ from requests.auth import HTTPBasicAuth
 import urllib3
 from urllib.parse import urlencode
 from getpass import getpass
-from dotenv import load_dotenv
 
-load_dotenv()
+# target machine doesn't have dotenv module used for debug
+# from dotenv import load_dotenv
+# load_dotenv()
 
 urllib3.disable_warnings()
 
