@@ -8,11 +8,15 @@ from requests.auth import HTTPBasicAuth
 import urllib3
 from urllib.parse import urlencode
 from getpass import getpass
+from dotenv import load_dotenv
+
+load_dotenv()
 
 urllib3.disable_warnings()
 
 debug = False
 debug_mode = False
+
 
 def set_debug_env(debug_dict):
     for i in debug_dict:
@@ -96,10 +100,8 @@ def get_requests(url):
         s = requests.get(url, auth=HTTPBasicAuth(user, password), verify=False)
     except requests.exceptions.RequestException as e:
         raise SystemExit(e)
-    if 200 <= s.status_code <= 229:
-        return s.json()
-    else:
-        return None
+    if debug: print("{}  {}  {}".format(url, s))
+    return s
 
 
 def post_request(url, post_payload):
@@ -117,10 +119,17 @@ def get_system_settings(provisioning):
 
     curss = dict()
     for key in provisioning:
-        print("getting systems settings on {}".format(key['name']))
-        ss = get_requests("https://{}/sys/10/getSystemSettings".format(key['private_ip']))
-        if ss is not None:
-            curss[key['name']] = ss
+        print("getting systems settings on {}".format(key['name']), end =": ")
+        s = get_requests("https://{}/sys/10/getSystemSettings".format(key['private_ip']))
+        if 200 <= s.status_code <= 229:
+            curss[key['name']] = s.json()
+            print("OK")
+        elif s.status_code == 401:
+            print("FAILED {} Check username / password".format(s.status_code))
+            exit(1)
+        else:
+            print("FAILED {}".format(s.status_code))
+            exit(1)
     return curss
 
 
@@ -134,12 +143,16 @@ def set_system_settings(t_settings, provisioning):
 
     curss = dict()
     for key in provisioning:
-        print("setting the following systems settings on {}".format(key['name']))
-        print(json.dumps(t_settings[key['name']], sort_keys=False, indent=4))
-        ss = get_requests("https://{}/sys/10/updateASingleSystemSetting?{}".format(key['private_ip'], urlencode(t_settings[key['name']])))
-        if ss is not None:
-            curss[key['name']] = ss
-
+        print("setting the following systems settings on {}".format(key['name']), end =": ")
+        s = get_requests("https://{}/sys/10/updateASingleSystemSetting?{}".format(key['private_ip'], urlencode(t_settings[key['name']])))
+        if 200 <= s.status_code <= 229:
+            curss[key['name']] = s.json()
+            print("OK")
+            print(json.dumps(t_settings[key['name']], sort_keys=False, indent=4))
+        else:
+            print("FAILED {}".format(s.status_code))
+            exit(1)
+    return curss
 
 def create_cvu_provisioining_settings():
     t_cvu_ss = dict()
@@ -184,13 +197,17 @@ def create_cstor_provisioning_settings():
 
 def restart_services(provisioning):
     for key in provisioning:
+        print("Restarting Services on {}".format(key['name']), end=": ")
         url = "https://{}/sys/20141028/restartAll".format(key['private_ip'])
         try:
             s = requests.get(url, auth=HTTPBasicAuth(user, password), verify=False)
         except requests.exceptions.RequestException as e:
             raise SystemExit(e)
-        print("Restarting Services on {}".format(key['name']))
-
+        if s.status_code in [500,200]:
+            print("OK")
+        else:
+            print("FAILED {}".format(s.status_code))
+            exit(1)
 
 def add_devices_to_cclear(provisioning):
     for key in provisioning:
