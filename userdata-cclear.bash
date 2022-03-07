@@ -12,9 +12,11 @@ import urllib3
 from urllib.parse import urlencode
 from getpass import getpass
 
-# target machine doesn't have dotenv module used for debug
-# from dotenv import load_dotenv
-# load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    print(".env files will not be loaded. 'pip3 install python-dotenv' to install") 
 
 urllib3.disable_warnings()
 
