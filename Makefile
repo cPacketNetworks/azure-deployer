@@ -3,7 +3,6 @@
 build: build-bicep
 
 build-bicep:
-	az bicep build --file main.bicep
 	# inject deployer.py into cclear userdata 
 	echo '#!/bin/bash' > userdata-cclear.bash
 	echo 'mkdir -p /opt/cloud/' >> userdata-cclear.bash
@@ -12,6 +11,7 @@ build-bicep:
 	echo '' >> userdata-cclear.bash
 	echo 'EOF_DEPLOYER' >> userdata-cclear.bash
 	echo 'chmod +x /opt/cloud/deployer.py' >> userdata-cclear.bash
+	az bicep build --file main.bicep
 
 tag-latest:
 	# create a git lightweight tag for lastest release
