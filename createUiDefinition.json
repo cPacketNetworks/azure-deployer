@@ -29,9 +29,7 @@
                     "sshPublicKey": "SSH Public Key for the Virtual Machines"
                 },
                 "constraints": {
-                  "required": true,
-                     "customPasswordRegex": "^(?=.*[A-Z])(?=.*[.!@#$%^&*()-_=+])(?=.*[0-9])(?=.*[a-z]).{12,40}$",
-                     "customValidationMessage": "Password must be at least 12 characters long (max 40), and contain upper case, lower case, number and symbol"
+                  "required": true
                 },
                 "options": {
                   "hideConfirmation": false,
