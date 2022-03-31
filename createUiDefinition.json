@@ -267,7 +267,7 @@
                                 "constraints": {
                                     "required": false,
                                     "regex": "^[0-9. ]{7,}$",
-                                    "validationMessage": "If more than one IP is required use spaces to separate the IP addresses: 10.101.3.100 10.101.3.101"
+                                    "validationMessage": "If more than one IP is required, use spaces to separate the IP addresses: 10.101.3.100 10.101.3.101"
                                 }
                             }
                         ],
