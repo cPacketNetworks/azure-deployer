@@ -254,17 +254,16 @@ if debug: print(cvu_ilb_frontend_ip)
 cvu_provisioning = json.loads(environ.get('CVU_PROVISIONING')) if environ.get('CVU_PROVISIONING') is not None else get_valid_json("cvu_provisioning: ")
 if debug: print(cvu_provisioning)
 
+cvu_tool_ip = environ.get('CVU_TOOL_IP').split() if environ.get('CVU_TOOL_IP') is not None else get_valid_ips("cvu_3rd_party_tools: ")
+if debug: print(cvu_tool_ip)
+num_tools = len(cvu_tool_ip)
+
 cstor_ilb_frontend_ip = environ.get('CSTOR_ILB_FRONTEND_IP') if environ.get('CSTOR_ILB_FRONTEND_IP') is not None else get_valid_ip("cstor_ilb_frontend_ip: ")
 if debug: print(cstor_ilb_frontend_ip)
 
 cstor_provisioning = json.loads(environ.get('CSTOR_PROVISIONING')) if environ.get('CSTOR_PROVISIONING') is not None else get_valid_json("cstor_provisioning: ")
 if debug: print(cstor_provisioning)
 num_cstors = len(cstor_provisioning)
-
-tool_ip_prompt = 'To provision the cvu to send to a packet based tool, enter space separated IP address(s). Leave blank for no tool provisioning. Example: 10.101.3.100 10.101.3.101: '
-cvu_tool_ip = environ.get('CVU_TOOL_IP').split() if environ.get('CVU_TOOL_IP') is not None else get_valid_ips(tool_ip_prompt)
-if debug: print(cvu_tool_ip)
-num_tools = len(cvu_tool_ip)
 
 user = environ.get('CPKT_USER') if environ.get('CPKT_USER') is not None else get_user("cClear Web UI Username: ")
 password = environ.get('CPKT_PASSWORD') if environ.get('CPKT_PASSWORD') is not None else get_passwd("cClear Web UI Password: ")

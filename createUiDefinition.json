@@ -255,6 +255,25 @@
                         }
                     },
                     {
+                        "name": "Tools",
+                        "type": "Microsoft.Common.Section",
+                        "label": "Packet Tool Outputs",
+                        "elements": [
+                            {
+                                "name": "PacketToolIPs",
+                                "type": "Microsoft.Common.TextBox",
+                                "label": "Packet Tool IPs",
+                                "toolTip": "IPs (space separated) of 3rd party tools to send packets. For example, output to Vectra or Corelight sensors.",
+                                "constraints": {
+                                    "required": false,
+                                    "regex": "^[0-9. ]{7,}$",
+                                    "validationMessage": "If more than one IP is required use spaces to separate the IP addresses: 10.101.3.100 10.101.3.101"
+                                }
+                            }
+                        ],
+                        "visible": true
+                    },
+                    {
                         "name": "Image",
                         "type": "Microsoft.Common.Section",
                         "label": "Image Selection",
@@ -448,6 +467,7 @@
             "cvuVmName": "[steps('cvu').cvuVmName]",
             "cvuImage": "[steps('cvu').Image.ImageSelector]",
             "cVuImageURI": "[steps('cvu').Image.URISelector]",
+            "cVu3rdPartyToolIPs": "[steps('cvu').Tools.PacketToolIPs]",
             "cstorVMSize": "[steps('cstor').vmSizeSelector]",
             "cstorCount": "[steps('cstor').cstorNumBox]",
             "cstorDiskCount": "[steps('cstor').cstorNumDisksBox]",

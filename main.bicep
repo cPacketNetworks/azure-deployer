@@ -50,6 +50,9 @@ param cvuImage object
 @description('cvu Image Version')
 param cVuImageURI string = ''
 
+@description('cVu 3rd Party Tools')
+param cVu3rdPartyTools string = ''
+
 // cStor
 @description('cvu VM size')
 param cstorVMSize string
@@ -459,6 +462,7 @@ output cvu_provisioning array = [for i in range(0, cvuCount): cvu_enabled ? {
   'nic_name': '${cvucapturenic[i].name}'
   'private_ip': '${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
 } : []]
+output cvu_3rd_party_tools string = cVu3rdPartyTools
 
 output cstor_ilb_frontend_ip string = cstorilb_enabled ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 output cstor_provisioning array = [for i in range(0, cstorCount): cstor_enabled ? {
