@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1318.3566",
-      "templateHash": "8444236556173895736"
+      "templateHash": "11937408027292961149"
     }
   },
   "parameters": {
@@ -107,7 +107,7 @@
         "description": "cvu Image Version"
       }
     },
-    "cVu3rdPartyTools": {
+    "cVu3rdPartyToolIPs": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
@@ -618,7 +618,7 @@
     },
     "cvu_3rd_party_tools": {
       "type": "string",
-      "value": "[parameters('cVu3rdPartyTools')]"
+      "value": "[parameters('cVu3rdPartyToolIPs')]"
     },
     "cstor_ilb_frontend_ip": {
       "type": "string",
