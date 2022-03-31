@@ -62,7 +62,7 @@
                             "addressPrefixSize": "/16"
                         },
                         "constraints": {
-                            "minAddressPrefixSize": "/16"
+                            "minAddressPrefixSize": "/21"
                         },
                         "options": {
                             "hideExisting": false
@@ -76,8 +76,8 @@
                                 },
                                 "constraints": {
                                     "required": true,
-                                    "minAddressPrefixSize": "/24",
-                                    "minAddressCount": 12,
+                                    "minAddressPrefixSize": "/28",
+                                    "minAddressCount": 10,
                                     "requireContiguousAddresses": false
                                 }
                             }
