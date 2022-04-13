@@ -27,14 +27,11 @@ function get_container_name {
 function get_tld {
     url=${1#*.}
     echo "${url%%/*}"
-
 }
 
 cpacket_uri_file="./cpacket_uri.txt"
 my_container_name="tmpcpacketvhds"
-my_test_blob_name=$(mktemp)
 uri_prompt=1
-
 
 if [ -r $cpacket_uri_file ]; then
     source $cpacket_uri_file
