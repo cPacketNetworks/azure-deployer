@@ -162,6 +162,7 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in ran
       osDisk: {
         osType: 'Linux'
         createOption: 'FromImage'
+        deleteOption: 'Delete'
         caching: 'ReadWrite'
       }
       dataDisks: [
@@ -169,6 +170,7 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in ran
           name: '${cClearVmName}-${i}-DataDisk1'
           lun: 1
           createOption: 'Empty'
+          deleteOption: 'Delete'
           diskSizeGB: 500
           caching: 'ReadWrite'
         }
@@ -239,12 +241,14 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
       osDisk: {
         osType: 'Linux'
         createOption: 'FromImage'
+        deleteOption: 'Delete'
         caching: 'ReadWrite'
       }
       dataDisks: [ for j in range(0, cstorDiskCount): {
         name: '${cstorVmName}-${i}-DataDisk-${j}'
         lun: j
         createOption: 'Empty'
+        deleteOption: 'Delete
         diskSizeGB: cstorDiskSize
         caching: 'ReadWrite'
       }]
@@ -313,6 +317,7 @@ resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(
       osDisk: {
         osType: 'Linux'
         createOption: 'FromImage'
+        deleteOption: 'Delete'
         caching: 'ReadWrite'
       }
     }
