@@ -78,7 +78,7 @@ my_container_url="https://$my_account_name.$storage_base_name/$my_container_name
 
 if [ ! -z "$cclear_uri" ]; then
     echo "copying cclear vhd"
-    copy --put-md5 "$cclear_uri" "$my_container_url"
+    azcopy copy --put-md5 "$cclear_uri" "$my_container_url"
     cclearimagename=$(get_filename "$cclear_uri")
     echo "creating cclear image"
     az image create --resource-group "$my_image_rg" --location "$my_image_loc" --name "$cclearimagename" --os-type Linux --source "https://$my_account_name.$storage_base_name/$my_container_name/$cclearimagename"
