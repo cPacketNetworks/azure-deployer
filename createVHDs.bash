@@ -29,7 +29,7 @@ function get_tld {
     echo "${url%%/*}"
 }
 
-cpacket_uri_file="$1"
+cpacket_uri_file=${1:-'./cpacket_uri.txt'}
 my_container_name="tmpcpacketvhds"
 uri_prompt=1
 
