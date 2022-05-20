@@ -57,7 +57,7 @@ my_blob_url=$(az storage account show --output json --only-show-errors --ids $st
 storage_base_name=$(get_tld "$my_blob_url")
 
 
-echo "Checking for existing temporary container at $
+echo "Checking for existing temporary container"
 container_is_created=$(az storage container exists --output tsv --only-show-errors --subscription $my_subscription_id --account-name $my_account_name --name $my_container_name)
 if [ $container_is_created == "True" ]; then
     echo "Removing previous temp directory"
