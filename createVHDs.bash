@@ -87,17 +87,17 @@ fi
 if [ ! -z "$cstor_uri" ]; then
     echo "copying cstor vhd"
     azcopy copy "$cstor_uri" "$my_container_url"
-    cvuimagename=$(get_filename "$cstor_uri")
+    cstorimagename=$(get_filename "$cstor_uri")
     echo "creating cstor image"
-    az image create --resource-group $my_image_rg --location $my_image_loc --name $cvuimagename --os-type Linux --source "https://$my_account_name.$storage_base_name/$my_container_name/$cvuimagename"
+    az image create --resource-group $my_image_rg --location $my_image_loc --name $cstorimagename --os-type Linux --source "https://$my_account_name.$storage_base_name/$my_container_name/$cstorimagename"
 fi
 
 if [ ! -z "$cvu_uri" ]; then
     echo "copying cvu vhd"
     azcopy copy "$cvu_uri" "$my_container_url"
-    cstorimagename=$(get_filename "$cvu_uri")
+    cvuimagename=$(get_filename "$cvu_uri")
     echo "creating cvu image"
-    az image create --resource-group $my_image_rg --location $my_image_loc --name $cstorimagename --os-type Linux --source "https://$my_account_name.$storage_base_name/$my_container_name/$cstorimagename"
+    az image create --resource-group $my_image_rg --location $my_image_loc --name $cvuimagename --os-type Linux --source "https://$my_account_name.$storage_base_name/$my_container_name/$cvuimagename"
 fi
 
 container_deleted=$(az storage container delete --output tsv --only-show-errors --account-name $my_account_name --name $my_container_name)
