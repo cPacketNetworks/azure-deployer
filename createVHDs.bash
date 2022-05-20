@@ -29,7 +29,7 @@ function get_tld {
     echo "${url%%/*}"
 }
 
-cpacket_uri_file="./cpacket_uri.txt"
+cpacket_uri_file="$1"
 my_container_name="tmpcpacketvhds"
 uri_prompt=1
 
@@ -44,7 +44,9 @@ echo "The script will create a temporary container in an existing storage accoun
 echo "This storage account MUST be publicly accessable. In the portal under the storage account: Networking -> Firewalls and virtual networks -> All networks."
 
 echo "" 
-read -ep "Enter your existing storage account name: " -i "$my_account_name" my_account_name
+if [ $uri_prompt -eq 1 ]; then
+    read -ep "Enter your existing storage account name: " -i "$my_account_name" my_account_name
+fi
 my_resource_group=$(az storage account show --output json --only-show-errors --name $my_account_name | jq .resourceGroup | tr -d '"')
 my_image_rg="$my_resource_group"
 my_image_loc=$(az storage account show --output json --only-show-errors --name $my_account_name | jq .location | tr -d '"')
