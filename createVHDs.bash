@@ -52,6 +52,7 @@ fi
 storage_account_ids="/subscriptions/$my_subscription_id/resourceGroups/$my_resource_group/providers/Microsoft.Storage/storageAccounts/$my_account_name"
 echo "The storage resource id is: $storage_account_ids"
 
+my_image_rg="$my_resource_group"
 my_image_loc=$(az storage account show --output json --only-show-errors --ids $storage_account_ids | jq .location | tr -d '"')
 my_blob_url=$(az storage account show --output json --only-show-errors --ids $storage_account_ids | jq .primaryEndpoints.blob | tr -d '"')
 storage_base_name=$(get_tld "$my_blob_url")
@@ -88,7 +89,7 @@ if [ ! -z "$cclear_uri" ]; then
     azcopy copy "$cclear_uri" "$my_container_url"
     cclearimagename=$(get_filename "$cclear_uri")
     echo "creating cclear image"
-    az image create --subscription $my_subscription_id --resource-group "$my_image_rg" --location "$my_image_loc" --name "$cclearimagename" --os-type Linux --source "https://$my_account_name.$storage_base_name/$my_container_name/$cclearimagename"
+    az image create --subscription "$my_subscription_id" --resource-group "$my_image_rg" --location "$my_image_loc" --name "$cclearimagename" --os-type Linux --source "https://$my_account_name.$storage_base_name/$my_container_name/$cclearimagename"
 fi
 
 if [ ! -z "$cstor_uri" ]; then
@@ -96,7 +97,7 @@ if [ ! -z "$cstor_uri" ]; then
     azcopy copy "$cstor_uri" "$my_container_url"
     cstorimagename=$(get_filename "$cstor_uri")
     echo "creating cstor image"
-    az image create --subscription $my_subscription_id --resource-group $my_image_rg --location $my_image_loc --name $cstorimagename --os-type Linux --source "https://$my_account_name.$storage_base_name/$my_container_name/$cstorimagename"
+    az image create --subscription "$my_subscription_id" --resource-group "$my_image_rg" --location "$my_image_loc" --name "$cstorimagename" --os-type Linux --source "https://$my_account_name.$storage_base_name/$my_container_name/$cstorimagename"
 fi
 
 if [ ! -z "$cvu_uri" ]; then
@@ -104,11 +105,11 @@ if [ ! -z "$cvu_uri" ]; then
     azcopy copy "$cvu_uri" "$my_container_url"
     cvuimagename=$(get_filename "$cvu_uri")
     echo "creating cvu image"
-    az image create --subscription $my_subscription_id --resource-group $my_image_rg --location $my_image_loc --name $cvuimagename --os-type Linux --source "https://$my_account_name.$storage_base_name/$my_container_name/$cvuimagename"
+    az image create --subscription "$my_subscription_id" --resource-group "$my_image_rg" --location "$my_image_loc" --name "$cvuimagename" --os-type Linux --source "https://$my_account_name.$storage_base_name/$my_container_name/$cvuimagename"
 fi
 
 container_deleted=$(az storage container delete --output tsv --only-show-errors --subscription $my_subscription_id --account-name $my_account_name --name $my_container_name)
 echo ""
 echo "temporary container removed: $container_deleted"
 
-az image list --output table --only-show-errors --subscription $my_subscription_id --resource-group $my_image_rg
+az image list --output table --only-show-errors --subscription "$my_subscription_id" --resource-group "$my_image_rg"
