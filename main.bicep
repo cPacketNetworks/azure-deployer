@@ -458,16 +458,16 @@ output cclear_ip string = cclear_enabled ? cclearnic[0].properties.ipConfigurati
 output cvu_ilb_frontend_ip string = cvuilb_enabled ? cvulb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 output cvu_provisioning array = [for i in range(0, cvuCount): cvu_enabled ? {
   'index': i
-  'name': '${cvuvm[i].name}'
-  'nic_name': '${cvucapturenic[i].name}'
-  'private_ip': '${cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
+  'name': cvuvm[i].name
+  'nic_name': cvucapturenic[i].name
+  'private_ip': cvucapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress
 } : []]
 output cvu_3rd_party_tools string = cVu3rdPartyToolIPs
 
 output cstor_ilb_frontend_ip string = cstorilb_enabled ? cstorlb01.properties.frontendIPConfigurations[0].properties.privateIPAddress : ''
 output cstor_provisioning array = [for i in range(0, cstorCount): cstor_enabled ? {
   'index': i
-  'name': '${cstorvm[i].name}'
-  'nic_name': '${cstorcapturenic[i].name}'
-  'private_ip': '${cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress}'
+  'name': cstorvm[i].name
+  'nic_name': cstorcapturenic[i].name
+  'private_ip': cstorcapturenic[i].properties.ipConfigurations[0].properties.privateIPAddress
 } : []]
