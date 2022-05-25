@@ -163,6 +163,7 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in ran
         osType: 'Linux'
         createOption: 'FromImage'
         caching: 'ReadWrite'
+        deleteOption: 'Delete'
       }
       dataDisks: [
         {
@@ -171,6 +172,7 @@ resource cclearvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in ran
           createOption: 'Empty'
           diskSizeGB: 500
           caching: 'ReadWrite'
+          deleteOption: 'Delete'
         }
       ]
     }
@@ -240,6 +242,7 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
         osType: 'Linux'
         createOption: 'FromImage'
         caching: 'ReadWrite'
+        deleteOption: 'Delete'
       }
       dataDisks: [ for j in range(0, cstorDiskCount): {
         name: '${cstorVmName}-${i}-DataDisk-${j}'
@@ -247,6 +250,8 @@ resource cstorvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in rang
         createOption: 'Empty'
         diskSizeGB: cstorDiskSize
         caching: 'ReadWrite'
+        //TODO: Make the delete option portal selectable  
+        deleteOption: 'Delete'
       }]
     }
     networkProfile: {
@@ -314,6 +319,7 @@ resource cvuvm 'Microsoft.Compute/virtualMachines@2021-03-01' = [for i in range(
         osType: 'Linux'
         createOption: 'FromImage'
         caching: 'ReadWrite'
+        deleteOption: 'Delete'
       }
     }
     networkProfile: {
