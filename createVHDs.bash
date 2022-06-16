@@ -43,7 +43,7 @@ function copy_create_image {
     if [ ! -z "$1" ]; then
         local imagename=$(get_filename "$1")
         local vhd_dest_url="https://$my_account_name.$storage_base_name/$my_container_name/$imagename"
-        echo "Copying $imagename"
+        echo "Copying $1 to $vhd_dest_url?$my_sas_token"
         azcopy copy "$1" "$vhd_dest_url?$my_sas_token"
         echo "Creating image $imagename"
         az image create --resource-group "$my_image_rg" --location "$my_image_loc" --name "$imagename" --os-type Linux --source "$vhd_dest_url"
