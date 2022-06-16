@@ -117,7 +117,7 @@ echo "Creating 24 hour expiry date"
 my_sas_expiry=$(date --date="+24 hours" +"%Y-%m-%dT%H:%M:%SZ")
 
 echo -n "Generating sas..." 
-my_sas_token=$(az storage container generate-sas --only-show-errors --account-name "$my_account_name" --name "$my_container_name" --permissions acw --expiry "$my_sas_expiry" | tr -d '"')
+my_sas_token=$(az storage container generate-sas --only-show-errors --account-name "$my_account_name" --name "$my_container_name" --permissions racwdl --expiry "$my_sas_expiry" | tr -d '"')
 # check length is reasonable for output
 if [ ${#my_sas_token} -gt 5 ]; then
     echo "Done"
