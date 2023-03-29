@@ -44,11 +44,6 @@ cat <<EOF_BOOTCFG >/home/cpacket/boot_config.txt
 'cvuv_nat_dst_ip_0'     : '',
 'cvuv_nat_dst_port_0'   : '',
 
-'burnside_mode'         : False,
-'cstor_lite_mode'       : False,
-'ssh'                   : {'enabled': True},
-'capture_nic_eth' 	    : 'eth0',
-'management_nic_eth'	: 'eth0',
 }
 EOF_BOOTCFG
 
