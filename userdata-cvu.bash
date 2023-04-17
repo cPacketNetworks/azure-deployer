@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # cVu-V-k inline mode config example
 
@@ -11,43 +11,30 @@
 # the vxlan output port.
 
 # cVu-V-k inline
-cat <<EOF_BOOTCFG >/home/cpacket/boot_config.txt
+touch /home/cpacket/boot_config.toml
+chmod a+w /home/cpacket/boot_config.toml
+
+cat >/home/cpacket/boot_config.toml <<EOF_BOOTCFG
 {
 'vm_type'               : 'azure',
 'capture_mode'          : 'cvuv',
 'cvuv_mode'             : 'inline',
 'cvuv_inline_mode'      : 'tctap',
 'cvuv_mirror_eth_0'     : 'eth0',
-'cvuv_max_vxlan_ports'  : 3,
 
-'cvuv_vxlan_dev_0'      : 'vxlan0',
 'cvuv_vxlan_srcip_0'    : '',
 'cvuv_vxlan_remoteip_0' : '',
-'cvuv_vxlan_id_0'       : '2110',
-'cvuv_vxlan_eth_0'      : 'cvuv_mirror_eth_0',
+'cvuv_vxlan_id_0'       : '1337',
 
-'cvuv_vxlan_dev_1'      : 'vxlan1',
 'cvuv_vxlan_srcip_1'    : '',
 'cvuv_vxlan_remoteip_1' : '',
-'cvuv_vxlan_id_1'       : '2211',
-'cvuv_vxlan_eth_1'      : 'cvuv_mirror_eth_0',
+'cvuv_vxlan_id_1'       : '1338',
 
-'cvuv_vxlan_dev_2'      : 'vxlan2',
 'cvuv_vxlan_srcip_2'    : '',
 'cvuv_vxlan_remoteip_2' : '',
-'cvuv_vxlan_id_2'       : '2212',
-'cvuv_vxlan_eth_2'      : 'cvuv_mirror_eth_0',
-
-'cvuv_nat_loc_proto_0'  : 'tcp',
-'cvuv_nat_loc_ip_0'     : '',
-'cvuv_nat_loc_port_0'   : '',
-'cvuv_nat_dst_ip_0'     : '',
-'cvuv_nat_dst_port_0'   : '',
+'cvuv_vxlan_id_2'       : '1339',
 
 }
 EOF_BOOTCFG
-
-# make writable so that next boot can overwrite if need be
-chmod ug+w /home/cpacket/boot_config.txt
 
 echo "cloud-init ran user-data at: " $(date) >>/home/cpacket/prebootmsg.txt
