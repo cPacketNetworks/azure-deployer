@@ -169,7 +169,7 @@
                                 "name": "ImageSelector",
                                 "type": "Microsoft.Solutions.ResourceSelector",
                                 "label": "Select image",
-                                "resourceType": "[if(equals(subscription().tenantId, '6c826f92-18d2-4705-bec4-7a9257f96733'), 'Microsoft.Compute/galleries/images', 'Microsoft.Compute/images')]",
+                                "resourceType": "Microsoft.Compute/images",
                                 "options": {
                                     "filter": {
                                         "subscription": "all",
