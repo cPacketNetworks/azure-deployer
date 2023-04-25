@@ -1,11 +1,11 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 touch /home/cpacket/boot_config.toml
 chmod a+w /home/cpacket/boot_config.toml
 
 capture_nic_ip=$(ifconfig eth0 | grep 'inet ' | awk '{print $2}')
 
-cat >/home/cpacket/boot_config.toml <<EOF_BOOTCFG
+cat <<EOF_BOOTCFG >/home/cpacket/boot_config.toml
 {
 'vm_type'               : 'azure',
 'capture_mode'          : 'cvuv',
