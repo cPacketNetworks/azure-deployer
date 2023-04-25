@@ -95,8 +95,8 @@
                         "toolTip": "",
                         "recommendedSizes": [
                             "Standard_D8s_v5",
-                            "Standard_D8s_v4",
-                            "Standard_D8s_v3"
+                            "Standard_D16s_v5",
+                            "Standard_D32s_v5"
                         ],
                         "constraints": {
                             "allowedSizes": [
@@ -169,7 +169,7 @@
                                 "name": "ImageSelector",
                                 "type": "Microsoft.Solutions.ResourceSelector",
                                 "label": "Select image",
-                                "resourceType": "Microsoft.Compute/images",
+                                "resourceType": "[if(equals(subscription().tenantId, '6c826f92-18d2-4705-bec4-7a9257f96733'), 'Microsoft.Compute/galleries/images', 'Microsoft.Compute/images')]",
                                 "options": {
                                     "filter": {
                                         "subscription": "all",
@@ -199,8 +199,8 @@
                         "toolTip": "",
                         "recommendedSizes": [
                             "Standard_D2s_v5",
-                            "Standard_D2s_v4",
-                            "Standard_D4s_v3"
+                            "Standard_D4s_v5",
+                            "Standard_D8s_v5"
                         ],
                         "constraints": {
                             "allowedSizes": [
@@ -312,8 +312,8 @@
                         "toolTip": "",
                         "recommendedSizes": [
                             "Standard_D4s_v5",
-                            "Standard_D4s_v4",
-                            "Standard_D4s_v3"
+                            "Standard_D8s_v5",
+                            "Standard_D4s_v4"
                         ],
                         "constraints": {
                             "allowedSizes": [
@@ -414,7 +414,7 @@
                                 "name": "ImageSelector",
                                 "type": "Microsoft.Solutions.ResourceSelector",
                                 "label": "Select image",
-                                "resourceType": "[if(equals(subscription().tenantId, '6c826f92-18d2-4705-bec4-7a9257f96733'), 'Microsoft.Compute/galleries/images', 'Microsoft.Compute/images')]",
+                                "resourceType": "Microsoft.Compute/images",
                                 "options": {
                                     "filter": {
                                         "subscription": "all",
