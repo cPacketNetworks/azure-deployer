@@ -1,7 +1,5 @@
 #!/bin/bash
 
-touch /home/cpacket/boot_config.toml
-chmod a+w /home/cpacket/boot_config.toml
 
 capture_nic_ip=$(ifconfig eth0 | grep 'inet ' | awk '{print $2}')
 
@@ -52,10 +50,14 @@ cat <<EOF_BOOTCFG >/home/cpacket/boot_config.toml
 }
 EOF_BOOTCFG
 
-echo "cloud-init ran user-data at: " $(date) >>/home/cpacket/prebootmsg.txt
 
 IFS=' ' read -ra ADDR <<< "$REMOTE_IPS"
 for i in "${!ADDR[@]}"; do
   # Set the remote IPs in the cvu_vxlan_remoteip_* variables
   sed -i "s|'cvuv_vxlan_remoteip_$i' : '',|'cvuv_vxlan_remoteip_$i' : '${ADDR[i]}',|" /home/cpacket/boot_config.toml
 done
+
+
+
+chmod ug+w /home/cpacket/boot_config.toml
+echo "cloud-init ran user-data at: " $(date) >>/home/cpacket/prebootmsg.txt
