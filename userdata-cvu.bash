@@ -3,7 +3,7 @@
 
 capture_nic_ip=$(ifconfig eth0 | grep 'inet ' | awk '{print $2}')
 
-cat <<EOF_BOOTCFG >/home/cpacket/boot_config.toml
+cat >/home/cpacket/boot_config.toml <<EOF_BOOTCFG
 {
 'vm_type'               : 'azure',
 'capture_mode'          : 'cvuv',
@@ -56,8 +56,6 @@ for i in "${!ADDR[@]}"; do
   # Set the remote IPs in the cvu_vxlan_remoteip_* variables
   sed -i "s|'cvuv_vxlan_remoteip_$i' : '',|'cvuv_vxlan_remoteip_$i' : '${ADDR[i]}',|" /home/cpacket/boot_config.toml
 done
-
-
 
 chmod ug+w /home/cpacket/boot_config.toml
 echo "cloud-init ran user-data at: " $(date) >>/home/cpacket/prebootmsg.txt
