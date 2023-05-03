@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-capture_nic_ip=$(ifconfig eth0 | grep 'inet ' | awk '{print $2}')
+capture_nic_ip=$(ip addr show eth0 | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
 
 cat >/home/cpacket/boot_config.toml <<EOF_BOOTCFG
 {
