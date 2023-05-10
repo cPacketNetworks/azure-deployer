@@ -6,10 +6,8 @@ capture_nic_ip=$(ip addr show eth0 | grep 'inet ' | awk '{print $2}' | cut -d/ -
 cat >/home/cpacket/boot_config.toml <<EOF_BOOTCFG
 {
 "vm_type"               : "azure",
-"capture_mode"          : "cvuv",
 "cvuv_mode"             : "inline",
-"cvuv_inline_mode"      : "tctap",
-"cvuv_mirror_eth_0"     : "eth0",
+"cvuv_mirror_eth_0"     : "$capture_nic",
 
 "cvuv_vxlan_srcip_0"    : "$capture_nic_ip",
 "cvuv_vxlan_remoteip_0" : "",
