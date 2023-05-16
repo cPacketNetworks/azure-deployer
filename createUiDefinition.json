@@ -464,6 +464,8 @@
             }
         ],
         "outputs": {
+            "label": "cPacket Deployer",
+            "description": "cPacket Deployer for Azure Resources",
             "location": "[location()]",
             "adminUsername": "[basics('adminUsername')]",
             "authenticationType": "[basics('SSHCredentials').authenticationType]",
