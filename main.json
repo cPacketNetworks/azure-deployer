@@ -470,7 +470,7 @@
           "adminPassword": "[parameters('adminPasswordOrKey')]",
           "linuxConfiguration": "[if(equals(parameters('authenticationType'), 'password'), null(), variables('linuxConfiguration'))]",
           // This is currently not working so this needs to be looked at
-          "customData": "[base64(concat('#!/bin/bash\n\nexport REMOTE_IPS=\"', parameters('cVu3rdPartyToolIPs'), '\"\n\n', variables('$cvuv_user_data')))]"
+            "customData": "[base64(concat('#!/bin/bash\n\nexport REMOTE_IPS=\"', parameters('cVu3rdPartyToolIPs'), if(variables('cstor_enabled'), concat(' ', reference(resourceId('Microsoft.Network/networkInterfaces', format('{0}-{1}-capture-nic', parameters('cstorVmName'), range(0, parameters('cstorCount'))[copyIndex()])),'2020-11-01', 'Full').properties.ipConfigurations[0].properties.privateIPAddress), ''), '\"\n\n', variables('$cvuv_user_data')))]"
         }
       },
       "tags": "[if(contains(parameters('tagsByResource'), 'Microsoft.Compute/virtualMachines'), parameters('tagsByResource')['Microsoft.Compute/virtualMachines'], null())]",
