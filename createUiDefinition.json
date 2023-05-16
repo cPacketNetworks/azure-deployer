@@ -274,6 +274,7 @@
                             {
                                 "name": "Tool IP Information",
                                 "type": "Microsoft.Common.TextBlock",
+                                "visible": true,
                                 "options": {
                                     "text": "The following IPs are used to send packets to 3rd party tools from cVu. If you do not have any 3rd party tools, you can have up to 9 tools."}
                             },
