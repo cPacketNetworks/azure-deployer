@@ -272,15 +272,10 @@
                         "label": "Packet Tool Outputs",
                         "elements": [
                             {
-                                "name": "PacketToolIPs",
-                                "type": "Microsoft.Common.TextBox",
-                                "label": "Packet Tool IPs",
-                                "toolTip": "IPs (space separated) of 3rd party tools to send packets. For example, output to security sensors.",
-                                "constraints": {
-                                    "required": false,
-                                    "regex": "^[0-9. ]{7,}$",
-                                    "validationMessage": "If more than one IP is required, use spaces to separate the IP addresses:"
-                                }
+                                "name": "Tool IP Information",
+                                "type": "Microsoft.Common.TextBlock",
+                                "options": {
+                                    "text": "The following IPs are used to send packets to 3rd party tools from cVu. If you do not have any 3rd party tools, you can have up to 9 tools."}
                             },
                             {
                                 "name": "PacketToolIPs",
