@@ -5,6 +5,18 @@
     "parameters": {
         "basics": [
             {
+                "name": "welcome_text",
+                "type": "Microsoft.Common.TextBlock",
+                "visible": true,
+                "options": {
+                  "text": "Welcome to cPacket Deployer, if you have any questions please contact us at",
+                  "link": {
+                    "label": "cpacket_email_support.",
+                    "uri": "support@cpacketnetworks.com"
+                  }
+                }
+              },
+            {
                 "name": "adminUsername",
                 "type": "Microsoft.Compute.UserNameTextBox",
                 "label": "Username",
