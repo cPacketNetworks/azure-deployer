@@ -11,7 +11,7 @@
                 "options": {
                   "text": "Welcome to cPacket Deployer, if you have any questions please contact us at",
                   "link": {
-                    "label": "cpacket_email_support.",
+                    "label": "support@cpacketnetworks.com",
                     "uri": "support@cpacketnetworks.com"
                   }
                 }
