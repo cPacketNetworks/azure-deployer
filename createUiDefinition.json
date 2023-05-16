@@ -5,6 +5,18 @@
     "parameters": {
         "basics": [
             {
+                "name": "welcome_text",
+                "type": "Microsoft.Common.TextBlock",
+                "visible": true,
+                "options": {
+                  "text": "Welcome to cPacket Deployer, if you have any questions please contact us at",
+                  "link": {
+                    "label": "support@cpacketnetworks.com",
+                    "uri": "support@cpacketnetworks.com"
+                  }
+                }
+              },
+            {
                 "name": "adminUsername",
                 "type": "Microsoft.Compute.UserNameTextBox",
                 "label": "Username",
@@ -95,8 +107,8 @@
                         "toolTip": "",
                         "recommendedSizes": [
                             "Standard_D8s_v5",
-                            "Standard_D8s_v4",
-                            "Standard_D8s_v3"
+                            "Standard_D16s_v5",
+                            "Standard_D32s_v5"
                         ],
                         "constraints": {
                             "allowedSizes": [
@@ -180,7 +192,7 @@
                             {
                                 "name": "URISelector",
                                 "type": "Microsoft.Common.TextBox",
-                                "label": "Image Direct URI (Optional)",
+                                "label": "Image Azure Resource ID (Optional)",
                                 "toolTip": "If the image cannot be found by the above dropdown or a specific image is needed, paste the full URI of the image into this textbox.  Note: cross-tenant shared images are not supported by this solution."
                             }
                         ],
@@ -199,8 +211,8 @@
                         "toolTip": "",
                         "recommendedSizes": [
                             "Standard_D2s_v5",
-                            "Standard_D2s_v4",
-                            "Standard_D4s_v3"
+                            "Standard_D4s_v5",
+                            "Standard_D8s_v5"
                         ],
                         "constraints": {
                             "allowedSizes": [
@@ -260,10 +272,17 @@
                         "label": "Packet Tool Outputs",
                         "elements": [
                             {
+                                "name": "Tool IP Information",
+                                "type": "Microsoft.Common.TextBlock",
+                                "visible": true,
+                                "options": {
+                                    "text": "The following IPs are used to send packets to 3rd party tools from cVu. You may input up to 9 tools. These are SPACE separated."}
+                            },
+                            {
                                 "name": "PacketToolIPs",
                                 "type": "Microsoft.Common.TextBox",
                                 "label": "Packet Tool IPs",
-                                "toolTip": "IPs (space separated) of 3rd party tools to send packets. For example, output to Vectra or Corelight sensors.",
+                                "toolTip": "IPs (space separated) of 3rd party tools to send packets. For example, output to security sensors.",
                                 "constraints": {
                                     "required": false,
                                     "regex": "^[0-9. ]{7,}$",
@@ -282,7 +301,7 @@
                                 "name": "ImageSelector",
                                 "type": "Microsoft.Solutions.ResourceSelector",
                                 "label": "Select image",
-                                "resourceType": "[if(equals(subscription().tenantId, '6c826f92-18d2-4705-bec4-7a9257f96733'), 'Microsoft.Compute/galleries/images', 'Microsoft.Compute/images')]",
+                                "resourceType": "Microsoft.Compute/images",
                                 "options": {
                                     "filter": {
                                         "subscription": "all",
@@ -293,7 +312,7 @@
                             {
                                 "name": "URISelector",
                                 "type": "Microsoft.Common.TextBox",
-                                "label": "Image Direct URI (Optional)",
+                                "label": "Image Azure Resource ID (Optional)",
                                 "toolTip": "If the image cannot be found by the above dropdown or a specific image is needed, paste the full URI of the image into this textbox.  Note: cross-tenant shared images are not supported by this solution."
                             }
                         ],
@@ -312,8 +331,8 @@
                         "toolTip": "",
                         "recommendedSizes": [
                             "Standard_D4s_v5",
-                            "Standard_D4s_v4",
-                            "Standard_D4s_v3"
+                            "Standard_D8s_v5",
+                            "Standard_D4s_v4"
                         ],
                         "constraints": {
                             "allowedSizes": [
@@ -414,7 +433,7 @@
                                 "name": "ImageSelector",
                                 "type": "Microsoft.Solutions.ResourceSelector",
                                 "label": "Select image",
-                                "resourceType": "[if(equals(subscription().tenantId, '6c826f92-18d2-4705-bec4-7a9257f96733'), 'Microsoft.Compute/galleries/images', 'Microsoft.Compute/images')]",
+                                "resourceType": "Microsoft.Compute/images",
                                 "options": {
                                     "filter": {
                                         "subscription": "all",
@@ -425,7 +444,7 @@
                             {
                                 "name": "URISelector",
                                 "type": "Microsoft.Common.TextBox",
-                                "label": "Image Direct URI (Optional)",
+                                "label": "Image Azure Resource ID (Optional)",
                                 "toolTip": "If the image cannot be found by the above dropdown or a specific image is needed, paste the full URI of the image into this textbox.  Note: cross-tenant shared images are not supported by this solution."
                             }
                         ],
