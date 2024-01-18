@@ -208,19 +208,17 @@ def create_cvu_provisioning_settings():
         print(json.dumps(t_cvu_ss, sort_keys=False, indent=4))
     return t_cvu_ss
 
-
-def create_cstor_provisioning_settings():
-    t_cstor_ss = dict()
-    for cstorkey in cstor_provisioning:
-        settings = None
-        i = 0
-        settings = dict()
-        settings["stats_db_server"] = cclear_ip
-        t_cstor_ss[cstorkey["name"]] = settings
-    if debug:
-        print(json.dumps(t_cstor_ss, sort_keys=False, indent=4))
-    return t_cstor_ss
-
+# def create_cstor_provisioning_settings():
+#     t_cstor_ss = dict()
+#     for cstorkey in cstor_provisioning:
+#         settings = None
+#         i = 0
+#         settings = dict()
+#         settings["stats_db_server"] = cclear_ip
+#         t_cstor_ss[cstorkey["name"]] = settings
+#     if debug:
+#         print(json.dumps(t_cstor_ss, sort_keys=False, indent=4))
+#     return t_cstor_ss
 
 def restart_services(provisioning):
     for key in provisioning:
@@ -351,21 +349,22 @@ password = (
 # main
 
 cur_ss_cvu = get_system_settings(cvu_provisioning)
-cur_ss_cstor = get_system_settings(cstor_provisioning)
+# cur_ss_cstor = get_system_settings(cstor_provisioning)
 
 cur_ss_cvu = set_system_settings(create_cvu_provisioning_settings(), cvu_provisioning)
 if debug:
     print(json.dumps(cur_ss_cvu, sort_keys=False, indent=4))
 
-cur_ss_cstor = set_system_settings(
-    create_cstor_provisioning_settings(), cstor_provisioning
-)
-
-if debug:
-    print(json.dumps(cur_ss_cstor, sort_keys=False, indent=4))
+# TODO: cStor provisioning
+# cur_ss_cstor = set_system_settings(
+#    create_cstor_provisioning_settings(), cstor_provisioning
+#)
+#
+# if debug:
+#    print(json.dumps(cur_ss_cstor, sort_keys=False, indent=4))
 
 restart_services(cvu_provisioning)
-restart_services(cstor_provisioning)
+# restart_services(cstor_provisioning)
 print("Finished VXLAN provisioning")
 
 add_devices_to_cclear(cstor_provisioning)

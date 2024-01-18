@@ -1,28 +1,15 @@
 #!/bin/bash
+set -ex
 
-# cVu-V-k inline boot config settings
-cat <<EOF_BOOTCFG >/home/cpacket/boot_config.txt
-{
-'vm_type': 'azure',
-'capture_mode': 'libpcap',
-'decap_mode': 'vxlan',
-'num_pcap_bufs': 2,
-'capture_nic_index': 0,
-'pci_whitelist': '0001:00:02.0',
-'eth_dev': 'eth0',
-'core_mask': '0x3',
-'burnside_mode': False,
-'cstor_lite_mode': False,
-'ssh': {'enabled': True},
-'cleanup_threshold': 50,
-'use_compression': True,
-'run_cflow_mode': True,
-'tiered_stor_en': False,
-'capture_nic_eth': 'eth0',
-'management_nic_eth': 'eth0',
-}
+config_file="/etc/cstor/boot-config.toml"
+
+cat >"$config_file" <<EOF_BOOTCFG
+[services.capture.sniffer.pcap]
+interfaces = [ "eth0" ]
 EOF_BOOTCFG
 
-chmod ug+w /home/cpacket/boot_config.txt
+chmod a+w "$config_file"
 
-echo "cloud-init ran user-data at: " $(date) >>/home/cpacket/prebootmsg.txt
+echo "boot configuration: completed"
+
+echo "cloud-init ran user-data at: " $(date) >>/home/ubuntu/prebootmsg.txt
